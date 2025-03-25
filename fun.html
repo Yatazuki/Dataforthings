@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farbwechselnde Felder</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #222;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            grid-template-rows: repeat(4, 100px);
+            gap: 5px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: white;
+            transition: background-color 0.01s linear;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid">
+        <!-- 16 Zellen erstellen -->
+        <script>
+            const grid = document.querySelector('.grid');
+            for (let i = 0; i < 16; i++) {
+                let cell = document.createElement('div');
+                cell.classList.add('cell');
+                grid.appendChild(cell);
+            }
+            
+            function getRandomColor() {
+                const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#FFA500', '#800080', '#008000', '#000080', '#FFC0CB', '#A52A2A', '#8A2BE2', '#5F9EA0', '#DC143C', '#B8860B'];
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+            
+            function changeColors() {
+                document.querySelectorAll('.cell').forEach(cell => {
+                    cell.style.backgroundColor = getRandomColor();
+                });
+            }
+            
+            setInterval(changeColors, 10); // Farbwechsel alle 0.01 Sekunden
+        </script>
+    </div>
+</body>
+</html>
