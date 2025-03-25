@@ -2,61 +2,98 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Collatz-Problem Tester</title>
+    <title>Collatz-Problem Visualisiert</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            background-color: #f0f0f0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #f9f9f9;
+            color: #333;
+            padding: 30px;
         }
-        input {
-            margin-bottom: 10px;
-            padding: 5px;
+        h1 {
+            text-align: center;
+            color: #444;
+        }
+        label, input, button {
+            font-size: 16px;
+        }
+        input, button {
+            padding: 8px;
+            margin: 10px 5px;
+        }
+        button {
+            background-color: #007acc;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #005a99;
         }
         .result {
             background: white;
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-top: 10px;
-            max-height: 400px;
-            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px #ccc;
         }
         .sequence {
-            margin-bottom: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #ccc;
+        }
+        .step {
+            margin-left: 20px;
+            line-height: 1.6;
         }
     </style>
 </head>
 <body>
-    <h1>Collatz-Problem Tester</h1>
-    <label for="limit">Bis zu welcher Zahl testen? </label>
-    <input type="number" id="limit" value="10" min="1" />
+    <h1>Collatz-Problem Visualisiert</h1>
+    <label for="limit">Bis zu welcher Zahl testen?</label>
+    <input type="number" id="limit" value="10" min="1">
     <button onclick="runTest()">Start</button>
+
     <div class="result" id="output"></div>
 
     <script>
-        function collatz(n) {
-            const sequence = [n];
-            while (n !== 1) {
-                if (n % 2 === 0) {
-                    n = n / 2;
-                } else {
-                    n = 3 * n + 1;
-                }
-                sequence.push(n);
-            }
-            return sequence;
-        }
-
         function runTest() {
             const limit = parseInt(document.getElementById("limit").value);
             const output = document.getElementById("output");
             output.innerHTML = "";
 
-            for (let i = 1; i <= limit; i++) {
-                const seq = collatz(i);
+            for (let start = 1; start <= limit; start++) {
                 const div = document.createElement("div");
                 div.classList.add("sequence");
-                div.textContent = `${i}: ${seq.join(" → ")}`;
+                const title = document.createElement("strong");
+                title.textContent = `Startwert: ${start}`;
+                div.appendChild(title);
+
+                let n = start;
+                const stepList = document.createElement("div");
+
+                while (n !== 1) {
+                    const step = document.createElement("div");
+                    step.classList.add("step");
+
+                    if (n % 2 === 0) {
+                        step.textContent = `${n} ist gerade → ${n} ÷ 2 = ${n / 2}`;
+                        n = n / 2;
+                    } else {
+                        step.textContent = `${n} ist ungerade → 3×${n} + 1 = ${3 * n + 1}`;
+                        n = 3 * n + 1;
+                    }
+
+                    stepList.appendChild(step);
+                }
+
+                const lastStep = document.createElement("div");
+                lastStep.classList.add("step");
+                lastStep.textContent = "1 erreicht – Ende der Folge.";
+                stepList.appendChild(lastStep);
+
+                div.appendChild(stepList);
                 output.appendChild(div);
             }
         }
