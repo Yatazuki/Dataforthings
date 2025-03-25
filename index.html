@@ -1,70 +1,106 @@
 <!DOCTYPE html>
-<html lang="de">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Farbwechselnde Felder</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 30px;
-            margin: 0;
-            background-color: #f0f0f0;
-        }
-
-        img {
-            max-width: 300px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            margin-bottom: 20px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(4, 100px);
-            grid-template-rows: repeat(4, 100px);
-            gap: 5px;
-        }
-
-        .cell {
-            width: 100px;
-            height: 100px;
-            background-color: white;
-            transition: background-color 1s linear;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Tic Tac Toe</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    table {
+      margin: 0 auto;
+      border-collapse: collapse;
+    }
+    td {
+      width: 100px;
+      height: 100px;
+      font-size: 40px;
+      text-align: center;
+      vertical-align: middle;
+      border: 2px solid #000;
+      cursor: pointer;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    #status {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+  </style>
 </head>
 <body>
+  <h1>Tic Tac Toe</h1>
+  <table>
+    <tr>
+      <td onclick="makeMove(this, 0)"></td>
+      <td onclick="makeMove(this, 1)"></td>
+      <td onclick="makeMove(this, 2)"></td>
+    </tr>
+    <tr>
+      <td onclick="makeMove(this, 3)"></td>
+      <td onclick="makeMove(this, 4)"></td>
+      <td onclick="makeMove(this, 5)"></td>
+    </tr>
+    <tr>
+      <td onclick="makeMove(this, 6)"></td>
+      <td onclick="makeMove(this, 7)"></td>
+      <td onclick="makeMove(this, 8)"></td>
+    </tr>
+  </table>
+  <div id="status">Player X's turn</div>
+  <button onclick="resetGame()">Restart</button>
 
-    <img src="https://image.migros.ch/mo-boxed/v-w-1000-h-1000/5a53b3529defbe03c0f1f6a98f0421d4e95a66b8/vollkornreiswaffeln-dunkle-schokolade.jpg" alt="Vollkornreiswaffeln mit dunkler Schokolade">
+  <script>
+    let board = ["", "", "", "", "", "", "", "", ""];
+    let currentPlayer = "X";
+    let gameOver = false;
 
-    <div class="grid">
-        <!-- 16 Zellen erstellen -->
-    </div>
-
-    <script>
-        const grid = document.querySelector('.grid');
-        for (let i = 0; i < 16; i++) {
-            let cell = document.createElement('div');
-            cell.classList.add('cell');
-            grid.appendChild(cell);
+    function makeMove(cell, index) {
+      if (board[index] === "" && !gameOver) {
+        board[index] = currentPlayer;
+        cell.textContent = currentPlayer;
+        if (checkWinner()) {
+          document.getElementById("status").textContent = `Player ${currentPlayer} wins!`;
+          gameOver = true;
+        } else if (board.every(cell => cell !== "")) {
+          document.getElementById("status").textContent = "It's a draw!";
+          gameOver = true;
+        } else {
+          currentPlayer = currentPlayer === "X" ? "O" : "X";
+          document.getElementById("status").textContent = `Player ${currentPlayer}'s turn`;
         }
+      }
+    }
 
-        function getRandomColor() {
-            const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#FFA500', '#800080', '#008000', '#000080', '#FFC0CB', '#A52A2A', '#8A2BE2', '#5F9EA0', '#DC143C', '#B8860B'];
-            return colors[Math.floor(Math.random() * colors.length)];
-        }
+    function checkWinner() {
+      const winPatterns = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+      ];
+      return winPatterns.some(pattern => 
+        board[pattern[0]] === currentPlayer &&
+        board[pattern[1]] === currentPlayer &&
+        board[pattern[2]] === currentPlayer
+      );
+    }
 
-        function changeColors() {
-            document.querySelectorAll('.cell').forEach(cell => {
-                cell.style.backgroundColor = getRandomColor();
-            });
-        }
-
-        setInterval(changeColors, 10); // Farbwechsel alle 0.01 Sekunden
-    </script>
-
+    function resetGame() {
+      board = ["", "", "", "", "", "", "", "", ""];
+      currentPlayer = "X";
+      gameOver = false;
+      const cells = document.querySelectorAll("td");
+      cells.forEach(cell => cell.textContent = "");
+      document.getElementById("status").textContent = `Player X's turn`;
+    }
+  </script>
 </body>
 </html>
