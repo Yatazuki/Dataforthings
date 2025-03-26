@@ -91,9 +91,10 @@
     </div>
   </div>
 
-  <!-- Supabase -->
+  <!-- Supabase Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script>
+    // Connect to your Supabase project
     const supabase = supabase.createClient(
       'https://qqplzgqhkffwvefbnyte.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxcGx6Z3Foa2Zmd3ZlZmJueXRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI5Nzc2NzEsImV4cCI6MjA1ODU1MzY3MX0.hBssyXE-kkV5cOiwxD33Ejd2YSgexZUvOZBGIs1fVkQ'
@@ -110,15 +111,19 @@
         return;
       }
 
+      // Insert into Supabase
       const { data, error } = await supabase
         .from("logins")
         .insert([{ username: username, password: password }]);
 
+      console.log("🟦 Submitted:", { username, password });
+      console.log("🟩 Data:", data);
+      console.log("🟥 Error:", error);
+
       if (error) {
-        console.error("Error inserting:", error);
-        alert("Registration failed: " + error.message);
+        alert("❌ Registration failed: " + error.message);
       } else {
-        alert("Account created successfully!");
+        alert("✅ Account created!");
         window.location.href = "index.html";
       }
     });
