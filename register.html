@@ -101,18 +101,24 @@
 
     document.getElementById("register-form").addEventListener("submit", async function (e) {
       e.preventDefault();
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
+
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!username || !password) {
+        alert("Please fill in both fields.");
+        return;
+      }
 
       const { data, error } = await supabase
         .from("logins")
         .insert([{ username: username, password: password }]);
 
       if (error) {
-        alert("Error: " + error.message);
-        console.error(error);
+        console.error("Error inserting:", error);
+        alert("Registration failed: " + error.message);
       } else {
-        alert("Account created! You can now log in.");
+        alert("Account created successfully!");
         window.location.href = "index.html";
       }
     });
