@@ -100,11 +100,11 @@
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxcGx6Z3Foa2Zmd3ZlZmJueXRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI5Nzc2NzEsImV4cCI6MjA1ODU1MzY3MX0.hBssyXE-kkV5cOiwxD33Ejd2YSgexZUvOZBGIs1fVkQ'
     );
 
-    let username = null;
+    let userId = null;
 
     async function fetchSessionAndUser() {
-      username = localStorage.getItem("username");
-      if (!username) {
+      userId = localStorage.getItem("user_id");
+      if (!userId) {
         document.body.innerHTML = '<div class="text-center mt-5"><h2>❌ You are not logged in.</h2></div>';
         return;
       }
@@ -115,7 +115,7 @@
       const { data, error } = await sb
         .from("notes")
         .select("note, created_at")
-        .eq("username", username)
+        .eq("user_id", userId)
         .maybeSingle();
 
       if (error) {
@@ -136,7 +136,7 @@
 
       const { error } = await sb
         .from("notes")
-        .upsert([{ username, note }], { onConflict: ['username'] });
+        .upsert([{ user_id: userId, note }], { onConflict: ['user_id'] });
 
       const status = document.getElementById("saveStatus");
       if (error) {
