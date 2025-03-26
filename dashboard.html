@@ -103,21 +103,12 @@
     let username = null;
 
     async function fetchSessionAndUser() {
-      const { data: { session }, error } = await sb.auth.getSession();
-
-      if (error || !session || !session.user) {
+      username = localStorage.getItem("username");
+      if (!username) {
         document.body.innerHTML = '<div class="text-center mt-5"><h2>❌ You are not logged in.</h2></div>';
         return;
       }
-
-      const userMeta = session.user.user_metadata;
-      if (userMeta && userMeta.username) {
-        username = userMeta.username;
-        localStorage.setItem("username", username);
-        await loadNote();
-      } else {
-        document.body.innerHTML = '<div class="text-center mt-5"><h2>❌ User metadata missing username.</h2></div>';
-      }
+      await loadNote();
     }
 
     async function loadNote() {
@@ -143,12 +134,9 @@
     async function saveNote() {
       const note = document.getElementById("noteBox").value;
 
-      const { data: { session } } = await sb.auth.getSession();
-      const jwtUsername = session?.user?.user_metadata?.username;
-
       const { error } = await sb
         .from("notes")
-        .upsert([{ username: jwtUsername, note }], { onConflict: ['username'] });
+        .upsert([{ username, note }], { onConflict: ['username'] });
 
       const status = document.getElementById("saveStatus");
       if (error) {
