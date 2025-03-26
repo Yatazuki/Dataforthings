@@ -59,11 +59,40 @@
   </style>
 </head>
 <body>
-  <!-- ... rest of your unchanged HTML ... -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Yatazuki</a>
+    </div>
+  </nav>
 
-  <div class="mt-2 text-center">
-    <small id="noteTimestamp" class="text-muted"></small>
-  </div>
+  <section class="hero">
+    <div class="container">
+      <h1>Welcome to Your Dashboard</h1>
+      <p>This is your central hub for managing all things Yatazuki.</p>
+    </div>
+  </section>
+
+  <section class="section" id="features">
+    <div class="container">
+      <h2>Features</h2>
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <textarea class="form-control mb-3" id="noteBox" rows="5" placeholder="Write your notes here..."></textarea>
+          <button class="btn btn-light w-100" onclick="saveNote()">Save Note</button>
+          <div id="saveStatus" class="text-center mt-2"></div>
+          <div class="mt-2 text-center">
+            <small id="noteTimestamp" class="text-muted"></small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      &copy; 2025 Yatazuki. All rights reserved.
+    </div>
+  </footer>
 
   <script>
     const sb = supabase.createClient(
@@ -76,12 +105,17 @@
     async function loadNote() {
       const { data, error } = await sb
         .from("notes")
-        .select("note, created_at")
+        .select("note, created_at", { head: false })
         .eq("username", username)
-        .single();
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error loading note:", error.message);
+        return;
+      }
 
       if (data) {
-        document.getElementById("noteBox").value = data.note;
+        document.getElementById("noteBox").value = data.note || "";
         document.getElementById("noteTimestamp").innerText = `Last updated: ${new Date(data.created_at).toLocaleString()}`;
       }
     }
@@ -99,6 +133,7 @@
     }
 
     if (username) loadNote();
+    else document.body.innerHTML = '<div class="text-center mt-5"><h2>❌ You are not logged in.</h2></div>';
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
