@@ -1,0 +1,30 @@
+/* styles.css */
+
+/* Base styling */
+body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  background-color: #f8f9fa;
+  margin-bottom: 60px; /* Space for footer if fixed */
+}
+
+/* Headings */
+h1 {
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+/* Paragraph styling */
+p {
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+}
+
+/* Footer styling */
+footer {
+  /* If you prefer a sticky footer, uncomment the code below */
+  /* position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%; */
+}
