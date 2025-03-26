@@ -1,102 +1,66 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Collatz-Problem Visualisiert</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #f9f9f9;
-            color: #333;
-            padding: 30px;
-        }
-        h1 {
-            text-align: center;
-            color: #444;
-        }
-        label, input, button {
-            font-size: 16px;
-        }
-        input, button {
-            padding: 8px;
-            margin: 10px 5px;
-        }
-        button {
-            background-color: #007acc;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #005a99;
-        }
-        .result {
-            background: white;
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 5px #ccc;
-        }
-        .sequence {
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px dashed #ccc;
-        }
-        .step {
-            margin-left: 20px;
-            line-height: 1.6;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modern Website</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <h1>Collatz-Problem Visualisiert</h1>
-    <label for="limit">Bis zu welcher Zahl testen?</label>
-    <input type="number" id="limit" value="10" min="1">
-    <button onclick="runTest()">Start</button>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">MyBrand</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" 
+              aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Features</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Pricing</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contact</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-    <div class="result" id="output"></div>
+  <!-- Content Section -->
+  <main class="container mt-5">
+    <div class="row">
+      <div class="col-12">
+        <h1>Welcome to My Modern Website</h1>
+        <p>
+          This is a fully responsive, modern website built using Bootstrap. Explore our features, check out our pricing, 
+          or contact us for more details. The design is sleek and modern, ensuring a great user experience on all devices.
+        </p>
+        <p>
+          Add additional sections, images, or interactive elements here to expand the content of your website.
+        </p>
+      </div>
+    </div>
+  </main>
 
-    <script>
-        function runTest() {
-            const limit = parseInt(document.getElementById("limit").value);
-            const output = document.getElementById("output");
-            output.innerHTML = "";
+  <!-- Footer -->
+  <footer class="bg-dark text-white text-center p-3 mt-5">
+    <p>&copy; 2025 My Modern Website. All rights reserved.</p>
+  </footer>
 
-            for (let start = 1; start <= limit; start++) {
-                const div = document.createElement("div");
-                div.classList.add("sequence");
-                const title = document.createElement("strong");
-                title.textContent = `Startwert: ${start}`;
-                div.appendChild(title);
-
-                let n = start;
-                const stepList = document.createElement("div");
-
-                while (n !== 1) {
-                    const step = document.createElement("div");
-                    step.classList.add("step");
-
-                    if (n % 2 === 0) {
-                        step.textContent = `${n} ist gerade → ${n} ÷ 2 = ${n / 2}`;
-                        n = n / 2;
-                    } else {
-                        step.textContent = `${n} ist ungerade → 3×${n} + 1 = ${3 * n + 1}`;
-                        n = 3 * n + 1;
-                    }
-
-                    stepList.appendChild(step);
-                }
-
-                const lastStep = document.createElement("div");
-                lastStep.classList.add("step");
-                lastStep.textContent = "1 erreicht – Ende der Folge.";
-                stepList.appendChild(lastStep);
-
-                div.appendChild(stepList);
-                output.appendChild(div);
-            }
-        }
-    </script>
+  <!-- Bootstrap JS Bundle (includes Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JS -->
+  <script src="scripts.js"></script>
 </body>
 </html>
