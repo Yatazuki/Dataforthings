@@ -65,6 +65,9 @@
       <h2 class="text-center">Register</h2>
       <form id="register-form">
         <div class="mb-3">
+          <input type="text" class="form-control" id="username" placeholder="Username" required>
+        </div>
+        <div class="mb-3">
           <input type="email" class="form-control" id="email" placeholder="Email" required>
         </div>
         <div class="mb-3">
@@ -85,22 +88,39 @@
     document.getElementById("register-form").addEventListener("submit", async function (e) {
       e.preventDefault();
 
+      const username = document.getElementById("username").value.trim().toLowerCase();
       const email = document.getElementById("email").value.trim().toLowerCase();
       const password = document.getElementById("password").value.trim();
 
-      if (!email || !password) return alert("Please fill in both fields.");
-
-      const { error } = await sb.auth.signUp({
-        email,
-        password
-      });
-
-      if (error) {
-        alert("❌ Error: " + error.message);
-      } else {
-        alert("✅ Check your email to confirm your account!");
-        window.location.href = "index.html";
+      if (!username || !email || !password) {
+        alert("❌ Please fill in all fields.");
+        return;
       }
+
+      // Check if username already exists
+      const { data: existing } = await sb.from("logins").select("*").eq("username", username).limit(1);
+      if (existing.length > 0) {
+        alert("❌ Username already exists.");
+        return;
+      }
+
+      // Register with Supabase Auth for email confirmation
+      const { error: authError } = await sb.auth.signUp({ email, password });
+
+      if (authError) {
+        alert("❌ Auth error: " + authError.message);
+        return;
+      }
+
+      // Insert username/password into 'logins' table
+      const { error: insertError } = await sb.from("logins").insert([{ username, password }]);
+      if (insertError) {
+        alert("❌ Database error: " + insertError.message);
+        return;
+      }
+
+      alert("✅ Registered! Please check your email to confirm your account.");
+      window.location.href = "index.html";
     });
   </script>
 </body>
