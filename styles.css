@@ -1,30 +1,86 @@
 /* styles.css */
 
-/* Base styling */
+/* Global Styling */
 body {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  line-height: 1.6;
-  background-color: #f8f9fa;
-  margin-bottom: 60px; /* Space for footer if fixed */
+  background: #121212; /* Dark background for a futuristic vibe */
+  color: #e0e0e0;
+  margin: 0;
+  padding: 0;
 }
 
-/* Headings */
-h1 {
-  font-weight: 700;
-  margin-bottom: 20px;
+/* Headings and brand styling using Orbitron for a futuristic look */
+h1, .navbar-brand {
+  font-family: 'Orbitron', sans-serif;
 }
 
-/* Paragraph styling */
-p {
-  font-size: 1.1rem;
-  margin-bottom: 15px;
+/* Navbar Styling */
+.navbar {
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: background 0.3s ease;
 }
 
-/* Footer styling */
+.navbar a.nav-link {
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.navbar a.nav-link:hover {
+  color: #00ffff; /* Neon cyan for a futuristic accent */
+  transform: scale(1.05);
+}
+
+/* Animation for navbar appearance */
+.nav-animate {
+  animation: slideDown 0.8s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade-in animation for main content */
+.fade-in {
+  animation: fadeIn 1.2s ease-out both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Main content styling */
+main.container {
+  padding: 2rem 0;
+}
+
+/* Footer Styling */
 footer {
-  /* For a sticky footer, you can uncomment the following lines */
-  /* position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%; */
+  background: #1a1a1a;
+  padding: 1rem 0;
+  font-size: 0.9rem;
+}
+
+/* Profile Image Styling with hover effect */
+.profile-img {
+  transition: transform 0.4s ease;
+  border: 2px solid #00ffff;
+}
+
+.profile-img:hover {
+  transform: scale(1.1);
 }
