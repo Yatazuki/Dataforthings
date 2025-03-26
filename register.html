@@ -65,7 +65,7 @@
       <h2 class="text-center">Register</h2>
       <form id="register-form">
         <div class="mb-3">
-          <input type="text" class="form-control" id="username" placeholder="Username" required>
+          <input type="email" class="form-control" id="email" placeholder="Email" required>
         </div>
         <div class="mb-3">
           <input type="password" class="form-control" id="password" placeholder="Password" required>
@@ -85,19 +85,22 @@
     document.getElementById("register-form").addEventListener("submit", async function (e) {
       e.preventDefault();
 
-      const username = document.getElementById("username").value.trim().toLowerCase();
+      const email = document.getElementById("email").value.trim().toLowerCase();
       const password = document.getElementById("password").value.trim();
 
-      if (!username || !password) return alert("Please fill in both fields.");
+      if (!email || !password) return alert("Please fill in both fields.");
 
-      const { data: existing } = await sb.from("logins").select("*").eq("username", username).limit(1);
-      if (existing.length > 0) return alert("Username already exists.");
+      const { error } = await sb.auth.signUp({
+        email,
+        password
+      });
 
-      const { error } = await sb.from("logins").insert([{ username, password }]);
-      if (error) return alert("Error: " + error.message);
-
-      alert("✅ Registered successfully!");
-      window.location.href = "index.html";
+      if (error) {
+        alert("❌ Error: " + error.message);
+      } else {
+        alert("✅ Check your email to confirm your account!");
+        window.location.href = "index.html";
+      }
     });
   </script>
 </body>
