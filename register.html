@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Registrieren</title>
+  <title>Register</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
-  <!-- Supabase & bcrypt -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
+
+  <!-- Supabase and bcrypt (loaded BEFORE main script using defer) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
+
   <style>
     body, html {
       height: 100%;
@@ -78,71 +80,70 @@
 <body>
   <div class="login-container">
     <div class="login-box">
-      <h2>Registrieren</h2>
+      <h2>Register</h2>
       <form id="register-form">
         <div class="mb-3 input-group">
-          <input type="text" class="form-control" id="username" placeholder="Benutzername" required>
+          <input type="text" class="form-control" id="username" placeholder="Username" required>
         </div>
         <div class="mb-3 input-group">
-          <input type="password" class="form-control" id="password" placeholder="Passwort" required>
+          <input type="password" class="form-control" id="password" placeholder="Password" required>
         </div>
-        <button type="submit" class="btn btn-login mb-3">Registrieren</button>
-        <p class="text-center login-link">Schon ein Konto? <a href="index.html">Login</a></p>
+        <button type="submit" class="btn btn-login mb-3">Register</button>
+        <p class="text-center login-link">Already have an account? <a href="index.html">Login</a></p>
       </form>
     </div>
   </div>
 
-  <script>
-    const sb = supabase.createClient(
-      'https://qqplzgqhkffwvefbnyte.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxcGx6Z3Foa2Zmd3ZlZmJueXRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI5Nzc2NzEsImV4cCI6MjA1ODU1MzY3MX0.hBssyXE-kkV5cOiwxD33Ejd2YSgexZUvOZBGIs1fVkQ'
-    );
+  <!-- Your custom script (MUST come after other scripts) -->
+  <script defer>
+    document.addEventListener("DOMContentLoaded", function () {
+      const sb = supabase.createClient(
+        'https://qqplzgqhkffwvefbnyte.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxcGx6Z3Foa2Zmd3ZlZmJueXRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI5Nzc2NzEsImV4cCI6MjA1ODU1MzY3MX0.hBssyXE-kkV5cOiwxD33Ejd2YSgexZUvOZBGIs1fVkQ'
+      );
 
-    document.getElementById("register-form").addEventListener("submit", async function (e) {
-      e.preventDefault();
+      document.getElementById("register-form").addEventListener("submit", async function (e) {
+        e.preventDefault();
 
-      const username = document.getElementById("username").value.trim();
-      const rawPassword = document.getElementById("password").value.trim();
+        const username = document.getElementById("username").value.trim();
+        const rawPassword = document.getElementById("password").value.trim();
 
-      if (!username || !rawPassword) {
-        alert("Bitte Benutzername und Passwort eingeben.");
-        return;
-      }
+        if (!username || !rawPassword) {
+          alert("Please fill in both fields.");
+          return;
+        }
 
-      // Prüfen, ob Benutzername schon existiert
-      const { data: existing, error: checkError } = await sb
-        .from("logins")
-        .select("*")
-        .eq("username", username)
-        .limit(1);
+        const { data: existingUser, error: checkError } = await sb
+          .from("logins")
+          .select("*")
+          .eq("username", username)
+          .limit(1);
 
-      if (checkError) {
-        alert("Fehler beim Überprüfen des Benutzernamens.");
-        console.error(checkError);
-        return;
-      }
+        if (checkError) {
+          alert("Error checking username.");
+          console.error(checkError);
+          return;
+        }
 
-      if (existing.length > 0) {
-        alert("❌ Benutzername existiert bereits!");
-        return;
-      }
+        if (existingUser.length > 0) {
+          alert("❌ Username already exists.");
+          return;
+        }
 
-      // Passwort verschlüsseln
-      const hashedPassword = bcrypt.hashSync(rawPassword, 10);
+        const hashedPassword = bcrypt.hashSync(rawPassword, 10);
 
-      // Benutzer speichern
-      const { data, error } = await sb
-        .from("logins")
-        .insert([{ username: username, password: hashedPassword }]);
+        const { data, error } = await sb
+          .from("logins")
+          .insert([{ username: username, password: hashedPassword }]);
 
-      if (error) {
-        alert("❌ Fehler beim Speichern: " + error.message);
-        console.error(error);
-        return;
-      }
-
-      alert("✅ Registrierung erfolgreich!");
-      window.location.href = "index.html";
+        if (error) {
+          alert("❌ Error saving user: " + error.message);
+          console.error(error);
+        } else {
+          alert("✅ Registration successful!");
+          window.location.href = "index.html";
+        }
+      });
     });
   </script>
 </body>
