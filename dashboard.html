@@ -100,15 +100,23 @@
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxcGx6Z3Foa2Zmd3ZlZmJueXRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI5Nzc2NzEsImV4cCI6MjA1ODU1MzY3MX0.hBssyXE-kkV5cOiwxD33Ejd2YSgexZUvOZBGIs1fVkQ'
     );
 
-    let username = localStorage.getItem("username");
+    let username = null;
 
     async function fetchSessionAndUser() {
-      const { data: { session } } = await sb.auth.getSession();
-      if (session && session.user && session.user.user_metadata.username) {
-        username = session.user.user_metadata.username;
-        localStorage.setItem("username", username);
-      } else {
+      const { data: { session }, error } = await sb.auth.getSession();
+
+      if (error || !session || !session.user) {
         document.body.innerHTML = '<div class="text-center mt-5"><h2>❌ You are not logged in.</h2></div>';
+        return;
+      }
+
+      const userMeta = session.user.user_metadata;
+      if (userMeta && userMeta.username) {
+        username = userMeta.username;
+        localStorage.setItem("username", username);
+        await loadNote();
+      } else {
+        document.body.innerHTML = '<div class="text-center mt-5"><h2>❌ User metadata missing username.</h2></div>';
       }
     }
 
@@ -134,9 +142,13 @@
 
     async function saveNote() {
       const note = document.getElementById("noteBox").value;
+
+      const { data: { session } } = await sb.auth.getSession();
+      const jwtUsername = session?.user?.user_metadata?.username;
+
       const { error } = await sb
         .from("notes")
-        .upsert([{ username, note }], { onConflict: ['username'] });
+        .upsert([{ username: jwtUsername, note }], { onConflict: ['username'] });
 
       const status = document.getElementById("saveStatus");
       if (error) {
@@ -149,10 +161,7 @@
       setTimeout(() => status.innerText = '', 3000);
     }
 
-    (async () => {
-      await fetchSessionAndUser();
-      if (username) loadNote();
-    })();
+    fetchSessionAndUser();
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
