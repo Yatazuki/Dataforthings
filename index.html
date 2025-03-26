@@ -130,8 +130,8 @@
       const isCorrect = bcrypt.compareSync(password, user.password);
 
       if (isCorrect) {
-        alert("✅ Logged in successfully!");
-        // You can store session info here if needed
+        localStorage.setItem("username", username);
+        window.location.href = "dashboard.html";
       } else {
         alert("❌ Invalid username or password.");
       }
