@@ -1,7 +1,12 @@
 // scripts.js
 
-// Run any custom JavaScript once the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", function() {
-  console.log("Website loaded successfully!");
-  // Additional JavaScript functionality can be added here.
+  console.log("Futuristic website loaded!");
+
+  // Example: You can add further interactive animations here.
+  // For instance, you might want to trigger animations based on scroll position.
+  window.addEventListener('scroll', function() {
+    // Placeholder for scroll-based animations
+    // e.g., console.log("Scroll position:", window.scrollY);
+  });
 });
