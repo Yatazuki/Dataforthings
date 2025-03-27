@@ -27,14 +27,13 @@
   
   <section class="section" id="features">
     <div class="container">
-      <h2>Features</h2>
+      <h2>Snake Game</h2>
       <div class="row justify-content-center">
-        <div class="col-md-8">
-          <textarea class="form-control mb-3" id="noteBox" rows="5" placeholder="Write your notes here..."></textarea>
-          <button class="btn btn-light w-100" onclick="saveNote()">Save Note</button>
-          <div id="saveStatus" class="text-center mt-2"></div>
-          <div class="mt-2 text-center">
-            <small id="noteTimestamp" class="text-muted"></small>
+        <div class="col-md-8 text-center">
+          <canvas id="gameCanvas" width="400" height="400" style="background: #000; border: 2px solid #fff;"></canvas>
+          <div class="mt-3">
+            <p>Score: <span id="score">0</span></p>
+            <p>Use arrow keys to control the snake!</p>
           </div>
         </div>
       </div>
@@ -55,53 +54,101 @@
 
     let userId = null;
 
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreElement = document.getElementById('score');
+    
+    let snake = [{x: 200, y: 200}];
+    let food = {x: 0, y: 0};
+    let dx = 10;
+    let dy = 0;
+    let score = 0;
+    
+    function generateFood() {
+      food.x = Math.floor(Math.random() * 40) * 10;
+      food.y = Math.floor(Math.random() * 40) * 10;
+    }
+    
+    function drawSnake() {
+      snake.forEach(segment => {
+        ctx.fillStyle = '#0F0';
+        ctx.fillRect(segment.x, segment.y, 10, 10);
+      });
+    }
+    
+    function drawFood() {
+      ctx.fillStyle = '#F00';
+      ctx.fillRect(food.x, food.y, 10, 10);
+    }
+    
+    function moveSnake() {
+      const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+      snake.unshift(head);
+      
+      if(head.x === food.x && head.y === food.y) {
+        score += 10;
+        scoreElement.textContent = score;
+        generateFood();
+      } else {
+        snake.pop();
+      }
+      
+      if(head.x < 0 || head.x > 390 || head.y < 0 || head.y > 390) {
+        gameOver();
+      }
+      
+      for(let i = 1; i < snake.length; i++) {
+        if(head.x === snake[i].x && head.y === snake[i].y) {
+          gameOver();
+        }
+      }
+    }
+    
+    function gameOver() {
+      score = 0;
+      scoreElement.textContent = score;
+      snake = [{x: 200, y: 200}];
+      dx = 10;
+      dy = 0;
+    }
+    
+    function gameLoop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawFood();
+      moveSnake();
+      drawSnake();
+    }
+    
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'ArrowUp' && dy === 0) {
+        dx = 0;
+        dy = -10;
+      }
+      if(e.key === 'ArrowDown' && dy === 0) {
+        dx = 0;
+        dy = 10;
+      }
+      if(e.key === 'ArrowLeft' && dx === 0) {
+        dx = -10;
+        dy = 0;
+      }
+      if(e.key === 'ArrowRight' && dx === 0) {
+        dx = 10;
+        dy = 0;
+      }
+    });
+    
+    generateFood();
+    setInterval(gameLoop, 100);
+    
     async function fetchSessionAndUser() {
       userId = localStorage.getItem("user_id");
       if (!userId) {
         document.body.innerHTML = '<div class="text-center mt-5"><h2>❌ You are not logged in.</h2></div>';
         return;
       }
-      await loadNote();
     }
-
-    async function loadNote() {
-      const { data, error } = await sb
-        .from("notes")
-        .select("note, created_at")
-        .eq("user_id", userId)
-        .maybeSingle();
-
-      if (error) {
-        console.error("Error loading note:", error.message);
-        return;
-      }
-
-      if (data) {
-        document.getElementById("noteBox").value = data.note || "";
-        if (data.created_at) {
-          document.getElementById("noteTimestamp").innerText = `Last updated: ${new Date(data.created_at).toLocaleString()}`;
-        }
-      }
-    }
-
-    async function saveNote() {
-      const note = document.getElementById("noteBox").value;
-
-      const { error } = await sb
-        .from("notes")
-        .upsert([{ user_id: userId, note }], { onConflict: ['user_id'] });
-
-      const status = document.getElementById("saveStatus");
-      if (error) {
-        console.error("Error saving note:", error.message);
-        status.innerText = "❌ Failed to save.";
-      } else {
-        status.innerText = "✅ Note saved!";
-        await loadNote();
-      }
-      setTimeout(() => status.innerText = '', 3000);
-    }
-
+    
     fetchSessionAndUser();
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
