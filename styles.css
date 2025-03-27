@@ -18,12 +18,12 @@ body {
 }
 
 .login-box {
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.85);
   padding: 4vh 3vw;
   border-radius: 2vh;
   width: 90vw;
   max-width: 40vw;
-  box-shadow: 0 0 1vh rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 2vh rgba(0, 0, 0, 0.3);
 }
 
 .login-box h2 {
