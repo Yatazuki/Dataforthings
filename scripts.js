@@ -8,21 +8,31 @@ async function login() {
   const pass = document.getElementById('password').value;
   const errorBox = document.getElementById('errorBox');
 
-  const { data, error } = await sb
-    .from("logins")
-    .select("id, username")
-    .eq("username", user)
-    .eq("password", pass)
-    .maybeSingle();
+  try {
+    const { data, error } = await sb
+      .from("logins")
+      .select("id, username")
+      .eq("username", user)
+      .eq("password", pass)
+      .maybeSingle();
 
-  if (error || !data) {
-    errorBox.innerText = "❌ Invalid credentials";
-    return;
+    if (error) {
+      errorBox.innerText = "❌ Server error: " + error.message;
+      return;
+    }
+
+    if (!data) {
+      errorBox.innerText = "❌ Invalid username or password";
+      return;
+    }
+
+    localStorage.setItem("user_id", data.id);
+    localStorage.setItem("username", user);
+    window.location.href = "dashboard.html";
+  } catch (err) {
+    console.error("Login error:", err);
+    errorBox.innerText = "❌ An error occurred during login";
   }
-
-  localStorage.setItem("user_id", data.id);
-  localStorage.setItem("username", data.username);
-  window.location.href = "dashboard.html";
 }
 
 // Dashboard functionality
