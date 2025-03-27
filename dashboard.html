@@ -30,10 +30,11 @@
       <h2>Snake Game</h2>
       <div class="row justify-content-center">
         <div class="col-md-8 text-center">
-          <canvas id="gameCanvas" width="400" height="400" style="background: #000; border: 2px solid #fff;"></canvas>
+          <canvas id="gameCanvas" width="400" height="400" style="background: #000; border: 2px solid #fff; cursor: pointer;"></canvas>
           <div class="mt-3">
-            <p>Score: <span id="score">0</span></p>
-            <p>Use arrow keys to control the snake!</p>
+            <p>Score: <span id="score">0</span> | High Score: <span id="highScore">0</span></p>
+            <button id="startButton" class="btn btn-success mb-2">Start Game</button>
+            <p>Click Start or canvas to begin!</p>
           </div>
         </div>
       </div>
@@ -57,12 +58,19 @@
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     const scoreElement = document.getElementById('score');
+    const highScoreElement = document.getElementById('highScore');
+    const startButton = document.getElementById('startButton');
     
     let snake = [{x: 200, y: 200}];
     let food = {x: 0, y: 0};
     let dx = 10;
     let dy = 0;
     let score = 0;
+    let highScore = localStorage.getItem('snakeHighScore') || 0;
+    let gameInterval = null;
+    let isGameRunning = false;
+    
+    highScoreElement.textContent = highScore;
     
     function generateFood() {
       food.x = Math.floor(Math.random() * 40) * 10;
@@ -105,11 +113,19 @@
     }
     
     function gameOver() {
+      if(score > highScore) {
+        highScore = score;
+        localStorage.setItem('snakeHighScore', highScore);
+        highScoreElement.textContent = highScore;
+      }
       score = 0;
       scoreElement.textContent = score;
       snake = [{x: 200, y: 200}];
       dx = 10;
       dy = 0;
+      clearInterval(gameInterval);
+      isGameRunning = false;
+      startButton.textContent = 'Start Game';
     }
     
     function gameLoop() {
@@ -119,7 +135,20 @@
       drawSnake();
     }
     
-    document.addEventListener('keydown', (e) => {
+    function startGame() {
+      if(!isGameRunning) {
+        isGameRunning = true;
+        generateFood();
+        gameInterval = setInterval(gameLoop, 100);
+        startButton.textContent = 'Game Running';
+        canvas.focus();
+      }
+    }
+    
+    function handleKeyDown(e) {
+      if(!isGameRunning) return;
+      
+      e.preventDefault();
       if(e.key === 'ArrowUp' && dy === 0) {
         dx = 0;
         dy = -10;
@@ -136,10 +165,11 @@
         dx = 10;
         dy = 0;
       }
-    });
+    }
     
-    generateFood();
-    setInterval(gameLoop, 100);
+    canvas.addEventListener('click', startGame);
+    startButton.addEventListener('click', startGame);
+    document.addEventListener('keydown', handleKeyDown);
     
     async function fetchSessionAndUser() {
       userId = localStorage.getItem("user_id");
