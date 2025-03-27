@@ -1,11 +1,8 @@
-
-// Initialize Supabase Client
 const sb = supabase.createClient(
   'https://qqplzgqhkffwvefbnyte.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxcGx6Z3Foa2Zmd3ZlZmJueXRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI5Nzc2NzEsImV4cCI6MjA1ODU1MzY3MX0.hBssyXE-kkV5cOiwxD33Ejd2YSgexZUvOZBGIs1fVkQ'
 );
 
-// Login functionality
 async function login() {
   const user = document.getElementById('username').value;
   const pass = document.getElementById('password').value;
@@ -77,49 +74,44 @@ async function saveNote() {
   setTimeout(() => status.innerText = '', 3000);
 }
 
-// Registration functionality
-async function register(event) {
-  event.preventDefault();
 
-  const username = document.getElementById("username").value.trim().toLowerCase();
-  const email = document.getElementById("email").value.trim().toLowerCase();
-  const password = document.getElementById("password").value.trim();
-
-  if (!username || !email || !password) {
-    alert("❌ Please fill in all fields.");
-    return;
-  }
-
-  const { data: existing } = await sb.from("logins").select("*").eq("username", username).limit(1);
-  if (existing.length > 0) {
-    alert("❌ Username already exists.");
-    return;
-  }
-
-  const { error: authError } = await sb.auth.signUp({ email, password });
-
-  if (authError) {
-    alert("❌ Auth error: " + authError.message);
-    return;
-  }
-
-  const { error: insertError } = await sb.from("logins").insert([{ username, password }]);
-  if (insertError) {
-    alert("❌ Database error: " + insertError.message);
-    return;
-  }
-
-  alert("✅ Registered! Please check your email to confirm your account.");
-  window.location.href = "index.html";
-}
-
-// Initialize event listeners when document is ready
 document.addEventListener('DOMContentLoaded', function() {
   const registerForm = document.getElementById('register-form');
   if (registerForm) {
-    registerForm.addEventListener('submit', register);
+    registerForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value.trim().toLowerCase();
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const password = document.getElementById("password").value.trim();
+
+      if (!username || !email || !password) {
+        alert("❌ Please fill in all fields.");
+        return;
+      }
+
+      const { data: existing } = await sb.from("logins").select("*").eq("username", username).limit(1);
+      if (existing.length > 0) {
+        alert("❌ Username already exists.");
+        return;
+      }
+
+      const { error: authError } = await sb.auth.signUp({ email, password });
+      if (authError) {
+        alert("❌ Auth error: " + authError.message);
+        return;
+      }
+
+      const { error: insertError } = await sb.from("logins").insert([{ username, password }]);
+      if (insertError) {
+        alert("❌ Database error: " + insertError.message);
+        return;
+      }
+
+      alert("✅ Registered! Please check your email to confirm your account.");
+      window.location.href = "index.html";
+    });
   }
-  
   if (window.location.pathname.includes('dashboard.html')) {
     fetchSessionAndUser();
   }

@@ -1,77 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Register</title>
+  <meta charset="UTF-8">
+  <title>Register - Yatazuki</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="login-container">
     <div class="login-box">
-      <h2 class="text-center">Register</h2>
+      <h2>Register</h2>
       <form id="register-form">
-        <div class="mb-3">
-          <input type="text" class="form-control" id="username" placeholder="Username" required>
-        </div>
-        <div class="mb-3">
-          <input type="email" class="form-control" id="email" placeholder="Email" required>
-        </div>
-        <div class="mb-3">
-          <input type="password" class="form-control" id="password" placeholder="Password" required>
-        </div>
-        <button type="submit" class="btn btn-login mb-3">Register</button>
-        <p class="text-center login-link">Already have an account? <a href="index.html">Login</a></p>
+        <input type="text" id="username" class="form-control mb-3" placeholder="Username" required>
+        <input type="email" id="email" class="form-control mb-3" placeholder="Email" required>
+        <input type="password" id="password" class="form-control mb-3" placeholder="Password" required>
+        <button type="submit" class="btn btn-light w-100 mb-3">Register</button>
+        <p class="text-center">Already have an account? <a href="index.html">Login</a></p>
       </form>
     </div>
   </div>
-
-  <script>
-    const sb = supabase.createClient(
-      'https://qqplzgqhkffwvefbnyte.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxcGx6Z3Foa2Zmd3ZlZmJueXRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI5Nzc2NzEsImV4cCI6MjA1ODU1MzY3MX0.hBssyXE-kkV5cOiwxD33Ejd2YSgexZUvOZBGIs1fVkQ'
-    );
-
-    document.getElementById("register-form").addEventListener("submit", async function (e) {
-      e.preventDefault();
-
-      const username = document.getElementById("username").value.trim().toLowerCase();
-      const email = document.getElementById("email").value.trim().toLowerCase();
-      const password = document.getElementById("password").value.trim();
-
-      if (!username || !email || !password) {
-        alert("❌ Please fill in all fields.");
-        return;
-      }
-
-      // Check if username already exists
-      const { data: existing } = await sb.from("logins").select("*").eq("username", username).limit(1);
-      if (existing.length > 0) {
-        alert("❌ Username already exists.");
-        return;
-      }
-
-      // Register with Supabase Auth for email confirmation
-      const { error: authError } = await sb.auth.signUp({ email, password });
-
-      if (authError) {
-        alert("❌ Auth error: " + authError.message);
-        return;
-      }
-
-      // Insert username/password into 'logins' table
-      const { error: insertError } = await sb.from("logins").insert([{ username, password }]);
-      if (insertError) {
-        alert("❌ Database error: " + insertError.message);
-        return;
-      }
-
-      alert("✅ Registered! Please check your email to confirm your account.");
-      window.location.href = "index.html";
-    });
-  </script>
+  <script src="scripts.js"></script>
 </body>
 </html>
