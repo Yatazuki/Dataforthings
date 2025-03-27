@@ -10,7 +10,7 @@ async function login() {
 
   const { data, error } = await sb
     .from("logins")
-    .select("*")
+    .select("id, username")
     .eq("username", user)
     .eq("password", pass)
     .maybeSingle();
@@ -20,7 +20,8 @@ async function login() {
     return;
   }
 
-  localStorage.setItem("username", user);
+  localStorage.setItem("user_id", data.id);
+  localStorage.setItem("username", data.username);
   window.location.href = "dashboard.html";
 }
 
