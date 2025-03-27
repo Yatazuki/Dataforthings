@@ -1,86 +1,106 @@
-/* styles.css */
 
-/* Global Styling */
+/* Global Styles */
 body {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  background: #121212; /* Dark background for a futuristic vibe */
-  color: #e0e0e0;
+  font-family: 'Montserrat', sans-serif;
+  background: url('background1.jpg') no-repeat center center fixed;
+  background-size: cover;
   margin: 0;
-  padding: 0;
+  color: white;
 }
 
-/* Headings and brand styling using Orbitron for a futuristic look */
-h1, .navbar-brand {
-  font-family: 'Orbitron', sans-serif;
+/* Login/Register Styles */
+.login-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Navbar Styling */
+.login-box {
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 2rem;
+  border-radius: 15px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+.login-box h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Form Controls */
+.form-control {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+}
+
+.form-control::placeholder {
+  color: #ccc;
+}
+
+.form-control:focus {
+  background-color: rgba(255, 255, 255, 0.2);
+  box-shadow: none;
+  color: white;
+}
+
+/* Dashboard Styles */
 .navbar {
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  transition: background 0.3s ease;
+  background-color: rgba(0, 0, 0, 0.85);
 }
 
-.navbar a.nav-link {
-  transition: color 0.3s ease, transform 0.3s ease;
+.hero {
+  padding: 80px 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  text-align: center;
 }
 
-.navbar a.nav-link:hover {
-  color: #00ffff; /* Neon cyan for a futuristic accent */
-  transform: scale(1.05);
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
 }
 
-/* Animation for navbar appearance */
-.nav-animate {
-  animation: slideDown 0.8s ease-out;
+.hero p {
+  font-size: 1.2rem;
 }
 
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.section {
+  padding: 60px 0;
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
-/* Fade-in animation for main content */
-.fade-in {
-  animation: fadeIn 1.2s ease-out both;
+.section h2 {
+  text-align: center;
+  margin-bottom: 40px;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.card {
+  background-color: rgba(0, 0, 0, 0.7);
+  border: none;
+  border-radius: 15px;
+  color: white;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
 }
 
-/* Main content styling */
-main.container {
-  padding: 2rem 0;
-}
-
-/* Footer Styling */
-footer {
-  background: #1a1a1a;
-  padding: 1rem 0;
+.footer {
+  padding: 30px 0;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.85);
   font-size: 0.9rem;
 }
 
-/* Profile Image Styling with hover effect */
-.profile-img {
-  transition: transform 0.4s ease;
-  border: 2px solid #00ffff;
+/* Buttons */
+.btn-custom {
+  background-color: white;
+  color: black;
+  font-weight: bold;
+  width: 100%;
+  margin-top: 1rem;
 }
 
-.profile-img:hover {
-  transform: scale(1.1);
+.btn-custom:hover {
+  background-color: #e0e0e0;
 }
