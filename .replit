@@ -20,7 +20,7 @@ args = "git add ."
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "git commit -m \"Auto-sync changes\""
+args = "git commit -m \"Update snake game implementation\""
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
