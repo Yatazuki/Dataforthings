@@ -67,6 +67,12 @@ async function loadNote() {
   }
 }
 
+function logout() {
+  localStorage.removeItem("user_id");
+  localStorage.removeItem("username");
+  window.location.href = "index.html";
+}
+
 async function saveNote() {
   const note = document.getElementById("noteBox").value;
 
