@@ -67,3 +67,36 @@ args = "git commit -m \"Update styling and fix navbar positioning\""
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "git push origin main"
+
+[[workflows.workflow]]
+name = "GitHub Sync Fresh"
+author = 37299935
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git init"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git config --global user.name \"Replit User\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git config --global user.email \"replituser@users.noreply.github.com\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git add ."
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git commit -m \"Sync latest changes\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git branch -M main"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git push -u origin main --force"
