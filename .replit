@@ -33,19 +33,11 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "git config --global user.name \"Replit User\""
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "git config --global user.email \"replituser@users.noreply.github.com\""
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
 args = "git add ."
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "git commit -m \"Update navbar and styling\""
+args = "git commit -m \"Fix navbar visibility and spacing\""
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
