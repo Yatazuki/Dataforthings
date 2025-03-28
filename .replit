@@ -25,3 +25,28 @@ args = "git commit -m \"Fix navbar positioning to top of page\""
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "git push origin main"
+
+[[workflows.workflow]]
+name = "Git Sync"
+author = 37299935
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git config --global user.name \"Replit User\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git config --global user.email \"replituser@users.noreply.github.com\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git add ."
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git commit -m \"Update navbar and styling\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "git push origin main"
