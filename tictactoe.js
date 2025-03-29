@@ -17,8 +17,8 @@ function createBoard() {
     const cell = document.createElement('div');
     cell.style.width = '100px';
     cell.style.height = '100px';
-    cell.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-    cell.style.border = '2px solid #fff';
+    cell.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    cell.style.border = '2px solid rgba(255, 255, 255, 0.8)';
     cell.style.display = 'flex';
     cell.style.justifyContent = 'center';
     cell.style.alignItems = 'center';
