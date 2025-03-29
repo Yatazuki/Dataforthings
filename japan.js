@@ -24,8 +24,13 @@ async function loadNotes() {
     const notesContainer = document.getElementById('notes-container');
     if (!notesContainer) return;
 
+    const currentUserId = localStorage.getItem("user_id");
     notesContainer.innerHTML = data.map(note => `
-      <div class="note">
+      <div class="note position-relative">
+        ${note.user_id === currentUserId ? 
+          `<button onclick="deleteNote('${note.id}')" class="delete-btn">×</button>` : 
+          ''
+        }
         <p>${note.note_text}</p>
         ${note.link_url ? `<p><a href="${note.link_url}" target="_blank">Link</a></p>` : ''}
         <small>By: ${note.logins?.username || 'Unknown'}</small>
@@ -58,6 +63,28 @@ async function addNote(content) {
     await loadNotes();
   } catch (err) {
     console.error("Failed to add note:", err);
+  }
+}
+
+async function deleteNote(noteId) {
+  const userId = localStorage.getItem("user_id");
+  if (!userId || !noteId) return;
+
+  try {
+    const { error } = await sb
+      .from("global_notes")
+      .delete()
+      .eq('id', noteId)
+      .eq('user_id', userId);
+
+    if (error) {
+      console.error("Error deleting note:", error.message);
+      return;
+    }
+
+    await loadNotes();
+  } catch (err) {
+    console.error("Failed to delete note:", err);
   }
 }
 
