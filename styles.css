@@ -133,29 +133,16 @@ body {
 
 /* Dashboard Styles */
 .navbar {
-  background: rgba(0, 0, 0, 0.7);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+  background-color: rgba(0, 0, 0, 0.85);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+  padding: 1rem 0;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  width: 100%;
-  z-index: 9999;
-  padding: 0.3rem 1rem;
-  margin: 0;
-}
-
-.container {
-  margin-top: 56px;
-  padding-top: 10px;
-}
-
-.dropdown-menu-dark {
-  background: rgba(0, 0, 0, 0.9);
-}
-
-.dropdown-item.active {
-  background-color: rgba(255, 255, 255, 0.2);
+  z-index: 1000;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
 }
 
 body {
