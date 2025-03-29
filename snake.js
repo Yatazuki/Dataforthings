@@ -86,6 +86,9 @@ function startGame() {
     generateFood();
     gameInterval = setInterval(gameLoop, 100);
     startButton.textContent = 'Game Running';
+    startButton.style.backgroundColor = '#8000ff';
+    startButton.style.borderColor = '#8000ff';
+    startButton.style.boxShadow = '0 0 15px rgba(128, 0, 255, 0.5)';
     canvas.focus();
   }
 }
