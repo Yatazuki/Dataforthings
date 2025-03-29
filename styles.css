@@ -87,11 +87,13 @@ body {
     cursor: pointer;
     margin: 5px;
     transition: all 0.2s ease;
+    box-shadow: 0 0 15px rgba(128, 0, 255, 0.3);
   }
 
   .control-btn:active {
     background-color: #8000ff;
     transform: scale(0.95);
+    box-shadow: 0 0 20px rgba(128, 0, 255, 0.5);
   }
 }
 
@@ -218,4 +220,17 @@ body {
 .btn-outline-light:hover {
   background-color: #8000ff;
   border-color: #8000ff;
+}
+
+/* Added styles for btn-success */
+.btn-success {
+  background-color: #8000ff;
+  border-color: #8000ff;
+  box-shadow: 0 0 15px rgba(128, 0, 255, 0.5);
+}
+
+.btn-success:hover {
+  background-color: #9933ff;
+  border-color: #9933ff;
+  box-shadow: 0 0 20px rgba(128, 0, 255, 0.7);
 }
