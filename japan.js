@@ -26,7 +26,8 @@ async function loadNotes() {
 
     notesContainer.innerHTML = data.map(note => `
       <div class="note">
-        <p>${note.content}</p>
+        <p>${note.note_text}</p>
+        ${note.link_url ? `<p><a href="${note.link_url}" target="_blank">Link</a></p>` : ''}
         <small>By: ${note.logins?.username || 'Unknown'}</small>
         <small>Posted: ${new Date(note.created_at).toLocaleString()}</small>
       </div>
@@ -43,7 +44,7 @@ async function addNote(content) {
   try {
     const { error } = await sb
       .from("global_notes")
-      .insert([{ user_id: userId, content }]);
+      .insert([{ user_id: userId, note_text: content }]);
 
     if (error) {
       console.error("Error adding note:", error.message);
