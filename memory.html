@@ -44,6 +44,18 @@
       <h1>Memory Game</h1>
       <div class="mt-3">
         <p>Moves: <span id="moves">0</span> | Best Score: <span id="bestScore">-</span></p>
+        <div class="mb-3 text-center">
+          <div class="btn-group" role="group">
+            <input type="radio" class="btn-check" name="difficulty" id="easy" value="easy" checked>
+            <label class="btn btn-outline-light" for="easy">Easy (8 pairs)</label>
+            
+            <input type="radio" class="btn-check" name="difficulty" id="medium" value="medium">
+            <label class="btn btn-outline-light" for="medium">Medium (12 pairs)</label>
+            
+            <input type="radio" class="btn-check" name="difficulty" id="hard" value="hard">
+            <label class="btn btn-outline-light" for="hard">Hard (16 pairs)</label>
+          </div>
+        </div>
         <button id="startButton" class="btn btn-success mb-2">New Game</button>
       </div>
       <div id="game-board" class="mt-4"></div>

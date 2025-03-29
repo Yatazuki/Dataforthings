@@ -1,18 +1,41 @@
 
-const cards = ['🌟', '🎮', '🎲', '🎯', '🎨', '🎭', '🎪', '🎡'];
-let gameBoard = [...cards, ...cards];
+const easyCards = ['🌟', '🎮', '🎲', '🎯', '🎨', '🎭', '🎪', '🎡'];
+const mediumCards = [...easyCards, '🎪', '🎨', '🎭', '🎡'];
+const hardCards = [...mediumCards, '🎯', '🎲', '🎮', '🌟'];
+
+let gameBoard = [];
 let flippedCards = [];
 let matchedPairs = 0;
 let moves = 0;
 let bestScore = localStorage.getItem('memoryBestScore') || '-';
 let canFlip = true;
+let currentDifficulty = 'easy';
 
 const board = document.getElementById('game-board');
 const movesDisplay = document.getElementById('moves');
 const bestScoreDisplay = document.getElementById('bestScore');
 const startButton = document.getElementById('startButton');
+const difficultyInputs = document.querySelectorAll('input[name="difficulty"]');
 
 bestScoreDisplay.textContent = bestScore;
+
+function getCardsForDifficulty(difficulty) {
+  switch(difficulty) {
+    case 'easy': return easyCards;
+    case 'medium': return mediumCards;
+    case 'hard': return hardCards;
+    default: return easyCards;
+  }
+}
+
+function getGridColumns(difficulty) {
+  switch(difficulty) {
+    case 'easy': return 4;
+    case 'medium': return 6;
+    case 'hard': return 8;
+    default: return 4;
+  }
+}
 
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -25,7 +48,8 @@ function shuffle(array) {
 function createBoard() {
   board.innerHTML = '';
   board.style.display = 'grid';
-  board.style.gridTemplateColumns = 'repeat(4, 80px)';
+  const columns = getGridColumns(currentDifficulty);
+  board.style.gridTemplateColumns = `repeat(${columns}, 136px)`;
   board.style.gap = '10px';
   board.style.margin = '0 auto';
   board.style.width = 'fit-content';
@@ -35,14 +59,14 @@ function createBoard() {
     cardElement.classList.add('memory-card');
     cardElement.dataset.cardIndex = index;
     cardElement.dataset.value = card;
-    cardElement.style.width = '80px';
-    cardElement.style.height = '80px';
+    cardElement.style.width = '136px';
+    cardElement.style.height = '136px';
     cardElement.style.backgroundColor = 'rgba(128, 0, 255, 0.7)';
     cardElement.style.border = '2px solid rgba(255, 255, 255, 0.2)';
     cardElement.style.display = 'flex';
     cardElement.style.justifyContent = 'center';
     cardElement.style.alignItems = 'center';
-    cardElement.style.fontSize = '40px';
+    cardElement.style.fontSize = '68px';
     cardElement.style.cursor = 'pointer';
     cardElement.style.transition = 'all 0.3s';
     cardElement.style.borderRadius = '10px';
@@ -76,7 +100,8 @@ function flipCard(card) {
       flippedCards = [];
       canFlip = true;
       
-      if (matchedPairs === cards.length) {
+      const currentCards = getCardsForDifficulty(currentDifficulty);
+      if (matchedPairs === currentCards.length) {
         setTimeout(() => {
           if (bestScore === '-' || moves < bestScore) {
             bestScore = moves;
@@ -101,6 +126,7 @@ function flipCard(card) {
 }
 
 function startGame() {
+  const cards = getCardsForDifficulty(currentDifficulty);
   gameBoard = shuffle([...cards, ...cards]);
   flippedCards = [];
   matchedPairs = 0;
@@ -109,6 +135,13 @@ function startGame() {
   canFlip = true;
   createBoard();
 }
+
+difficultyInputs.forEach(input => {
+  input.addEventListener('change', (e) => {
+    currentDifficulty = e.target.value;
+    startGame();
+  });
+});
 
 startButton.addEventListener('click', startGame);
 startGame();
