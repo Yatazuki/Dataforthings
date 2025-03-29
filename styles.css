@@ -246,3 +246,21 @@ body {
   border-color: #9933ff;
   box-shadow: 0 0 20px rgba(128, 0, 255, 0.7);
 }
+.note {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  backdrop-filter: blur(5px);
+}
+
+.note p {
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.note small {
+  color: #aaa;
+  display: block;
+  font-size: 0.85em;
+}
