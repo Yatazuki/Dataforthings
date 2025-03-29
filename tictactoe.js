@@ -14,19 +14,23 @@ function createBoard() {
   board.style.display = 'grid';
   board.style.gridTemplateColumns = 'repeat(3, 100px)';
   board.style.gap = '5px';
+  board.style.margin = '0 auto';
   
   for (let i = 0; i < 9; i++) {
     const cell = document.createElement('div');
     cell.style.width = '100px';
     cell.style.height = '100px';
     cell.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    cell.style.border = '2px solid rgba(255, 255, 255, 0.8)';
+    cell.style.border = '2px solid rgba(255, 255, 255, 0.2)';
     cell.style.display = 'flex';
     cell.style.justifyContent = 'center';
     cell.style.alignItems = 'center';
     cell.style.fontSize = '40px';
     cell.style.color = '#fff';
     cell.style.cursor = 'pointer';
+    cell.style.backdropFilter = 'blur(5px)';
+    cell.style.boxShadow = '0 0 15px rgba(255, 255, 255, 0.1)';
+    cell.style.borderRadius = '15px';
     
     cell.addEventListener('click', () => handleCellClick(i));
     board.appendChild(cell);
