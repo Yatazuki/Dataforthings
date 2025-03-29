@@ -169,12 +169,16 @@ function checkDraw() {
 function resetGame() {
   gameBoard = ['', '', '', '', '', '', '', '', ''];
   gameActive = true;
-  currentPlayer = 'X';
+  currentPlayer = Math.random() < 0.5 ? 'X' : 'O';
   currentPlayerDisplay.textContent = currentPlayer;
   
   const cells = board.children;
   for (let cell of cells) {
     cell.textContent = '';
+  }
+
+  if (botDifficulty !== 'human' && currentPlayer === 'O') {
+    makeBotMove();
   }
 }
 
