@@ -36,10 +36,10 @@ function getCardsForDifficulty(difficulty) {
 
 function getGridColumns(difficulty) {
   switch(difficulty) {
-    case 'easy': return 4;
+    case 'easy': return 3;
     case 'medium': return 6;
-    case 'hard': return 8;
-    default: return 4;
+    case 'hard': return 12;
+    default: return 3;
   }
 }
 
@@ -55,7 +55,7 @@ function createBoard() {
   board.innerHTML = '';
   board.style.display = 'grid';
   const columns = getGridColumns(currentDifficulty);
-  board.style.gridTemplateColumns = `repeat(${columns}, 136px)`;
+  board.style.gridTemplateColumns = `repeat(${columns}, 100px)`;
   board.style.gap = '10px';
   board.style.margin = '0 auto';
   board.style.width = 'fit-content';
@@ -65,8 +65,8 @@ function createBoard() {
     cardElement.classList.add('memory-card');
     cardElement.dataset.cardIndex = index;
     cardElement.dataset.value = card;
-    cardElement.style.width = '136px';
-    cardElement.style.height = '136px';
+    cardElement.style.width = '100px';
+    cardElement.style.height = '100px';
     cardElement.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
     cardElement.style.border = '1px solid rgba(255, 255, 255, 0.2)';
     cardElement.style.display = 'flex';
