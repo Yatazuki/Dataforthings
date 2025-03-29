@@ -51,6 +51,10 @@ async function addNote(content) {
       return;
     }
 
+    // Clear the input after successful addition
+    document.getElementById('note-input').value = '';
+    
+    // Reload the notes
     await loadNotes();
   } catch (err) {
     console.error("Failed to add note:", err);
