@@ -67,16 +67,17 @@ function createBoard() {
     cardElement.dataset.value = card;
     cardElement.style.width = '136px';
     cardElement.style.height = '136px';
-    cardElement.style.backgroundColor = 'transparent';
-    cardElement.style.border = '1px solid rgba(255, 255, 255, 0.5)';
+    cardElement.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+    cardElement.style.border = '1px solid rgba(255, 255, 255, 0.2)';
     cardElement.style.display = 'flex';
     cardElement.style.justifyContent = 'center';
     cardElement.style.alignItems = 'center';
     cardElement.style.fontSize = '68px';
     cardElement.style.cursor = 'pointer';
     cardElement.style.transition = 'all 0.3s';
-    cardElement.style.borderRadius = '5px';
-    cardElement.style.backdropFilter = 'blur(5px)';
+    cardElement.style.borderRadius = '15px';
+    cardElement.style.backdropFilter = 'blur(10px)';
+    cardElement.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
     cardElement.style.transform = 'rotateY(180deg)';
     
     cardElement.addEventListener('click', () => flipCard(cardElement));
