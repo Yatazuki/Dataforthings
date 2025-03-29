@@ -2,12 +2,14 @@
 const board = document.getElementById('game-board');
 const currentPlayerDisplay = document.getElementById('current-player');
 const resetButton = document.getElementById('resetButton');
+const gameModeInputs = document.querySelectorAll('input[name="gameMode"]');
 
 let currentPlayer = 'X';
 let gameBoard = ['', '', '', '', '', '', '', '', ''];
 let gameActive = true;
+let botEnabled = false;
+let botDifficulty = 'human';
 
-// Create game board
 function createBoard() {
   board.style.display = 'grid';
   board.style.gridTemplateColumns = 'repeat(3, 100px)';
@@ -28,6 +30,92 @@ function createBoard() {
     
     cell.addEventListener('click', () => handleCellClick(i));
     board.appendChild(cell);
+  }
+}
+
+function getEmptyCells() {
+  return gameBoard.reduce((acc, cell, index) => {
+    if (cell === '') acc.push(index);
+    return acc;
+  }, []);
+}
+
+function makeRandomMove() {
+  const emptyCells = getEmptyCells();
+  if (emptyCells.length === 0) return null;
+  return emptyCells[Math.floor(Math.random() * emptyCells.length)];
+}
+
+function getBestMove() {
+  let bestScore = -Infinity;
+  let bestMove;
+  
+  for (let i = 0; i < gameBoard.length; i++) {
+    if (gameBoard[i] === '') {
+      gameBoard[i] = 'O';
+      let score = minimax(gameBoard, 0, false);
+      gameBoard[i] = '';
+      if (score > bestScore) {
+        bestScore = score;
+        bestMove = i;
+      }
+    }
+  }
+  return bestMove;
+}
+
+function minimax(board, depth, isMaximizing) {
+  if (checkWin()) {
+    return isMaximizing ? -1 : 1;
+  }
+  if (checkDraw()) {
+    return 0;
+  }
+
+  if (isMaximizing) {
+    let bestScore = -Infinity;
+    for (let i = 0; i < board.length; i++) {
+      if (board[i] === '') {
+        board[i] = 'O';
+        let score = minimax(board, depth + 1, false);
+        board[i] = '';
+        bestScore = Math.max(score, bestScore);
+      }
+    }
+    return bestScore;
+  } else {
+    let bestScore = Infinity;
+    for (let i = 0; i < board.length; i++) {
+      if (board[i] === '') {
+        board[i] = 'X';
+        let score = minimax(board, depth + 1, true);
+        board[i] = '';
+        bestScore = Math.min(score, bestScore);
+      }
+    }
+    return bestScore;
+  }
+}
+
+function makeBotMove() {
+  let moveIndex;
+  
+  switch (botDifficulty) {
+    case 'easy':
+      moveIndex = makeRandomMove();
+      break;
+    case 'medium':
+      moveIndex = Math.random() < 0.5 ? makeRandomMove() : getBestMove();
+      break;
+    case 'hard':
+      moveIndex = getBestMove();
+      break;
+    default:
+      return;
+  }
+  
+  if (moveIndex !== null && moveIndex !== undefined) {
+    setTimeout(() => handleCellClick(moveIndex), 500);
   }
 }
 
@@ -52,14 +140,18 @@ function handleCellClick(index) {
     
     currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
     currentPlayerDisplay.textContent = currentPlayer;
+
+    if (botDifficulty !== 'human' && currentPlayer === 'O' && gameActive) {
+      makeBotMove();
+    }
   }
 }
 
 function checkWin() {
   const winPatterns = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
-    [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
-    [0, 4, 8], [2, 4, 6] // Diagonals
+    [0, 1, 2], [3, 4, 5], [6, 7, 8],
+    [0, 3, 6], [1, 4, 7], [2, 5, 8],
+    [0, 4, 8], [2, 4, 6]
   ];
   
   return winPatterns.some(pattern => {
@@ -85,6 +177,13 @@ function resetGame() {
     cell.textContent = '';
   }
 }
+
+gameModeInputs.forEach(input => {
+  input.addEventListener('change', (e) => {
+    botDifficulty = e.target.value;
+    resetGame();
+  });
+});
 
 resetButton.addEventListener('click', resetGame);
 createBoard();
