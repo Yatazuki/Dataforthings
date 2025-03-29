@@ -67,17 +67,17 @@ body {
   .mobile-controls {
     margin-top: 20px;
     padding: 15px;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.3);
     border-radius: 15px;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 15px rgba(128, 0, 255, 0.2);
     backdrop-filter: blur(8px);
   }
 
   .control-btn {
     width: 60px;
     height: 60px;
-    background-color: rgba(128, 0, 255, 0.2);
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    background-color: rgba(128, 0, 255, 0.3);
+    border: 2px solid rgba(128, 0, 255, 0.5);
     color: white;
     font-size: 28px;
     border-radius: 12px;
@@ -91,9 +91,21 @@ body {
   }
 
   .control-btn:active {
-    background-color: #8000ff;
+    background-color: rgba(128, 0, 255, 0.6);
     transform: scale(0.95);
     box-shadow: 0 0 20px rgba(128, 0, 255, 0.5);
+  }
+
+  .btn-success {
+    background-color: #8000ff !important;
+    border-color: #8000ff !important;
+    box-shadow: 0 0 15px rgba(128, 0, 255, 0.5);
+  }
+
+  .btn-success:hover {
+    background-color: #9933ff !important;
+    border-color: #9933ff !important;
+    box-shadow: 0 0 20px rgba(128, 0, 255, 0.7);
   }
 }
 
