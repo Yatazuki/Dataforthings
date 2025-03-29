@@ -21,9 +21,49 @@ body {
   background-color: rgba(0, 0, 0, 0.85);
   padding: 4vh 3vw;
   border-radius: 2vh;
-  width: 90vw;
-  max-width: 40vw;
+  width: 90%;
+  max-width: 500px;
   box-shadow: 0 0 2vh rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .login-box {
+    width: 95%;
+    padding: 3vh 4vw;
+  }
+  
+  .navbar-brand {
+    font-size: 1.2rem;
+  }
+  
+  .hero h1 {
+    font-size: 2rem;
+  }
+  
+  .hero p {
+    font-size: 1rem;
+  }
+  
+  .section {
+    padding: 30px 0;
+  }
+  
+  .card {
+    margin-bottom: 20px;
+  }
+  
+  body {
+    padding-top: 56px;
+  }
+  
+  .btn-group {
+    flex-direction: column;
+  }
+  
+  .btn-group .btn {
+    margin: 5px 0;
+    border-radius: 5px !important;
+  }
 }
 
 .login-box h2 {
