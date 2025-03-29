@@ -1,0 +1,67 @@
+
+YATAZUKI GAME PLATFORM - CODE DOCUMENTATION
+
+1. AUTHENTICATION SYSTEM
+- Located in scripts.js
+- Uses Supabase for user authentication and data storage
+- Features: Login, Register, Session management
+- Main functions: login(), fetchSessionAndUser(), logout()
+
+2. SNAKE GAME
+- Files: snake.js, snake.html
+- Canvas-based implementation
+- Features:
+  * Score tracking
+  * High score persistence
+  * Collision detection
+  * Responsive controls
+- Main functions: startGame(), gameLoop(), moveSnake(), gameOver()
+
+3. TIC-TAC-TOE GAME
+- Files: tictactoe.js, tictactoe.html
+- Grid-based implementation
+- Features:
+  * Two-player gameplay
+  * Win detection
+  * Draw detection
+  * Game reset functionality
+- Main functions: createBoard(), handleCellClick(), checkWin(), resetGame()
+
+4. STYLING (styles.css)
+- Global theme: Dark modern interface
+- Responsive design
+- Key components:
+  * Navigation bar
+  * Login/Register forms
+  * Game containers
+  * Dashboard layout
+
+5. DASHBOARD (dashboard.html)
+- Main hub after authentication
+- Features:
+  * Navigation menu
+  * Game access
+  * User profile management
+  * Session management
+
+6. FILE STRUCTURE
+├── HTML Files
+│   ├── index.html (Login page)
+│   ├── register.html (Registration page)
+│   ├── dashboard.html (Main hub)
+│   ├── snake.html (Snake game)
+│   └── tictactoe.html (Tic-tac-toe game)
+├── JavaScript Files
+│   ├── scripts.js (Authentication & core functionality)
+│   ├── snake.js (Snake game logic)
+│   ├── tictactoe.js (Tic-tac-toe game logic)
+│   └── sphere.js (Visual effects)
+└── CSS Files
+    └── styles.css (Global styling)
+
+7. TECHNICAL SPECIFICATIONS
+- Frontend: HTML5, CSS3, JavaScript
+- Backend: Supabase
+- Authentication: Token-based
+- Data Storage: Supabase tables (logins, notes)
+- Game Rendering: Canvas API (Snake), DOM (Tic-tac-toe)
