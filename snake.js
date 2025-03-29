@@ -23,7 +23,7 @@ function generateFood() {
 
 function drawSnake() {
   snake.forEach(segment => {
-    ctx.fillStyle = '#8000ff'; // Purple color
+    ctx.fillStyle = '#bf80ff'; // Light purple color
     ctx.fillRect(segment.x, segment.y, 10, 10);
   });
 }
