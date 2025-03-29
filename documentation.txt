@@ -1,138 +1,149 @@
 
-YATAZUKI GAME PLATFORM - DETAILED DOCUMENTATION
+YATAZUKI GAME PLATFORM - COMPREHENSIVE DOCUMENTATION
 
-1. CORE SYSTEM ARCHITECTURE
-├── Frontend: HTML5, CSS3, JavaScript
-├── Backend: Supabase
-├── Authentication: Token-based
-└── Storage: Supabase tables
+1. SYSTEM ARCHITECTURE
+├── Frontend Technologies
+│   ├── HTML5
+│   ├── CSS3 (with Bootstrap 5.3.0)
+│   ├── JavaScript (Vanilla)
+│   └── External Libraries
+│       ├── Bootstrap CDN: https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css
+│       └── Montserrat Font: https://fonts.googleapis.com/css2?family=Montserrat:wght@700
+├── Backend Infrastructure
+│   └── Supabase
+│       ├── Project URL: https://qqplzgqhkffwvefbnyte.supabase.co
+│       └── Public API Key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+└── Database Schema
+    ├── Authentication Tables
+    │   └── logins
+    │       ├── id (int8, primary key)
+    │       └── username (text)
+    └── Application Tables
+        └── global_notes
+            ├── id (uuid, primary key, default: uuid_generate_v4())
+            ├── user_id (int8, references logins.id)
+            ├── note_text (text, not null)
+            ├── link_url (text)
+            └── created_at (timestamp with timezone, default: UTC now())
 
-2. AUTHENTICATION SYSTEM (scripts.js)
-├── Core Functions
-│   ├── login() - Handles user authentication
-│   ├── fetchSessionAndUser() - Validates session
-│   ├── logout() - Handles user logout
-│   └── loadNote() - Loads user-specific notes
-├── Data Storage
-│   └── localStorage
-│       ├── user_id - Stores authenticated user ID
-│       └── session - Stores current session data
+2. AUTHENTICATION SYSTEM
+├── Core Functions (scripts.js)
+│   ├── login() - User authentication handler
+│   │   └── Endpoint: /auth/v1/login
+│   ├── fetchSessionAndUser() - Session validation
+│   │   └── Endpoint: /auth/v1/user
+│   └── logout() - User logout handler
+└── Local Storage Management
+    ├── user_id - Stores authenticated user ID
+    └── session - Stores current session data
 
-3. GAMES IMPLEMENTATION
+3. GAME IMPLEMENTATIONS
 
-A. SNAKE GAME (snake.js, snake.html)
-├── Core Components
-│   ├── Canvas Implementation
-│   ├── Game Loop System
-│   └── Mobile Controls
-├── Key Functions
-│   ├── startGame() - Initializes game state
-│   ├── gameLoop() - Manages game rendering
-│   ├── moveSnake() - Handles snake movement
-│   ├── generateFood() - Creates food items
-│   ├── handleKeyDown() - Processes keyboard input
-│   └── gameOver() - Handles end game state
-├── Features
-│   ├── Score Tracking
-│   ├── High Score System
-│   ├── Collision Detection
-│   ├── Responsive Controls
-│   └── Mobile Support
+A. SNAKE GAME (snake.js)
+├── Canvas Implementation
+│   ├── Resolution: 400x400 pixels
+│   └── Rendering Context: 2D
+├── Game Mechanics
+│   ├── Score System
+│   │   ├── Local Storage: snakeHighScore
+│   │   └── Real-time Score Tracking
+│   └── Controls
+│       ├── Desktop: Arrow Keys
+│       └── Mobile: Touch Controls
+└── Animation System
+    └── Game Loop: 100ms interval
 
-B. TIC-TAC-TOE (tictactoe.js, tictactoe.html)
+B. TIC-TAC-TOE (tictactoe.js)
 ├── Game Modes
 │   ├── Human vs Human
-│   ├── Easy Bot
-│   ├── Medium Bot
-│   └── Hard Bot
-├── Core Functions
-│   ├── createBoard() - Initializes game board
-│   ├── handleCellClick() - Processes moves
-│   ├── checkWin() - Validates winning conditions
-│   ├── makeAIMove() - Handles bot moves
-│   └── resetGame() - Resets game state
-├── Features
-│   ├── Dynamic Board Generation
-│   ├── Win Detection
-│   ├── Draw Detection
-│   └── AI Difficulty Levels
+│   └── AI Modes
+│       ├── Easy Bot: Random Moves
+│       ├── Medium Bot: Basic Strategy
+│       └── Hard Bot: Minimax Algorithm
+└── Board Implementation
+    └── 3x3 Grid System
 
-C. MEMORY GAME (memory.js, memory.html)
+C. MEMORY GAME (memory.js)
 ├── Game Logic
-│   ├── Card Matching System
-│   ├── Score Tracking
-│   └── Timer Implementation
-├── Core Functions
-│   ├── startGame() - Initializes game
-│   ├── flipCard() - Handles card flipping
-│   ├── checkMatch() - Validates matches
-│   └── endGame() - Handles game completion
+│   ├── Card System
+│   │   ├── Pair Matching
+│   │   └── Flip Animation
+│   └── Score Tracking
+└── Timer Implementation
 
-4. STYLING SYSTEM (styles.css)
+4. JAPAN NOTES SYSTEM (japan.js)
+├── Database Integration
+│   └── Table: global_notes
+├── Features
+│   ├── Note Creation
+│   ├── Real-time Updates
+│   └── User Attribution
+└── UI Components
+    ├── Note Display
+    │   ├── Content
+    │   ├── Timestamp
+    │   └── Author
+    └── Delete Function
+        └── User-specific Access
+
+5. STYLING SYSTEM (styles.css)
 ├── Global Theme
-│   ├── Dark Modern Interface
-│   ├── Responsive Design
-│   └── Custom Fonts (Montserrat)
-├── Components
-│   ├── Navigation Bar
-│   │   ├── Fixed Position
-│   │   ├── Dropdown Menus
-│   │   └── Mobile Responsiveness
-│   ├── Game Containers
-│   │   ├── Responsive Canvas
-│   │   ├── Mobile Controls
-│   │   └── Score Displays
-│   └── Forms
-│       ├── Login/Register
-│       └── Game Settings
-
-5. USER INTERFACE
-├── Components
-│   ├── Dashboard
-│   │   ├── Game Selection
-│   │   ├── User Profile
-│   │   └── Navigation
-│   ├── Game Interfaces
-│   │   ├── Snake Game Canvas
-│   │   ├── Tic-tac-toe Grid
-│   │   └── Memory Game Board
-│   └── Authentication Forms
+│   ├── Background: background1.jpg
+│   ├── Font: Montserrat
+│   └── Color Scheme
+│       ├── Primary: #8000ff
+│       ├── Secondary: #9933ff
+│       └── Text: #FFFFFF
 ├── Responsive Design
-│   ├── Mobile-First Approach
 │   ├── Breakpoints
-│   └── Touch Controls
+│   │   ├── Mobile: < 768px
+│   │   └── Desktop: ≥ 768px
+│   └── Mobile Adaptations
+│       ├── Font Sizing
+│       ├── Button Layout
+│       └── Navigation
+└── Component Styles
+    ├── Navigation Bar
+    ├── Game Containers
+    ├── Forms
+    └── Buttons
 
-6. FILE STRUCTURE
-└── Root
-    ├── HTML Files
-    │   ├── index.html (Login)
-    │   ├── register.html
-    │   ├── dashboard.html
-    │   ├── snake.html
-    │   ├── tictactoe.html
-    │   └── memory.html
-    ├── JavaScript Files
-    │   ├── scripts.js
-    │   ├── snake.js
-    │   ├── tictactoe.js
-    │   ├── memory.js
-    │   └── sphere.js
-    ├── CSS Files
-    │   └── styles.css
-    └── Assets
-        └── background1.jpg
-
-7. DEPLOYMENT SPECIFICATIONS
+6. DEPLOYMENT CONFIGURATION
 ├── Environment: Replit
-├── Production Setup
-│   ├── Asset Optimization
-│   └── Performance Tuning
-└── Security
-    ├── Authentication Flow
-    └── Data Protection
+├── Run Configuration
+│   └── Command: "run"
+└── Modules
+    ├── web
+    └── nodejs-20
 
-8. PERFORMANCE CONSIDERATIONS
+7. VERSION CONTROL
+├── Git Workflows
+│   ├── Auto Sync
+│   ├── Git Sync
+│   └── GitHub Sync
+└── Branch Structure
+    └── main
+
+8. SECURITY CONSIDERATIONS
+├── Authentication
+│   ├── Token-based System
+│   └── Session Management
+└── Data Protection
+    └── Supabase Security Rules
+
+9. PERFORMANCE OPTIMIZATION
 ├── Asset Loading
-├── Game Loop Optimization
-├── Mobile Performance
-└── Response Time
+│   ├── CDN Usage
+│   └── Image Optimization
+├── Game Loop Efficiency
+└── Mobile Performance
+    └── Touch Event Handling
+
+10. ERROR HANDLING
+├── Authentication Errors
+├── Database Connection Issues
+└── Game State Errors
+
+11. MAINTENANCE AND UPDATES
+├── Workflow Configuration
+└── Deployment Process
