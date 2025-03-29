@@ -115,3 +115,32 @@ function handleKeyDown(e) {
 canvas.addEventListener('click', startGame);
 startButton.addEventListener('click', startGame);
 document.addEventListener('keydown', handleKeyDown);
+
+// Mobile controls
+document.getElementById('upBtn')?.addEventListener('click', () => {
+  if (dy === 0 && isGameRunning) {
+    dx = 0;
+    dy = -10;
+  }
+});
+
+document.getElementById('downBtn')?.addEventListener('click', () => {
+  if (dy === 0 && isGameRunning) {
+    dx = 0;
+    dy = 10;
+  }
+});
+
+document.getElementById('leftBtn')?.addEventListener('click', () => {
+  if (dx === 0 && isGameRunning) {
+    dx = -10;
+    dy = 0;
+  }
+});
+
+document.getElementById('rightBtn')?.addEventListener('click', () => {
+  if (dx === 0 && isGameRunning) {
+    dx = 10;
+    dy = 0;
+  }
+});
