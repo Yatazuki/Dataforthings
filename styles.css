@@ -91,22 +91,24 @@ body {
 
 .hero {
   padding: 80px 0;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.8);
   text-align: center;
 }
 
 .hero h1 {
   font-size: 3rem;
   margin-bottom: 20px;
+  color: white;
 }
 
 .hero p {
   font-size: 1.2rem;
+  color: white;
 }
 
 .section {
   padding: 60px 0;
-  background-color: rgba(128, 0, 255, 0.15);
+  background-color: rgba(128, 0, 255, 0.2);
 }
 
 .section h2 {
@@ -131,13 +133,20 @@ body {
 
 /* Buttons */
 .btn-custom {
-  background-color: white;
-  color: black;
+  background-color: #8000ff;
+  color: white;
   font-weight: bold;
   width: 100%;
   margin-top: 1rem;
+  border: 2px solid white;
 }
 
 .btn-custom:hover {
-  background-color: #e0e0e0;
+  background-color: white;
+  color: #8000ff;
+}
+
+.btn-outline-light:hover {
+  background-color: #8000ff;
+  border-color: #8000ff;
 }
