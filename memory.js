@@ -84,6 +84,7 @@ function flipCard(card) {
   card.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
   card.style.transform = 'rotateY(0deg)';
   card.textContent = card.dataset.value;
+  card.style.backdropFilter = 'blur(5px)';
   
   flippedCards.push(card);
   
@@ -115,7 +116,7 @@ function flipCard(card) {
     } else {
       setTimeout(() => {
         flippedCards.forEach(card => {
-          card.style.backgroundColor = 'rgba(128, 0, 255, 0.7)';
+          card.style.backgroundColor = 'transparent';
           card.style.transform = 'rotateY(180deg)';
           card.textContent = '';
         });
