@@ -131,14 +131,18 @@ function handleCellClick(index) {
     cells[index].textContent = currentPlayer;
     
     if (checkWin()) {
-      alert(`Player ${currentPlayer} wins!`);
-      gameActive = false;
+      setTimeout(() => {
+        alert(`Player ${currentPlayer} wins!`);
+        gameActive = false;
+      }, 100);
       return;
     }
     
     if (checkDraw()) {
-      alert("It's a draw!");
-      gameActive = false;
+      setTimeout(() => {
+        alert("It's a draw!");
+        gameActive = false;
+      }, 100);
       return;
     }
     
