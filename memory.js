@@ -7,13 +7,19 @@ let gameBoard = [];
 let flippedCards = [];
 let matchedPairs = 0;
 let moves = 0;
-let bestScore = localStorage.getItem('memoryBestScore') || '-';
+let bestScores = {
+  easy: localStorage.getItem('memoryBestScore_easy') || '-',
+  medium: localStorage.getItem('memoryBestScore_medium') || '-',
+  hard: localStorage.getItem('memoryBestScore_hard') || '-'
+};
 let canFlip = true;
 let currentDifficulty = 'easy';
 
 const board = document.getElementById('game-board');
 const movesDisplay = document.getElementById('moves');
 const bestScoreDisplay = document.getElementById('bestScore');
+
+bestScoreDisplay.textContent = bestScores[currentDifficulty];
 const startButton = document.getElementById('startButton');
 const difficultyInputs = document.querySelectorAll('input[name="difficulty"]');
 
@@ -105,10 +111,10 @@ function flipCard(card) {
       const currentCards = getCardsForDifficulty(currentDifficulty);
       if (matchedPairs === currentCards.length) {
         setTimeout(() => {
-          if (bestScore === '-' || moves < bestScore) {
-            bestScore = moves;
-            localStorage.setItem('memoryBestScore', bestScore);
-            bestScoreDisplay.textContent = bestScore;
+          if (bestScores[currentDifficulty] === '-' || moves < bestScores[currentDifficulty]) {
+            bestScores[currentDifficulty] = moves;
+            localStorage.setItem(`memoryBestScore_${currentDifficulty}`, moves);
+            bestScoreDisplay.textContent = moves;
           }
           alert(`Congratulations! You won in ${moves} moves!`);
         }, 500);
@@ -141,6 +147,7 @@ function startGame() {
 difficultyInputs.forEach(input => {
   input.addEventListener('change', (e) => {
     currentDifficulty = e.target.value;
+    bestScoreDisplay.textContent = bestScores[currentDifficulty];
     startGame();
   });
 });
