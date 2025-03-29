@@ -12,14 +12,14 @@ let botDifficulty = 'human';
 
 function createBoard() {
   board.style.display = 'grid';
-  board.style.gridTemplateColumns = 'repeat(3, 100px)';
+  board.style.gridTemplateColumns = 'repeat(3, 80px)';
   board.style.gap = '5px';
   board.style.margin = '0 auto';
   
   for (let i = 0; i < 9; i++) {
     const cell = document.createElement('div');
-    cell.style.width = '100px';
-    cell.style.height = '100px';
+    cell.style.width = '80px';
+    cell.style.height = '80px';
     cell.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
     cell.style.border = '2px solid rgba(255, 255, 255, 0.2)';
     cell.style.display = 'flex';
