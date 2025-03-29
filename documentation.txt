@@ -1,67 +1,138 @@
 
-YATAZUKI GAME PLATFORM - CODE DOCUMENTATION
+YATAZUKI GAME PLATFORM - DETAILED DOCUMENTATION
 
-1. AUTHENTICATION SYSTEM
-- Located in scripts.js
-- Uses Supabase for user authentication and data storage
-- Features: Login, Register, Session management
-- Main functions: login(), fetchSessionAndUser(), logout()
+1. CORE SYSTEM ARCHITECTURE
+├── Frontend: HTML5, CSS3, JavaScript
+├── Backend: Supabase
+├── Authentication: Token-based
+└── Storage: Supabase tables
 
-2. SNAKE GAME
-- Files: snake.js, snake.html
-- Canvas-based implementation
-- Features:
-  * Score tracking
-  * High score persistence
-  * Collision detection
-  * Responsive controls
-- Main functions: startGame(), gameLoop(), moveSnake(), gameOver()
+2. AUTHENTICATION SYSTEM (scripts.js)
+├── Core Functions
+│   ├── login() - Handles user authentication
+│   ├── fetchSessionAndUser() - Validates session
+│   ├── logout() - Handles user logout
+│   └── loadNote() - Loads user-specific notes
+├── Data Storage
+│   └── localStorage
+│       ├── user_id - Stores authenticated user ID
+│       └── session - Stores current session data
 
-3. TIC-TAC-TOE GAME
-- Files: tictactoe.js, tictactoe.html
-- Grid-based implementation
-- Features:
-  * Two-player gameplay
-  * Win detection
-  * Draw detection
-  * Game reset functionality
-- Main functions: createBoard(), handleCellClick(), checkWin(), resetGame()
+3. GAMES IMPLEMENTATION
 
-4. STYLING (styles.css)
-- Global theme: Dark modern interface
-- Responsive design
-- Key components:
-  * Navigation bar
-  * Login/Register forms
-  * Game containers
-  * Dashboard layout
+A. SNAKE GAME (snake.js, snake.html)
+├── Core Components
+│   ├── Canvas Implementation
+│   ├── Game Loop System
+│   └── Mobile Controls
+├── Key Functions
+│   ├── startGame() - Initializes game state
+│   ├── gameLoop() - Manages game rendering
+│   ├── moveSnake() - Handles snake movement
+│   ├── generateFood() - Creates food items
+│   ├── handleKeyDown() - Processes keyboard input
+│   └── gameOver() - Handles end game state
+├── Features
+│   ├── Score Tracking
+│   ├── High Score System
+│   ├── Collision Detection
+│   ├── Responsive Controls
+│   └── Mobile Support
 
-5. DASHBOARD (dashboard.html)
-- Main hub after authentication
-- Features:
-  * Navigation menu
-  * Game access
-  * User profile management
-  * Session management
+B. TIC-TAC-TOE (tictactoe.js, tictactoe.html)
+├── Game Modes
+│   ├── Human vs Human
+│   ├── Easy Bot
+│   ├── Medium Bot
+│   └── Hard Bot
+├── Core Functions
+│   ├── createBoard() - Initializes game board
+│   ├── handleCellClick() - Processes moves
+│   ├── checkWin() - Validates winning conditions
+│   ├── makeAIMove() - Handles bot moves
+│   └── resetGame() - Resets game state
+├── Features
+│   ├── Dynamic Board Generation
+│   ├── Win Detection
+│   ├── Draw Detection
+│   └── AI Difficulty Levels
+
+C. MEMORY GAME (memory.js, memory.html)
+├── Game Logic
+│   ├── Card Matching System
+│   ├── Score Tracking
+│   └── Timer Implementation
+├── Core Functions
+│   ├── startGame() - Initializes game
+│   ├── flipCard() - Handles card flipping
+│   ├── checkMatch() - Validates matches
+│   └── endGame() - Handles game completion
+
+4. STYLING SYSTEM (styles.css)
+├── Global Theme
+│   ├── Dark Modern Interface
+│   ├── Responsive Design
+│   └── Custom Fonts (Montserrat)
+├── Components
+│   ├── Navigation Bar
+│   │   ├── Fixed Position
+│   │   ├── Dropdown Menus
+│   │   └── Mobile Responsiveness
+│   ├── Game Containers
+│   │   ├── Responsive Canvas
+│   │   ├── Mobile Controls
+│   │   └── Score Displays
+│   └── Forms
+│       ├── Login/Register
+│       └── Game Settings
+
+5. USER INTERFACE
+├── Components
+│   ├── Dashboard
+│   │   ├── Game Selection
+│   │   ├── User Profile
+│   │   └── Navigation
+│   ├── Game Interfaces
+│   │   ├── Snake Game Canvas
+│   │   ├── Tic-tac-toe Grid
+│   │   └── Memory Game Board
+│   └── Authentication Forms
+├── Responsive Design
+│   ├── Mobile-First Approach
+│   ├── Breakpoints
+│   └── Touch Controls
 
 6. FILE STRUCTURE
-├── HTML Files
-│   ├── index.html (Login page)
-│   ├── register.html (Registration page)
-│   ├── dashboard.html (Main hub)
-│   ├── snake.html (Snake game)
-│   └── tictactoe.html (Tic-tac-toe game)
-├── JavaScript Files
-│   ├── scripts.js (Authentication & core functionality)
-│   ├── snake.js (Snake game logic)
-│   ├── tictactoe.js (Tic-tac-toe game logic)
-│   └── sphere.js (Visual effects)
-└── CSS Files
-    └── styles.css (Global styling)
+└── Root
+    ├── HTML Files
+    │   ├── index.html (Login)
+    │   ├── register.html
+    │   ├── dashboard.html
+    │   ├── snake.html
+    │   ├── tictactoe.html
+    │   └── memory.html
+    ├── JavaScript Files
+    │   ├── scripts.js
+    │   ├── snake.js
+    │   ├── tictactoe.js
+    │   ├── memory.js
+    │   └── sphere.js
+    ├── CSS Files
+    │   └── styles.css
+    └── Assets
+        └── background1.jpg
 
-7. TECHNICAL SPECIFICATIONS
-- Frontend: HTML5, CSS3, JavaScript
-- Backend: Supabase
-- Authentication: Token-based
-- Data Storage: Supabase tables (logins, notes)
-- Game Rendering: Canvas API (Snake), DOM (Tic-tac-toe)
+7. DEPLOYMENT SPECIFICATIONS
+├── Environment: Replit
+├── Production Setup
+│   ├── Asset Optimization
+│   └── Performance Tuning
+└── Security
+    ├── Authentication Flow
+    └── Data Protection
+
+8. PERFORMANCE CONSIDERATIONS
+├── Asset Loading
+├── Game Loop Optimization
+├── Mobile Performance
+└── Response Time
