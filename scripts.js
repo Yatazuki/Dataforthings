@@ -1,4 +1,5 @@
-const API_URL = process.env.BACKEND_URL || 'http://0.0.0.0:3000';
+const API_URL = 'https://5cb110af-956e-4abc-9ac8-0a402e499a2e-00-gksjpc3ojn7k.spock.replit.dev';
+const API_KEY = 'yatazuki.dev';
 
 async function login() {
   const user = document.getElementById('username').value;
