@@ -131,10 +131,8 @@
     let userId = null;
 
     const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    const scoreElement = document.getElementById('score');
-    const highScoreElement = document.getElementById('highScore');
-    const startButton = document.getElementById('startButton');
+    const ctx = canvas ? canvas.getContext('2d') : null; //Added check for canvas existence.
+
 
     let snake = [{x: 200, y: 200}];
     let food = {x: 0, y: 0};
