@@ -1,5 +1,5 @@
-const API_URL = BACKEND_URL;
-const API_KEY = API_KEY;
+const API_URL = process.env.BACKEND_URL || 'http://0.0.0.0:3000';
+const API_KEY = process.env.API_KEY;
 
 async function login() {
   const user = document.getElementById('username').value;
