@@ -1,5 +1,5 @@
-const API_URL = 'http://your-backend-url:3000';
-const API_KEY = 'your-api-key'; // This should be stored securely
+const API_URL = BACKEND_URL;
+const API_KEY = API_KEY;
 
 async function login() {
   const user = document.getElementById('username').value;
