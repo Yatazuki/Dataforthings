@@ -1,7 +1,5 @@
-const sb = supabase.createClient(
-  'https://qqplzgqhkffwvefbnyte.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxcGx6Z3Foa2Zmd3ZlZmJueXRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI5Nzc2NzEsImV4cCI6MjA1ODU1MzY3MX0.hBssyXE-kkV5cOiwxD33Ejd2YSgexZUvOZBGIs1fVkQ'
-);
+const API_URL = 'http://your-backend-url:3000';
+const API_KEY = 'your-api-key'; // This should be stored securely
 
 async function login() {
   const user = document.getElementById('username').value;
@@ -9,20 +7,19 @@ async function login() {
   const errorBox = document.getElementById('errorBox');
 
   try {
-    const { data, error } = await sb
-      .from("logins")
-      .select("id, username")
-      .eq("username", user)
-      .eq("password", pass)
-      .maybeSingle();
+    const response = await fetch(`${API_URL}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY
+      },
+      body: JSON.stringify({ username: user, password: pass })
+    });
 
-    if (error) {
-      errorBox.innerText = "❌ Server error: " + error.message;
-      return;
-    }
+    const data = await response.json();
 
-    if (!data) {
-      errorBox.innerText = "❌ Invalid username or password";
+    if (!response.ok) {
+      errorBox.innerText = "❌ " + data.error;
       return;
     }
 
@@ -48,24 +45,32 @@ async function fetchSessionAndUser() {
 }
 
 async function loadNote() {
-  const { data, error } = await sb
-    .from("notes")
-    .select("note, created_at")
-    .eq("user_id", userId)
-    .maybeSingle();
+  try {
+    const response = await fetch(`${API_URL}/notes/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY
+      }
+    });
+    const data = await response.json();
 
-  if (error) {
-    console.error("Error loading note:", error.message);
-    return;
-  }
-
-  if (data) {
-    document.getElementById("noteBox").value = data.note || "";
-    if (data.created_at) {
-      document.getElementById("noteTimestamp").innerText = `Last updated: ${new Date(data.created_at).toLocaleString()}`;
+    if (!response.ok) {
+      console.error("Error loading note:", data.error);
+      return;
     }
+
+    if (data) {
+      document.getElementById("noteBox").value = data.note || "";
+      if (data.created_at) {
+        document.getElementById("noteTimestamp").innerText = `Last updated: ${new Date(data.created_at).toLocaleString()}`;
+      }
+    }
+  } catch (error) {
+    console.error("Error loading note:", error);
   }
 }
+
 
 function logout() {
   localStorage.removeItem("user_id");
@@ -75,18 +80,29 @@ function logout() {
 
 async function saveNote() {
   const note = document.getElementById("noteBox").value;
-
-  const { error } = await sb
-    .from("notes")
-    .upsert([{ user_id: userId, note }], { onConflict: ['user_id'] });
-
   const status = document.getElementById("saveStatus");
-  if (error) {
-    console.error("Error saving note:", error.message);
-    status.innerText = "❌ Failed to save.";
-  } else {
+
+  try {
+    const response = await fetch(`${API_URL}/notes/${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY
+      },
+      body: JSON.stringify({ note })
+    });
+
+    if (!response.ok) {
+      console.error("Error saving note:", await response.text());
+      status.innerText = "❌ Failed to save.";
+      return;
+    }
+
     status.innerText = "✅ Note saved!";
     await loadNote();
+  } catch (error) {
+    console.error("Error saving note:", error);
+    status.innerText = "❌ Failed to save.";
   }
   setTimeout(() => status.innerText = '', 3000);
 }
@@ -107,26 +123,30 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
-      const { data: existing } = await sb.from("logins").select("*").eq("username", username).limit(1);
-      if (existing.length > 0) {
-        alert("❌ Username already exists.");
-        return;
-      }
+      try {
+        const response = await fetch(`${API_URL}/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': API_KEY
+          },
+          body: JSON.stringify({ username, email, password })
+        });
 
-      const { error: authError } = await sb.auth.signUp({ email, password });
-      if (authError) {
-        alert("❌ Auth error: " + authError.message);
-        return;
-      }
+        const data = await response.json();
 
-      const { error: insertError } = await sb.from("logins").insert([{ username, password }]);
-      if (insertError) {
-        alert("❌ Database error: " + insertError.message);
-        return;
-      }
+        if (!response.ok) {
+          alert(`❌ Registration failed: ${data.error}`);
+          return;
+        }
 
-      alert("✅ Registered! Please check your email to confirm your account.");
-      window.location.href = "index.html";
+        alert("✅ Registered! Please check your email to confirm your account.");
+        window.location.href = "index.html";
+
+      } catch (error) {
+        console.error("Registration error:", error);
+        alert("❌ An error occurred during registration.");
+      }
     });
   }
   if (window.location.pathname.includes('dashboard.html')) {

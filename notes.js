@@ -1,23 +1,19 @@
 
-const sb = supabase.createClient(
-  'https://qqplzgqhkffwvefbnyte.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxcGx6Z3Foa2Zmd3ZlZmJueXRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI5Nzc2NzEsImV4cCI6MjA1ODU1MzY3MX0.hBssyXE-kkV5cOiwxD33Ejd2YSgexZUvOZBGIs1fVkQ'
-);
+const API_URL = 'http://your-backend-url:3000';
+const API_KEY = 'your-api-key'; // This should be stored securely
 
 async function loadNotes() {
   try {
-    const { data, error } = await sb
-      .from("global_notes")
-      .select(`
-        *,
-        logins (
-          username
-        )
-      `)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error("Error loading notes:", error.message);
+    const response = await fetch(`${API_URL}/notes`, {
+      headers: {
+        'x-api-key': API_KEY
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      console.error("Error loading notes:", data.error);
       return;
     }
 
@@ -33,7 +29,7 @@ async function loadNotes() {
         }
         <p>${note.note_text}</p>
         ${note.link_url ? `<p><a href="${note.link_url}" target="_blank">Link</a></p>` : ''}
-        <small>By: ${note.logins?.username || 'Unknown'}</small>
+        <small>By: ${note.username || 'Unknown'}</small>
         <small>Posted: ${new Date(note.created_at).toLocaleString()}</small>
       </div>
     `).join('');
@@ -47,16 +43,22 @@ async function addNote(content) {
   if (!userId || !content) return;
 
   try {
-    const { error } = await sb
-      .from("global_notes")
-      .insert([{ user_id: userId, note_text: content }]);
+    const response = await fetch(`${API_URL}/notes`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY
+      },
+      body: JSON.stringify({
+        content,
+        userId
+      })
+    });
 
-    if (error) {
-      console.error("Error adding note:", error.message);
-      return;
+    if (!response.ok) {
+      throw new Error('Failed to add note');
     }
 
-    document.getElementById('note-input').value = '';
     await loadNotes();
   } catch (err) {
     console.error("Failed to add note:", err);
@@ -64,19 +66,16 @@ async function addNote(content) {
 }
 
 async function deleteNote(noteId) {
-  const userId = localStorage.getItem("user_id");
-  if (!userId || !noteId) return;
-
   try {
-    const { error } = await sb
-      .from("global_notes")
-      .delete()
-      .eq('id', noteId)
-      .eq('user_id', userId);
+    const response = await fetch(`${API_URL}/notes/${noteId}`, {
+      method: 'DELETE',
+      headers: {
+        'x-api-key': API_KEY
+      }
+    });
 
-    if (error) {
-      console.error("Error deleting note:", error.message);
-      return;
+    if (!response.ok) {
+      throw new Error('Failed to delete note');
     }
 
     await loadNotes();
@@ -84,5 +83,3 @@ async function deleteNote(noteId) {
     console.error("Failed to delete note:", err);
   }
 }
-
-document.addEventListener('DOMContentLoaded', loadNotes);
