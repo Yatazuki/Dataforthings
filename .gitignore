@@ -2,3 +2,6 @@
 attached_assets/
 *.png
 *.jpg
+.env
+.env.local
+.env.*
