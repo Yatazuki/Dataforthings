@@ -46,57 +46,51 @@
 </body>
 </html>
 ```
+## dashboard.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Yatazuki</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="dashboard_styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Yatazuki</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Profile</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Settings</a></li>
+                <li class="nav-item"><a class="nav-link" href="logout.html">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
 
-### Structure Breakdown
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <h1>Welcome to the Dashboard!</h1>
+        <p class="lead">Here is where you can manage your account and view statistics.</p>
+        <!-- Additional content can be added here -->
+    </div>
 
-1. **Document Type Declaration**
-   - HTML5 specification
-   - Language set to English
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3 bg-light">
+        <div class="container">
+            <span class="text-muted">&copy; 2023 Yatazuki, Inc.</span>
+        </div>
+    </footer>
 
-2. **Head Section**
-   - Character encoding: UTF-8
-   - Responsive viewport settings
-   - Title: "Login - Yatazuki"
-
-3. **External Dependencies**
-   - Supabase.js for backend integration
-   - Bootstrap 5.3.0 for styling
-   - Montserrat font (700 weight)
-   - Custom styles.css
-
-4. **Configuration Script**
-   - Backend URL configuration
-   - API key setup
-
-5. **Body Structure**
-   - Login container
-     - Login box wrapper
-     - Heading
-     - Form elements
-       - Username input
-       - Password input
-       - Submit button
-       - Registration link
-       - Error message box
-
-6. **Scripts**
-   - Core functionality in scripts.js
-
-### Key Components
-
-1. **Form Handling**
-   - preventDefault() to stop default form submission
-   - Custom login() function called on submit
-
-2. **Styling Classes**
-   - Bootstrap utility classes (mb-3, w-100)
-   - Custom classes (login-container, login-box)
-   - Form control styling
-
-3. **Error Handling**
-   - Dedicated error box for displaying messages
-   - Form validation support
-
-4. **Navigation**
-   - Link to registration page
-   - Clean URL structure
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
+```
