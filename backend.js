@@ -31,14 +31,7 @@ initDatabase();
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: function(origin, callback) {
-    const allowedOrigins = ['http://yatazuki.com', 'https://yatazuki.com', 'http://localhost:5000', 'http://0.0.0.0:5000'];
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: '*',
   methods: ['GET', 'POST', 'DELETE', 'PUT'],
   allowedHeaders: ['Content-Type', 'x-api-key'],
   credentials: true
