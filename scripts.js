@@ -1,6 +1,5 @@
 const API_URL = 'https://5cb110af-956e-4abc-9ac8-0a402e499a2e-00-gksjpc3ojn7k.spock.replit.dev';
 const REGISTER_URL = `${API_URL}/register`;
-const API_KEY = 'yatazuki.dev';
 
 async function login() {
   const user = document.getElementById('username').value;
