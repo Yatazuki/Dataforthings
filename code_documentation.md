@@ -173,10 +173,10 @@
           <div class="btn-group" role="group">
             <input type="radio" class="btn-check" name="difficulty" id="easy" value="easy" checked>
             <label class="btn btn-outline-light" for="easy">Easy</label>
-            
+
             <input type="radio" class="btn-check" name="difficulty" id="medium" value="medium">
             <label class="btn btn-outline-light" for="medium">Medium</label>
-            
+
             <input type="radio" class="btn-check" name="difficulty" id="hard" value="hard">
             <label class="btn btn-outline-light" for="hard">Hard</label>
           </div>
@@ -360,3 +360,134 @@
   <script type="module" src="sphere.js"></script>
 </body>
 </html>
+```
+
+## Part 3: JavaScript Game Implementations
+
+### Snake Game (snake.js)
+```javascript
+// Core game variables and canvas setup
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+let snake = [{x: 200, y: 200}];
+let food = {x: 0, y: 0};
+let dx = 10;
+let dy = 0;
+let score = 0;
+let highScore = localStorage.getItem('snakeHighScore') || 0;
+
+// Game mechanics
+// moveSnake(): Handles snake movement and collision detection
+// generateFood(): Randomly places food on the canvas
+// drawSnake(): Renders snake segments with light purple color
+// drawFood(): Renders food item in white
+// gameLoop(): Main game loop handling drawing and updates
+// handleKeyDown(): Processes keyboard input for movement
+
+// Mobile controls implementation for touch devices
+// Directional buttons for up, down, left, right
+// Touch event handling for mobile gameplay
+```
+
+### Memory Game (memory.js)
+```javascript
+// Card sets for different difficulty levels
+const easyCards = ['🐱', '🐶', '🐭', '🐹', '🐰', '🦊'];
+const mediumCards = [...easyCards, '🐼', '🐨', '🦁', '🐯', '🐮', '🐷'];
+const hardCards = [...mediumCards, '🐸', '🐙', '🦋', '🦉', ...];
+
+// Game state management
+let gameBoard = [];
+let flippedCards = [];
+let matchedPairs = 0;
+let moves = 0;
+let bestScores = {
+  easy: localStorage.getItem('memoryBestScore_easy') || '-',
+  medium: localStorage.getItem('memoryBestScore_medium') || '-',
+  hard: localStorage.getItem('memoryBestScore_hard') || '-'
+};
+
+// Core functions
+// createBoard(): Generates and renders the game grid
+// flipCard(): Handles card flipping mechanics and matching logic
+// startGame(): Initializes new game with selected difficulty
+// shuffle(): Randomizes card positions
+```
+
+### Tic-tac-toe Game (tictactoe.js)
+```javascript
+// Game configuration
+let currentPlayer = 'X';
+let gameBoard = Array(9).fill('');
+let gameActive = true;
+let gameMode = 'human';
+
+// AI difficulty levels
+const difficulties = {
+  easy: () => randomMove(),
+  medium: () => smartMove(0.5),
+  hard: () => minimax(gameBoard, 'O').index
+};
+
+// Core game logic
+// makeMove(): Handles player moves and updates board
+// checkWinner(): Validates win conditions
+// minimax(): Implements AI strategy for hard mode
+// resetGame(): Clears board and resets game state
+```
+
+### Click Speed Test (clickspeed.js)
+```javascript
+// Game settings
+let clicks = 0;
+let timeLeft = 10;
+let timer = null;
+let isGameActive = false;
+let bestScore = localStorage.getItem('clickSpeedBestScore') || 0;
+
+// Core functionality
+// startTest(): Begins the click speed test
+// updateClicks(): Tracks and validates clicks
+// calculateCPS(): Computes clicks per second
+// updateHighScore(): Manages best score tracking
+```
+
+### Utility Scripts
+
+#### scripts.js
+```javascript
+// Authentication handling
+// login(): Manages user login process
+// register(): Handles new user registration
+// logout(): Clears session and redirects
+
+// Note management
+// saveNote(): Persists user notes
+// loadNote(): Retrieves saved notes
+// deleteNote(): Removes notes
+
+// Session management
+// fetchSessionAndUser(): Validates user session
+// checkAuth(): Middleware for protected routes
+```
+
+### Styling Implementation
+
+#### styles.css
+```css
+// Global theming
+// Dark mode color scheme
+// Responsive typography
+// Custom animations
+
+// Game-specific styles
+// Game board layouts
+// Card designs
+// Button animations
+// Mobile-responsive controls
+
+// Component styling
+// Navigation bar
+// Game cards
+// Form elements
+// Modal dialogs
