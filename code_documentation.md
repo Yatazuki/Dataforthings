@@ -619,12 +619,342 @@ document.addEventListener('DOMContentLoaded', function() {
 
 ### snake.js
 ```javascript
-${rag://rag_source_11}
+let canvas = document.getElementById('gameCanvas');
+let ctx = canvas.getContext('2d');
+let scoreElement = document.getElementById('score');
+let highScoreElement = document.getElementById('highScore');
+
+const GRID_SIZE = 20;
+const SNAKE_COLOR = '#8000ff';
+const FOOD_COLOR = '#ff0000';
+
+let snake = [
+  {x: 10, y: 10}
+];
+let food = {x: 15, y: 15};
+let dx = 0;
+let dy = 0;
+let score = 0;
+let highScore = localStorage.getItem('snakeHighScore') || 0;
+let gameLoop;
+let isPaused = false;
+
+function drawSnake() {
+  snake.forEach(segment => {
+    ctx.fillStyle = SNAKE_COLOR;
+    ctx.fillRect(segment.x * GRID_SIZE, segment.y * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2);
+  });
+}
+
+function drawFood() {
+  ctx.fillStyle = FOOD_COLOR;
+  ctx.fillRect(food.x * GRID_SIZE, food.y * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2);
+}
+
+function moveSnake() {
+  const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+  snake.unshift(head);
+  
+  if(head.x === food.x && head.y === food.y) {
+    score += 10;
+    scoreElement.textContent = score;
+    generateFood();
+  } else {
+    snake.pop();
+  }
+}
+
+function generateFood() {
+  food = {
+    x: Math.floor(Math.random() * (canvas.width / GRID_SIZE)),
+    y: Math.floor(Math.random() * (canvas.height / GRID_SIZE))
+  };
+  
+  // Check if food spawned on snake
+  if(snake.some(segment => segment.x === food.x && segment.y === food.y)) {
+    generateFood();
+  }
+}
+
+function checkCollision() {
+  const head = snake[0];
+  
+  // Wall collision
+  if(head.x < 0 || head.x >= canvas.width / GRID_SIZE || 
+     head.y < 0 || head.y >= canvas.height / GRID_SIZE) {
+    return true;
+  }
+  
+  // Self collision
+  for(let i = 1; i < snake.length; i++) {
+    if(head.x === snake[i].x && head.y === snake[i].y) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+function gameOver() {
+  clearInterval(gameLoop);
+  if(score > highScore) {
+    highScore = score;
+    localStorage.setItem('snakeHighScore', highScore);
+    highScoreElement.textContent = highScore;
+  }
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#fff';
+  ctx.font = '30px Montserrat';
+  ctx.textAlign = 'center';
+  ctx.fillText('Game Over!', canvas.width/2, canvas.height/2);
+  ctx.font = '20px Montserrat';
+  ctx.fillText('Press Space to Restart', canvas.width/2, canvas.height/2 + 40);
+}
+
+function update() {
+  if(isPaused) return;
+  
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  moveSnake();
+  if(checkCollision()) {
+    gameOver();
+    return;
+  }
+  drawFood();
+  drawSnake();
+}
+
+function startGame() {
+  snake = [{x: 10, y: 10}];
+  food = {x: 15, y: 15};
+  dx = 0;
+  dy = 0;
+  score = 0;
+  scoreElement.textContent = score;
+  highScoreElement.textContent = highScore;
+  clearInterval(gameLoop);
+  gameLoop = setInterval(update, 100);
+}
+
+document.addEventListener('keydown', (e) => {
+  if(e.code === 'Space') {
+    if(!gameLoop) startGame();
+    return;
+  }
+  
+  if(e.code === 'KeyP') {
+    isPaused = !isPaused;
+    return;
+  }
+  
+  if(isPaused) return;
+  
+  switch(e.code) {
+    case 'ArrowUp':
+      if(dy === 1) break;
+      dx = 0;
+      dy = -1;
+      break;
+    case 'ArrowDown':
+      if(dy === -1) break;
+      dx = 0;
+      dy = 1;
+      break;
+    case 'ArrowLeft':
+      if(dx === 1) break;
+      dx = -1;
+      dy = 0;
+      break;
+    case 'ArrowRight':
+      if(dx === -1) break;
+      dx = 1;
+      dy = 0;
+      break;
+  }
+});
+
+// Mobile controls
+const controls = document.querySelectorAll('.control-btn');
+controls.forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    const direction = e.target.dataset.direction;
+    
+    switch(direction) {
+      case 'up':
+        if(dy === 1) return;
+        dx = 0;
+        dy = -1;
+        break;
+      case 'down':
+        if(dy === -1) return;
+        dx = 0;
+        dy = 1;
+        break;
+      case 'left':
+        if(dx === 1) return;
+        dx = -1;
+        dy = 0;
+        break;
+      case 'right':
+        if(dx === -1) return;
+        dx = 1;
+        dy = 0;
+        break;
+    }
+  });
+});
+
+startGame();
 ```
 
 ### tictactoe.js
 ```javascript
-${rag://rag_source_12}
+let currentPlayer = 'X';
+let board = ['', '', '', '', '', '', '', '', ''];
+let gameActive = true;
+let gameMode = 'human';
+
+const winConditions = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+    [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+    [0, 4, 8], [2, 4, 6] // Diagonals
+];
+
+function createBoard() {
+    const gameBoard = document.getElementById('game-board');
+    gameBoard.innerHTML = '';
+    for(let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.setAttribute('data-index', i);
+        cell.addEventListener('click', () => handleCellClick(i));
+        gameBoard.appendChild(cell);
+    }
+}
+
+function handleCellClick(index) {
+    if(!gameActive || board[index] !== '') return;
+    
+    makeMove(index);
+    
+    if(gameMode !== 'human' && gameActive) {
+        setTimeout(() => botMove(), 500);
+    }
+}
+
+function makeMove(index) {
+    board[index] = currentPlayer;
+    document.querySelector(`[data-index="${index}"]`).textContent = currentPlayer;
+    
+    if(checkWin()) {
+        gameActive = false;
+        alert(`Player ${currentPlayer} wins!`);
+        return;
+    }
+    
+    if(checkDraw()) {
+        gameActive = false;
+        alert("It's a draw!");
+        return;
+    }
+    
+    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    document.getElementById('current-player').textContent = currentPlayer;
+}
+
+function checkWin() {
+    return winConditions.some(condition => {
+        return condition.every(index => {
+            return board[index] === currentPlayer;
+        });
+    });
+}
+
+function checkDraw() {
+    return board.every(cell => cell !== '');
+}
+
+function botMove() {
+    let index;
+    switch(gameMode) {
+        case 'easy':
+            index = makeRandomMove();
+            break;
+        case 'medium':
+            index = Math.random() < 0.5 ? makeSmartMove() : makeRandomMove();
+            break;
+        case 'hard':
+            index = makeSmartMove();
+            break;
+    }
+    if(index !== undefined) makeMove(index);
+}
+
+function makeRandomMove() {
+    const emptyCells = board.reduce((acc, cell, index) => {
+        if(cell === '') acc.push(index);
+        return acc;
+    }, []);
+    
+    if(emptyCells.length === 0) return;
+    return emptyCells[Math.floor(Math.random() * emptyCells.length)];
+}
+
+function makeSmartMove() {
+    // Try to win
+    const winMove = findWinningMove('O');
+    if(winMove !== undefined) return winMove;
+    
+    // Block opponent
+    const blockMove = findWinningMove('X');
+    if(blockMove !== undefined) return blockMove;
+    
+    // Take center
+    if(board[4] === '') return 4;
+    
+    // Take corner
+    const corners = [0, 2, 6, 8];
+    const emptyCorners = corners.filter(i => board[i] === '');
+    if(emptyCorners.length > 0) {
+        return emptyCorners[Math.floor(Math.random() * emptyCorners.length)];
+    }
+    
+    // Take any available spot
+    return makeRandomMove();
+}
+
+function findWinningMove(player) {
+    for(let i = 0; i < board.length; i++) {
+        if(board[i] === '') {
+            board[i] = player;
+            if(checkWin()) {
+                board[i] = '';
+                return i;
+            }
+            board[i] = '';
+        }
+    }
+}
+
+document.querySelectorAll('input[name="gameMode"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+        gameMode = e.target.value;
+        resetGame();
+    });
+});
+
+document.getElementById('resetButton').addEventListener('click', resetGame);
+
+function resetGame() {
+    board = ['', '', '', '', '', '', '', '', ''];
+    gameActive = true;
+    currentPlayer = 'X';
+    document.getElementById('current-player').textContent = currentPlayer;
+    createBoard();
+}
+
+createBoard();
 ```
 
 ### memory.js
