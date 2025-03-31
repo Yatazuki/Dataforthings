@@ -959,12 +959,199 @@ createBoard();
 
 ### memory.js
 ```javascript
-${rag://rag_source_13}
+let cards = [];
+let flippedCards = [];
+let matchedPairs = 0;
+let moves = 0;
+let gameStarted = false;
+let difficulty = 'easy';
+let bestScores = {
+  easy: localStorage.getItem('memoryBestScoreEasy') || '-',
+  medium: localStorage.getItem('memoryBestScoreMedium') || '-',
+  hard: localStorage.getItem('memoryBestScoreHard') || '-'
+};
+
+const emojis = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮'];
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function createCards() {
+  const pairs = {
+    'easy': 6,
+    'medium': 8,
+    'hard': 12
+  };
+  
+  const numPairs = pairs[difficulty];
+  const selectedEmojis = emojis.slice(0, numPairs);
+  cards = [...selectedEmojis, ...selectedEmojis];
+  cards = shuffleArray(cards);
+  
+  const gameBoard = document.getElementById('game-board');
+  gameBoard.innerHTML = '';
+  gameBoard.style.gridTemplateColumns = `repeat(${Math.ceil(Math.sqrt(cards.length))}, 1fr)`;
+  
+  cards.forEach((card, index) => {
+    const cardElement = document.createElement('div');
+    cardElement.classList.add('memory-card');
+    cardElement.setAttribute('data-index', index);
+    cardElement.innerHTML = `
+      <div class="card-inner">
+        <div class="card-front"></div>
+        <div class="card-back">${card}</div>
+      </div>
+    `;
+    cardElement.addEventListener('click', () => flipCard(index));
+    gameBoard.appendChild(cardElement);
+  });
+}
+
+function flipCard(index) {
+  if (!gameStarted) return;
+  
+  const cardElement = document.querySelector(`[data-index="${index}"]`);
+  
+  if (
+    flippedCards.length === 2 || // Already two cards flipped
+    flippedCards.includes(index) || // Same card clicked
+    cardElement.classList.contains('matched') // Already matched card
+  ) {
+    return;
+  }
+  
+  cardElement.classList.add('flipped');
+  flippedCards.push(index);
+  
+  if (flippedCards.length === 2) {
+    moves++;
+    document.getElementById('moves').textContent = moves;
+    checkMatch();
+  }
+}
+
+function checkMatch() {
+  const [firstIndex, secondIndex] = flippedCards;
+  const match = cards[firstIndex] === cards[secondIndex];
+  
+  if (match) {
+    document.querySelectorAll(`[data-index="${firstIndex}"], [data-index="${secondIndex}"]`)
+      .forEach(card => card.classList.add('matched'));
+    matchedPairs++;
+    
+    if (matchedPairs === cards.length / 2) {
+      setTimeout(() => {
+        const currentScore = moves;
+        const bestScore = parseInt(bestScores[difficulty]);
+        
+        if (bestScore === '-' || currentScore < bestScore) {
+          bestScores[difficulty] = currentScore;
+          localStorage.setItem(`memoryBestScore${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}`, currentScore);
+          document.getElementById('bestScore').textContent = currentScore;
+        }
+        
+        alert(`Congratulations! You won in ${moves} moves!`);
+      }, 500);
+    }
+  } else {
+    setTimeout(() => {
+      document.querySelectorAll(`[data-index="${firstIndex}"], [data-index="${secondIndex}"]`)
+        .forEach(card => card.classList.remove('flipped'));
+    }, 1000);
+  }
+  
+  flippedCards = [];
+}
+
+function startGame() {
+  gameStarted = true;
+  matchedPairs = 0;
+  moves = 0;
+  flippedCards = [];
+  document.getElementById('moves').textContent = moves;
+  document.getElementById('bestScore').textContent = bestScores[difficulty];
+  createCards();
+}
+
+document.querySelectorAll('input[name="difficulty"]').forEach(radio => {
+  radio.addEventListener('change', (e) => {
+    difficulty = e.target.value;
+    document.getElementById('bestScore').textContent = bestScores[difficulty];
+  });
+});
+
+document.getElementById('startButton').addEventListener('click', startGame);
 ```
 
 ### clickspeed.js
 ```javascript
-${rag://rag_source_14}
+let clicks = 0;
+let timeLeft = 5;
+let timer = null;
+let isGameActive = false;
+let highScore = localStorage.getItem('clickSpeedHighScore') || 0;
+
+const clickArea = document.getElementById('clickArea');
+const timeLeftDisplay = document.getElementById('timeLeft');
+const currentSpeedDisplay = document.getElementById('currentSpeed');
+const highScoreDisplay = document.getElementById('highScore');
+
+highScoreDisplay.textContent = highScore;
+
+function updateDisplay() {
+  const currentSpeed = (clicks / (5 - timeLeft)).toFixed(2);
+  currentSpeedDisplay.textContent = isGameActive ? currentSpeed : '0';
+}
+
+function endGame() {
+  isGameActive = false;
+  clearInterval(timer);
+  
+  const finalSpeed = (clicks / 5).toFixed(2);
+  if (finalSpeed > highScore) {
+    highScore = finalSpeed;
+    localStorage.setItem('clickSpeedHighScore', highScore);
+    highScoreDisplay.textContent = highScore;
+  }
+  
+  clickArea.textContent = `Game Over! Your speed: ${finalSpeed} CPS\nClick to try again!`;
+}
+
+function startGame() {
+  if (isGameActive) return;
+  
+  clicks = 0;
+  timeLeft = 5;
+  isGameActive = true;
+  
+  timeLeftDisplay.textContent = timeLeft;
+  currentSpeedDisplay.textContent = '0';
+  clickArea.textContent = 'Click!';
+  
+  timer = setInterval(() => {
+    timeLeft--;
+    timeLeftDisplay.textContent = timeLeft;
+    updateDisplay();
+    
+    if (timeLeft <= 0) {
+      endGame();
+    }
+  }, 1000);
+}
+
+clickArea.addEventListener('click', () => {
+  if (!isGameActive) {
+    startGame();
+  } else {
+    clicks++;
+    updateDisplay();
+  }
+});
 ```
 
 ### notes.js
