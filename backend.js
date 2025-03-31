@@ -31,9 +31,10 @@ initDatabase();
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: '*',
+  origin: ['http://yatazuki.com', 'https://yatazuki.com'],
   methods: ['GET', 'POST', 'DELETE', 'PUT'],
-  allowedHeaders: ['Content-Type', 'x-api-key']
+  allowedHeaders: ['Content-Type', 'x-api-key'],
+  credentials: true
 }));
 
 // API Key middleware
