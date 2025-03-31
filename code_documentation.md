@@ -1156,12 +1156,146 @@ clickArea.addEventListener('click', () => {
 
 ### notes.js
 ```javascript
-${rag://rag_source_10}
+const API_URL = BACKEND_URL || 'http://0.0.0.0:3000';
+const API_KEY = API_KEY;
+
+async function loadNotes() {
+  try {
+    const response = await fetch(`${API_URL}/notes`, {
+      headers: {
+        'x-api-key': API_KEY
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      console.error("Error loading notes:", data.error);
+      return;
+    }
+
+    const notesContainer = document.getElementById('notes-container');
+    if (!notesContainer) return;
+
+    const currentUserId = localStorage.getItem("user_id");
+    notesContainer.innerHTML = data.map(note => `
+      <div class="note position-relative">
+        ${note.user_id === currentUserId ? 
+          `<button onclick="deleteNote('${note.id}')" class="delete-btn">×</button>` : 
+          ''
+        }
+        <p>${note.note_text}</p>
+        ${note.link_url ? `<p><a href="${note.link_url}" target="_blank">Link</a></p>` : ''}
+        <small>By: ${note.username || 'Unknown'}</small>
+        <small>Posted: ${new Date(note.created_at).toLocaleString()}</small>
+      </div>
+    `).join('');
+  } catch (err) {
+    console.error("Failed to load notes:", err);
+  }
+}
+
+async function addNote(content) {
+  const userId = localStorage.getItem("user_id");
+  if (!userId || !content) return;
+
+  try {
+    const response = await fetch(`${API_URL}/notes`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY
+      },
+      body: JSON.stringify({
+        content,
+        userId
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to add note');
+    }
+
+    await loadNotes();
+  } catch (err) {
+    console.error("Failed to add note:", err);
+  }
+}
+
+async function deleteNote(noteId) {
+  try {
+    const response = await fetch(`${API_URL}/notes/${noteId}`, {
+      method: 'DELETE',
+      headers: {
+        'x-api-key': API_KEY
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete note');
+    }
+
+    await loadNotes();
+  } catch (err) {
+    console.error("Failed to delete note:", err);
+  }
+}
 ```
 
 ### sphere.js
 ```javascript
-${rag://rag_source_15}
+import * as THREE from 'https://unpkg.com/three@0.157.0/build/three.module.js';
+
+function createSphere() {
+  const container = document.getElementById('sphere-container');
+  const width = container.clientWidth;
+  const height = 300;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ alpha: true });
+  
+  renderer.setSize(width, height);
+  container.appendChild(renderer.domElement);
+
+  const geometry = new THREE.SphereGeometry(2, 32, 32);
+  const material = new THREE.MeshPhongMaterial({
+    color: 0x8000ff,
+    shininess: 100,
+    opacity: 0.9,
+    transparent: true
+  });
+  
+  const sphere = new THREE.Mesh(geometry, material);
+  scene.add(sphere);
+
+  const light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.set(5, 5, 5);
+  scene.add(light);
+
+  const ambientLight = new THREE.AmbientLight(0x404040);
+  scene.add(ambientLight);
+
+  camera.position.z = 5;
+
+  function animate() {
+    requestAnimationFrame(animate);
+    sphere.rotation.x += 0.01;
+    sphere.rotation.y += 0.01;
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  window.addEventListener('resize', () => {
+    const newWidth = container.clientWidth;
+    camera.aspect = newWidth / height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(newWidth, height);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', createSphere);
 ```
 
 ## File Structure Overview
