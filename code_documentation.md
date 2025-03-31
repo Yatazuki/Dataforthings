@@ -1,4 +1,3 @@
-
 # Yatazuki Web Application - Complete Code Documentation
 
 ## Backend Files
@@ -125,161 +124,54 @@ CREATE INDEX IF NOT EXISTS idx_game_scores_user_id ON game_scores(user_id);
 CREATE INDEX IF NOT EXISTS idx_game_scores_type ON game_scores(game_type);
 ```
 
-## Frontend Core Files
+## HTML Files
 
-### scripts.js
-```javascript
-const API_URL = 'https://5cb110af-956e-4abc-9ac8-0a402e499a2e-00-gksjpc3ojn7k.spock.replit.dev';
-const API_KEY = 'yatazuki.dev';
-
-async function login() {
-  const user = document.getElementById('username').value;
-  const pass = document.getElementById('password').value;
-  const errorBox = document.getElementById('errorBox');
-
-  try {
-    const response = await fetch(`${API_URL}/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': API_KEY
-      },
-      body: JSON.stringify({ username: user, password: pass })
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      errorBox.innerText = "❌ " + data.error;
-      return;
-    }
-
-    localStorage.setItem("user_id", data.id);
-    localStorage.setItem("username", user);
-    window.location.href = "dashboard.html";
-  } catch (err) {
-    console.error("Login error:", err);
-    errorBox.innerText = "❌ An error occurred during login";
-  }
-}
-
-async function fetchSessionAndUser() {
-  userId = localStorage.getItem("user_id");
-  if (!userId) {
-    document.body.innerHTML = '<div class="text-center mt-5"><h2>❌ You are not logged in.</h2></div>';
-    return;
-  }
-  await loadNote();
-}
-
-async function loadNote() {
-  try {
-    const response = await fetch(`${API_URL}/notes/${userId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': API_KEY
-      }
-    });
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error("Error loading note:", data.error);
-      return;
-    }
-
-    if (data) {
-      document.getElementById("noteBox").value = data.note || "";
-      if (data.created_at) {
-        document.getElementById("noteTimestamp").innerText = `Last updated: ${new Date(data.created_at).toLocaleString()}`;
-      }
-    }
-  } catch (error) {
-    console.error("Error loading note:", error);
-  }
-}
-
-function logout() {
-  localStorage.removeItem("user_id");
-  localStorage.removeItem("username");
-  window.location.href = "index.html";
-}
-
-async function saveNote() {
-  const note = document.getElementById("noteBox").value;
-  const status = document.getElementById("saveStatus");
-
-  try {
-    const response = await fetch(`${API_URL}/notes/${userId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': API_KEY
-      },
-      body: JSON.stringify({ note })
-    });
-
-    if (!response.ok) {
-      console.error("Error saving note:", await response.text());
-      status.innerText = "❌ Failed to save.";
-      return;
-    }
-
-    status.innerText = "✅ Note saved!";
-    await loadNote();
-  } catch (error) {
-    console.error("Error saving note:", error);
-    status.innerText = "❌ Failed to save.";
-  }
-  setTimeout(() => status.innerText = '', 3000);
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  const registerForm = document.getElementById('register-form');
-  if (registerForm) {
-    registerForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-
-      const username = document.getElementById("username").value.trim().toLowerCase();
-      const email = document.getElementById("email").value.trim().toLowerCase();
-      const password = document.getElementById("password").value.trim();
-
-      if (!username || !email || !password) {
-        alert("❌ Please fill in all fields.");
-        return;
-      }
-
-      try {
-        const response = await fetch(`${API_URL}/register`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': API_KEY
-          },
-          body: JSON.stringify({ username, email, password })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          alert(`❌ Registration failed: ${data.error}`);
-          return;
-        }
-
-        alert("✅ Registered! Please check your email to confirm your account.");
-        window.location.href = "index.html";
-
-      } catch (error) {
-        console.error("Registration error:", error);
-        alert("❌ An error occurred during registration.");
-      }
-    });
-  }
-  if (window.location.pathname.includes('dashboard.html')) {
-    fetchSessionAndUser();
-  }
-});
+### index.html
+```html
+${rag://rag_source_5}
 ```
+
+### dashboard.html
+```html
+${rag://rag_source_1}
+```
+
+### snake.html
+```html
+${rag://rag_source_2}
+```
+
+### tictactoe.html
+```html
+${rag://rag_source_0}
+```
+
+### memory.html
+```html
+${rag://rag_source_0}
+```
+
+### clickspeed.html
+```html
+${rag://rag_source_8}
+```
+
+### notes.html
+```html
+${rag://rag_source_3}
+```
+
+### profile.html
+```html
+${rag://rag_source_6}
+```
+
+### register.html
+```html
+${rag://rag_source_7}
+```
+
+## CSS Files
 
 ### styles.css
 ```css
@@ -569,56 +461,215 @@ body {
 }
 ```
 
-### Game Files
+## JavaScript Files
 
-#### snake.js
+### scripts.js
 ```javascript
-${rag://rag_source_3}
+const API_URL = 'https://5cb110af-956e-4abc-9ac8-0a402e499a2e-00-gksjpc3ojn7k.spock.replit.dev';
+const API_KEY = 'yatazuki.dev';
+
+async function login() {
+  const user = document.getElementById('username').value;
+  const pass = document.getElementById('password').value;
+  const errorBox = document.getElementById('errorBox');
+
+  try {
+    const response = await fetch(`${API_URL}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY
+      },
+      body: JSON.stringify({ username: user, password: pass })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      errorBox.innerText = "❌ " + data.error;
+      return;
+    }
+
+    localStorage.setItem("user_id", data.id);
+    localStorage.setItem("username", user);
+    window.location.href = "dashboard.html";
+  } catch (err) {
+    console.error("Login error:", err);
+    errorBox.innerText = "❌ An error occurred during login";
+  }
+}
+
+async function fetchSessionAndUser() {
+  userId = localStorage.getItem("user_id");
+  if (!userId) {
+    document.body.innerHTML = '<div class="text-center mt-5"><h2>❌ You are not logged in.</h2></div>';
+    return;
+  }
+  await loadNote();
+}
+
+async function loadNote() {
+  try {
+    const response = await fetch(`${API_URL}/notes/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY
+      }
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Error loading note:", data.error);
+      return;
+    }
+
+    if (data) {
+      document.getElementById("noteBox").value = data.note || "";
+      if (data.created_at) {
+        document.getElementById("noteTimestamp").innerText = `Last updated: ${new Date(data.created_at).toLocaleString()}`;
+      }
+    }
+  } catch (error) {
+    console.error("Error loading note:", error);
+  }
+}
+
+function logout() {
+  localStorage.removeItem("user_id");
+  localStorage.removeItem("username");
+  window.location.href = "index.html";
+}
+
+async function saveNote() {
+  const note = document.getElementById("noteBox").value;
+  const status = document.getElementById("saveStatus");
+
+  try {
+    const response = await fetch(`${API_URL}/notes/${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY
+      },
+      body: JSON.stringify({ note })
+    });
+
+    if (!response.ok) {
+      console.error("Error saving note:", await response.text());
+      status.innerText = "❌ Failed to save.";
+      return;
+    }
+
+    status.innerText = "✅ Note saved!";
+    await loadNote();
+  } catch (error) {
+    console.error("Error saving note:", error);
+    status.innerText = "❌ Failed to save.";
+  }
+  setTimeout(() => status.innerText = '', 3000);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const registerForm = document.getElementById('register-form');
+  if (registerForm) {
+    registerForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value.trim().toLowerCase();
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const password = document.getElementById("password").value.trim();
+
+      if (!username || !email || !password) {
+        alert("❌ Please fill in all fields.");
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': API_KEY
+          },
+          body: JSON.stringify({ username, email, password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          alert(`❌ Registration failed: ${data.error}`);
+          return;
+        }
+
+        alert("✅ Registered! Please check your email to confirm your account.");
+        window.location.href = "index.html";
+
+      } catch (error) {
+        console.error("Registration error:", error);
+        alert("❌ An error occurred during registration.");
+      }
+    });
+  }
+  if (window.location.pathname.includes('dashboard.html')) {
+    fetchSessionAndUser();
+  }
+});
 ```
 
-#### snake.html
-```html
-${rag://rag_source_4}
-```
-
-#### tictactoe.js
+### snake.js
 ```javascript
-${rag://rag_source_5}
+${rag://rag_source_11}
 ```
 
-#### tictactoe.html
-```html
-${rag://rag_source_0}
-```
-
-#### memory.js
+### tictactoe.js
 ```javascript
-${rag://rag_source_6}
+${rag://rag_source_12}
 ```
 
-#### memory.html
-```html
-${rag://rag_source_2}
-```
-
-#### clickspeed.js
+### memory.js
 ```javascript
-${rag://rag_source_7}
+${rag://rag_source_13}
 ```
 
-#### clickspeed.html
-```html
-${rag://rag_source_8}
-```
-
-### Note System Files
-
-#### notes.js
+### clickspeed.js
 ```javascript
-${rag://rag_source_9}
+${rag://rag_source_14}
 ```
 
-#### notes.html
-```html
-${rag://rag_source_0}
+### notes.js
+```javascript
+${rag://rag_source_10}
 ```
+
+### sphere.js
+```javascript
+${rag://rag_source_15}
+```
+
+## File Structure Overview
+```
+├── HTML Files
+│   ├── index.html
+│   ├── dashboard.html
+│   ├── snake.html
+│   ├── tictactoe.html
+│   ├── memory.html
+│   ├── clickspeed.html
+│   ├── notes.html
+│   ├── profile.html
+│   └── register.html
+├── CSS Files
+│   └── styles.css
+└── JavaScript Files
+    ├── scripts.js
+    ├── snake.js
+    ├── tictactoe.js
+    ├── memory.js
+    ├── clickspeed.js
+    ├── notes.js
+    ├── sphere.js
+    └── backend.js
+```
+
+Each file has been documented with its complete code, making it easy to reference and understand the entire codebase. The files work together to create a cohesive gaming platform with authentication, game features, and note-taking capabilities.
