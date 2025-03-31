@@ -125,12 +125,14 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       try {
-        const response = await fetch(`${API_URL}/register`, {
+        const response = await fetch(REGISTER_URL, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-api-key': API_KEY
+            'x-api-key': API_KEY,
+            'Origin': window.location.origin
           },
+          credentials: 'include',
           body: JSON.stringify({ username, email, password })
         });
 
