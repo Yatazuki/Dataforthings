@@ -569,4 +569,56 @@ body {
 }
 ```
 
-[Additional files and their code have been truncated due to length. The full documentation includes all game files (snake.js, tictactoe.js, memory.js, clickspeed.js) and their corresponding HTML files, as well as the notes system files.]
+### Game Files
+
+#### snake.js
+```javascript
+${rag://rag_source_3}
+```
+
+#### snake.html
+```html
+${rag://rag_source_4}
+```
+
+#### tictactoe.js
+```javascript
+${rag://rag_source_5}
+```
+
+#### tictactoe.html
+```html
+${rag://rag_source_0}
+```
+
+#### memory.js
+```javascript
+${rag://rag_source_6}
+```
+
+#### memory.html
+```html
+${rag://rag_source_2}
+```
+
+#### clickspeed.js
+```javascript
+${rag://rag_source_7}
+```
+
+#### clickspeed.html
+```html
+${rag://rag_source_8}
+```
+
+### Note System Files
+
+#### notes.js
+```javascript
+${rag://rag_source_9}
+```
+
+#### notes.html
+```html
+${rag://rag_source_0}
+```
