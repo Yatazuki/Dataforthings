@@ -27,6 +27,18 @@
       </form>
     </div>
   </div>
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      // Initialize any page-specific functionality
+      const loginForm = document.getElementById('login-form');
+      if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          login();
+        });
+      }
+    });
+  </script>
   <script src="scripts.js"></script>
 </body>
 </html>
