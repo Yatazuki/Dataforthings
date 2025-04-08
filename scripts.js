@@ -1,5 +1,5 @@
-
-import { createClient } from '@supabase/supabase-js'
+// Import Supabase client
+import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   'https://qqplzgqhkffwvefbnyte.supabase.co',
@@ -30,6 +30,9 @@ async function login() {
     errorBox.innerText = "❌ An error occurred during login";
   }
 }
+
+// Export functions that need to be accessible
+export { login };
 
 // Dashboard functionality
 let userId = null;
