@@ -1,8 +1,8 @@
 
 // Initialize Supabase client
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
+  'your-supabase-url',
+  'your-supabase-anon-key'
 );
 
 async function login() {
