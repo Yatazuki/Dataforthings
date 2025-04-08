@@ -1,8 +1,8 @@
 
 // Initialize Supabase client
 const supabase = createClient(
-  'your-supabase-url',
-  'your-supabase-anon-key'
+  'https://qqplzgqhkffwvefbnyte.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxcGx6Z3Foa2Zmd3ZlZmJueXRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI5Nzc2NzEsImV4cCI6MjA1ODU1MzY3MX0.hBssyXE-kkV5cOiwxD33Ejd2YSgexZUvOZBGIs1fVkQ'
 );
 
 async function login() {
