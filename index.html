@@ -11,7 +11,8 @@
   <link rel="stylesheet" href="styles.css">
   <script>
     const BACKEND_URL = 'http://0.0.0.0:3000';
-    const SUPABASE_KEY = process.env.SUPABASE_KEY;
+    window.SUPABASE_URL = '{{SUPABASE_URL}}';  // Will be replaced during build
+    window.SUPABASE_KEY = '{{SUPABASE_KEY}}';  // Will be replaced during build
   </script>
 </head>
 <body>
