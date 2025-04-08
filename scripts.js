@@ -1,5 +1,9 @@
-const API_URL = 'https://5cb110af-956e-4abc-9ac8-0a402e499a2e-00-gksjpc3ojn7k.spock.replit.dev';
-const REGISTER_URL = `${API_URL}/register`;
+
+// Initialize Supabase client
+const supabase = window.supabase.createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
+);
 
 async function login() {
   const user = document.getElementById('username').value;
@@ -7,23 +11,17 @@ async function login() {
   const errorBox = document.getElementById('errorBox');
 
   try {
-    const response = await fetch(`${API_URL}/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': API_KEY
-      },
-      body: JSON.stringify({ username: user, password: pass })
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: user,
+      password: pass
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      errorBox.innerText = "❌ " + data.error;
+    if (error) {
+      errorBox.innerText = "❌ " + error.message;
       return;
     }
 
-    localStorage.setItem("user_id", data.id);
+    localStorage.setItem("user_id", data.user.id);
     localStorage.setItem("username", user);
     window.location.href = "dashboard.html";
   } catch (err) {
@@ -36,7 +34,8 @@ async function login() {
 let userId = null;
 
 async function fetchSessionAndUser() {
-  userId = localStorage.getItem("user_id");
+  const { data: { user } } = await supabase.auth.getUser();
+  userId = user?.id;
   if (!userId) {
     document.body.innerHTML = '<div class="text-center mt-5"><h2>❌ You are not logged in.</h2></div>';
     return;
@@ -46,22 +45,16 @@ async function fetchSessionAndUser() {
 
 async function loadNote() {
   try {
-    const response = await fetch(`${API_URL}/notes/${userId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': API_KEY
-      }
-    });
-    const data = await response.json();
+    const { data, error } = await supabase
+      .from('notes')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
 
-    if (!response.ok) {
-      console.error("Error loading note:", data.error);
-      return;
-    }
+    if (error) throw error;
 
     if (data) {
-      document.getElementById("noteBox").value = data.note || "";
+      document.getElementById("noteBox").value = data.content || "";
       if (data.created_at) {
         document.getElementById("noteTimestamp").innerText = `Last updated: ${new Date(data.created_at).toLocaleString()}`;
       }
@@ -71,8 +64,8 @@ async function loadNote() {
   }
 }
 
-
 function logout() {
+  supabase.auth.signOut();
   localStorage.removeItem("user_id");
   localStorage.removeItem("username");
   window.location.href = "index.html";
@@ -83,20 +76,15 @@ async function saveNote() {
   const status = document.getElementById("saveStatus");
 
   try {
-    const response = await fetch(`${API_URL}/notes/${userId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': API_KEY
-      },
-      body: JSON.stringify({ note })
-    });
+    const { error } = await supabase
+      .from('notes')
+      .upsert({ 
+        user_id: userId,
+        content: note,
+        updated_at: new Date()
+      });
 
-    if (!response.ok) {
-      console.error("Error saving note:", await response.text());
-      status.innerText = "❌ Failed to save.";
-      return;
-    }
+    if (error) throw error;
 
     status.innerText = "✅ Note saved!";
     await loadNote();
@@ -106,7 +94,6 @@ async function saveNote() {
   }
   setTimeout(() => status.innerText = '', 3000);
 }
-
 
 document.addEventListener('DOMContentLoaded', function() {
   const registerForm = document.getElementById('register-form');
@@ -124,21 +111,18 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       try {
-        const response = await fetch(REGISTER_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': API_KEY,
-            'Origin': window.location.origin
-          },
-          credentials: 'include',
-          body: JSON.stringify({ username, email, password })
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              username
+            }
+          }
         });
 
-        const data = await response.json();
-
-        if (!response.ok) {
-          alert(`❌ Registration failed: ${data.error}`);
+        if (error) {
+          alert(`❌ Registration failed: ${error.message}`);
           return;
         }
 
@@ -151,6 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
+  
   if (window.location.pathname.includes('dashboard.html')) {
     fetchSessionAndUser();
   }
