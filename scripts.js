@@ -111,18 +111,33 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       try {
-        const { data, error } = await supabase.auth.signUp({
+        // First insert into login table
+        const { error: loginError } = await supabase
+          .from('login')
+          .insert([
+            { 
+              username: username,
+              password: password, // Note: In production, password should be hashed
+              email: email
+            }
+          ]);
+
+        if (loginError) {
+          alert(`❌ Registration failed: ${loginError.message}`);
+          return;
+        }
+
+        // Then create auth user
+        const { error: authError } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            data: {
-              username
-            }
+            data: { username }
           }
         });
 
-        if (error) {
-          alert(`❌ Registration failed: ${error.message}`);
+        if (authError) {
+          alert(`❌ Auth registration failed: ${authError.message}`);
           return;
         }
 

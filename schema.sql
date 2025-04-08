@@ -1,16 +1,16 @@
 -- Users table
-CREATE TABLE IF NOT EXISTS logins (
+CREATE TABLE IF NOT EXISTS login (
   id SERIAL PRIMARY KEY,
-  username VARCHAR(50) UNIQUE NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  email VARCHAR(255) UNIQUE,
+  username TEXT NOT NULL UNIQUE,
+  password TEXT NOT NULL,
+  email TEXT NOT NULL UNIQUE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Global notes table
 CREATE TABLE IF NOT EXISTS global_notes (
   id SERIAL PRIMARY KEY,
-  user_id INTEGER REFERENCES logins(id) ON DELETE CASCADE,
+  user_id INTEGER REFERENCES login(id) ON DELETE CASCADE,
   note_text TEXT NOT NULL,
   link_url TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -45,7 +45,7 @@ create table if not exists notes (
 -- Game scores table
 CREATE TABLE IF NOT EXISTS game_scores (
   id SERIAL PRIMARY KEY,
-  user_id INTEGER REFERENCES logins(id) ON DELETE CASCADE,
+  user_id INTEGER REFERENCES login(id) ON DELETE CASCADE,
   game_type VARCHAR(20) NOT NULL,
   score INTEGER NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
