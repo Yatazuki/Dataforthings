@@ -1,8 +1,8 @@
 
 // Initialize Supabase client
 const supabase = window.supabase.createClient(
-  window.SUPABASE_URL || process.env.SUPABASE_URL,
-  window.SUPABASE_KEY || process.env.SUPABASE_KEY
+  window.SUPABASE_URL,
+  window.SUPABASE_KEY
 );
 
 async function login() {
