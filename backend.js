@@ -41,7 +41,7 @@ app.use(cors({
 // API Key middleware
 const validateApiKey = (req, res, next) => {
   const apiKey = req.headers['x-api-key'];
-  if (!apiKey || apiKey !== process.env.API_KEY) {
+  if (!apiKey || apiKey !== process.env.SUPABASE_KEY) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
   next();
