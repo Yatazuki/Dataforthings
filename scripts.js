@@ -104,35 +104,20 @@ document.addEventListener('DOMContentLoaded', function() {
   if (registerForm) {
     registerForm.addEventListener('submit', async function(e) {
       e.preventDefault();
-
+      
       const username = document.getElementById("username").value.trim().toLowerCase();
       const email = document.getElementById("email").value.trim().toLowerCase();
       const password = document.getElementById("password").value.trim();
+      const errorBox = document.getElementById('errorBox');
 
       if (!username || !email || !password) {
-        alert("❌ Please fill in all fields.");
+        if (errorBox) errorBox.innerText = "❌ Please fill in all fields.";
         return;
       }
 
       try {
-        // First insert into login table
-        const { error: loginError } = await supabase
-          .from('login')
-          .insert([
-            { 
-              username: username,
-              password: password, // Note: In production, password should be hashed
-              email: email
-            }
-          ]);
-
-        if (loginError) {
-          alert(`❌ Registration failed: ${loginError.message}`);
-          return;
-        }
-
-        // Then create auth user
-        const { error: authError } = await supabase.auth.signUp({
+        // First create auth user
+        const { data: authData, error: authError } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -140,17 +125,28 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         });
 
-        if (authError) {
-          alert(`❌ Auth registration failed: ${authError.message}`);
-          return;
-        }
+        if (authError) throw authError;
 
-        alert("✅ Registered! Please check your email to confirm your account.");
-        window.location.href = "index.html";
+        // Then insert into login table
+        const { error: loginError } = await supabase
+          .from('login')
+          .insert([
+            { 
+              user_id: authData.user.id,
+              username: username,
+              email: email,
+              created_at: new Date()
+            }
+          ]);
+
+        if (loginError) throw loginError;
+
+        if (errorBox) errorBox.innerText = "✅ Registration successful! Please check your email.";
+        setTimeout(() => window.location.href = "index.html", 2000);
 
       } catch (error) {
         console.error("Registration error:", error);
-        alert("❌ An error occurred during registration.");
+        if (errorBox) errorBox.innerText = `❌ ${error.message || 'Registration failed'}`;
       }
     });
   }
