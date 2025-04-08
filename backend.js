@@ -36,11 +36,25 @@ app.use(cors({
 // API Key middleware
 const validateApiKey = (req, res, next) => {
   const apiKey = req.headers['x-api-key'];
-  if (!apiKey || apiKey !== process.env.SUPABASE_KEY) {
-    return res.status(401).json({ error: 'Unauthorized' });
+  const supabaseKey = process.env.SUPABASE_KEY;
+  
+  if (!apiKey || apiKey !== supabaseKey || !supabaseKey) {
+    return res.status(403).json({ error: 'Access forbidden' });
   }
+
+  // Verify if request comes from allowed origins
+  const origin = req.headers.origin;
+  const allowedOrigins = [process.env.FRONTEND_URL, 'https://yatazuki.com', 'http://yatazuki.com'];
+  
+  if (!allowedOrigins.includes(origin)) {
+    return res.status(403).json({ error: 'Origin not allowed' });
+  }
+
   next();
 };
+
+// Apply API key validation to all routes
+app.use(validateApiKey);
 
 // Notes endpoints
 app.post('/notes', validateApiKey, async (req, res) => {
