@@ -4,8 +4,7 @@ const { Pool } = require('pg');
 const fs = require('fs').promises;
 const app = express();
 
-// Supabase client initialization
-const { createClient } = require('@supabase/supabase-js');
+import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
   'https://qqplzgqhkffwvefbnyte.supabase.co',
