@@ -1,4 +1,3 @@
-
 -- Users table
 CREATE TABLE IF NOT EXISTS logins (
   id SERIAL PRIMARY KEY,
@@ -17,14 +16,31 @@ CREATE TABLE IF NOT EXISTS global_notes (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Personal notes table
-CREATE TABLE IF NOT EXISTS notes (
-  id SERIAL PRIMARY KEY,
-  user_id INTEGER REFERENCES logins(id) ON DELETE CASCADE,
-  note TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE(user_id)
+-- Enable RLS
+alter table notes enable row level security;
+
+-- Create policies
+create policy "Users can read all notes" on notes
+  for select using (true);
+
+create policy "Users can insert their own notes" on notes
+  for insert with check (auth.uid() = user_id);
+
+create policy "Users can update their own notes" on notes
+  for update using (auth.uid() = user_id);
+
+create policy "Users can delete their own notes" on notes
+  for delete using (auth.uid() = user_id);
+
+-- Create notes table if it doesn't exist
+create table if not exists notes (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users(id),
+  content text not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
 
 -- Game scores table
 CREATE TABLE IF NOT EXISTS game_scores (
@@ -37,6 +53,5 @@ CREATE TABLE IF NOT EXISTS game_scores (
 
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_global_notes_user_id ON global_notes(user_id);
-CREATE INDEX IF NOT EXISTS idx_notes_user_id ON notes(user_id);
 CREATE INDEX IF NOT EXISTS idx_game_scores_user_id ON game_scores(user_id);
 CREATE INDEX IF NOT EXISTS idx_game_scores_type ON game_scores(game_type);

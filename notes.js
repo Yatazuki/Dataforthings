@@ -1,16 +1,15 @@
 
-const API_URL = BACKEND_URL || 'http://0.0.0.0:3000';
-const API_KEY = API_KEY;
-
 async function loadNotes() {
   try {
-    const response = await fetch(`${API_URL}/notes`, {
-      headers: {
-        'x-api-key': API_KEY
-      }
-    });
-    
-    const data = await response.json();
+    const { data, error } = await supabase
+      .from('notes')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error("Error loading notes:", error);
+      return;
+    }
     
     if (!response.ok) {
       console.error("Error loading notes:", data.error);
@@ -43,17 +42,17 @@ async function addNote(content) {
   if (!userId || !content) return;
 
   try {
-    const response = await fetch(`${API_URL}/notes`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': API_KEY
-      },
-      body: JSON.stringify({
+    const { error } = await supabase
+      .from('notes')
+      .insert([{
         content,
-        userId
-      })
-    });
+        user_id: userId,
+        created_at: new Date()
+      }]);
+
+    if (error) {
+      throw error;
+    }
 
     if (!response.ok) {
       throw new Error('Failed to add note');
@@ -67,12 +66,14 @@ async function addNote(content) {
 
 async function deleteNote(noteId) {
   try {
-    const response = await fetch(`${API_URL}/notes/${noteId}`, {
-      method: 'DELETE',
-      headers: {
-        'x-api-key': API_KEY
-      }
-    });
+    const { error } = await supabase
+      .from('notes')
+      .delete()
+      .eq('id', noteId);
+
+    if (error) {
+      throw error;
+    }
 
     if (!response.ok) {
       throw new Error('Failed to delete note');
