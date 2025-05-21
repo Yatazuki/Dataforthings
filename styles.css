@@ -330,65 +330,105 @@ body {
 
 /* Card Game Styles */
 .blackjack-card {
-  background-color: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 15px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: all 0.3s;
-  width: 100px;
-  height: 140px;
+  width: 120px;
+  height: 170px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 68px;
+  font-size: 64px;
   margin: 8px;
   position: relative;
   transform-style: preserve-3d;
   perspective: 1000px;
+  overflow: hidden;
+}
+
+.blackjack-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.1) 50%, rgba(0,0,0,0.05) 100%);
+  z-index: 1;
+  pointer-events: none;
 }
 
 .blackjack-card:hover {
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
 .blackjack-card.red {
-  color: #ff5555;
-  text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
+  color: #d40000;
 }
 
 .blackjack-card.black {
-  color: white;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  color: #000000;
+}
+
+.card-symbol {
+  font-size: 64px;
+  z-index: 2;
 }
 
 .card-value {
   position: absolute;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
   line-height: 1;
-  white-space: pre;
-  text-align: center;
+  z-index: 2;
 }
 
 .top-left {
-  top: 8px;
-  left: 8px;
+  top: 5px;
+  left: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .bottom-right {
-  bottom: 8px;
-  right: 8px;
+  bottom: 5px;
+  right: 5px;
   transform: rotate(180deg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.suit-small {
+  font-size: 20px;
+  margin-top: 2px;
 }
 
 .card-back {
-  background: linear-gradient(135deg, #8000ff 0%, #3a0073 100%);
-  background-size: 10px 10px;
-  background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.1) 0, rgba(255,255,255,0.1) 1px, transparent 0, transparent 50%);
-  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(135deg, #0a3b88 0%, #072a63 100%);
+  background-image: repeating-linear-gradient(45deg, 
+    transparent 0px, 
+    transparent 10px, 
+    rgba(20, 90, 190, 0.8) 10px, 
+    rgba(20, 90, 190, 0.8) 20px);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid #1a5bb5;
+  border-radius: 8px;
+}
+
+.card-back::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
   border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
 }
 
 /* Card Styles - keep the original card style for Bootstrap cards */

@@ -110,27 +110,48 @@ function renderHands() {
     // Hide first card if game is in progress and player hasn't stood yet
     if (index === 0 && playerHand.length > 0 && hitButton.disabled === false) {
       cardElement.classList.add('card-back');
-      cardElement.textContent = '';
       dealerValueDisplay.textContent = '';
     } else {
       const cardValue = card.slice(0, -1);
       const cardSuit = card.slice(-1);
       
+      // Format card value (10 is too long, J, Q, K, A are fine)
+      let displayValue = cardValue;
+      
       // Center big symbol
       const symbolSpan = document.createElement('span');
+      symbolSpan.classList.add('card-symbol');
       symbolSpan.textContent = cardImages[card] || card;
       cardElement.appendChild(symbolSpan);
       
       // Top left corner
       const topLeftValue = document.createElement('div');
       topLeftValue.classList.add('card-value', 'top-left');
-      topLeftValue.textContent = `${cardValue}\n${cardSuit}`;
+      
+      const valueSpan = document.createElement('span');
+      valueSpan.textContent = displayValue;
+      topLeftValue.appendChild(valueSpan);
+      
+      const suitSpan = document.createElement('span');
+      suitSpan.classList.add('suit-small');
+      suitSpan.textContent = cardSuit;
+      topLeftValue.appendChild(suitSpan);
+      
       cardElement.appendChild(topLeftValue);
       
       // Bottom right corner
       const bottomRightValue = document.createElement('div');
       bottomRightValue.classList.add('card-value', 'bottom-right');
-      bottomRightValue.textContent = `${cardValue}\n${cardSuit}`;
+      
+      const valueSpan2 = document.createElement('span');
+      valueSpan2.textContent = displayValue;
+      bottomRightValue.appendChild(valueSpan2);
+      
+      const suitSpan2 = document.createElement('span');
+      suitSpan2.classList.add('suit-small');
+      suitSpan2.textContent = cardSuit;
+      bottomRightValue.appendChild(suitSpan2);
+      
       cardElement.appendChild(bottomRightValue);
       
       dealerValueDisplay.textContent = `Value: ${dealerValue}`;
@@ -164,21 +185,43 @@ function renderHands() {
     const cardValue = card.slice(0, -1);
     const cardSuit = card.slice(-1);
     
+    // Format card value (10 is too long, J, Q, K, A are fine)
+    let displayValue = cardValue;
+    
     // Center big symbol
     const symbolSpan = document.createElement('span');
+    symbolSpan.classList.add('card-symbol');
     symbolSpan.textContent = cardImages[card] || card;
     cardElement.appendChild(symbolSpan);
     
     // Top left corner
     const topLeftValue = document.createElement('div');
     topLeftValue.classList.add('card-value', 'top-left');
-    topLeftValue.textContent = `${cardValue}\n${cardSuit}`;
+    
+    const valueSpan = document.createElement('span');
+    valueSpan.textContent = displayValue;
+    topLeftValue.appendChild(valueSpan);
+    
+    const suitSpan = document.createElement('span');
+    suitSpan.classList.add('suit-small');
+    suitSpan.textContent = cardSuit;
+    topLeftValue.appendChild(suitSpan);
+    
     cardElement.appendChild(topLeftValue);
     
     // Bottom right corner
     const bottomRightValue = document.createElement('div');
     bottomRightValue.classList.add('card-value', 'bottom-right');
-    bottomRightValue.textContent = `${cardValue}\n${cardSuit}`;
+    
+    const valueSpan2 = document.createElement('span');
+    valueSpan2.textContent = displayValue;
+    bottomRightValue.appendChild(valueSpan2);
+    
+    const suitSpan2 = document.createElement('span');
+    suitSpan2.classList.add('suit-small');
+    suitSpan2.textContent = cardSuit;
+    bottomRightValue.appendChild(suitSpan2);
+    
     cardElement.appendChild(bottomRightValue);
     
     playerCardsDiv.appendChild(cardElement);
