@@ -135,7 +135,7 @@ function renderHands() {
       const cardSuit = card.slice(-1);
       const suitOnly = suitSymbols[cardSuit] || cardSuit;
       
-      // Get numerical value for display
+      // Get numerical value for display in corners
       let displayValue = cardValues[cardValue] || cardValue;
       
       // Center suit symbol only
@@ -168,7 +168,8 @@ function renderHands() {
   // Player's hand
   const playerHandDiv = document.createElement('div');
   playerHandDiv.classList.add('player-hand');
-  playerHandDiv.innerHTML = `<h3>Your Hand</h3><div class="hand-value">Value: ${calculateHandValue(playerHand)}</div>`;
+  const playerValue = calculateHandValue(playerHand);
+  playerHandDiv.innerHTML = `<h3>Your Hand</h3><div class="hand-value">Value: ${playerValue}</div>`;
   
   const playerCardsDiv = document.createElement('div');
   playerCardsDiv.classList.add('cards-container');
@@ -188,7 +189,7 @@ function renderHands() {
     const cardSuit = card.slice(-1);
     const suitOnly = suitSymbols[cardSuit] || cardSuit;
     
-    // Get numerical value for display
+    // Get numerical value for display in corners
     let displayValue = cardValues[cardValue] || cardValue;
     
     // Center suit symbol only
