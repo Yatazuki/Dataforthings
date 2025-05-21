@@ -92,9 +92,17 @@ function dealCard(hand) {
 function renderHands() {
   gameBoard.innerHTML = '';
   
+  // Game board container with spacing
+  const gameContainer = document.createElement('div');
+  gameContainer.style.display = 'flex';
+  gameContainer.style.flexDirection = 'column';
+  gameContainer.style.gap = '40px';
+  gameContainer.style.alignItems = 'center';
+  gameContainer.style.width = '100%';
+  
   // Dealer's hand
   const dealerHandDiv = document.createElement('div');
-  dealerHandDiv.classList.add('dealer-hand', 'me-4');
+  dealerHandDiv.classList.add('dealer-hand');
   dealerHandDiv.innerHTML = `<h3>Dealer's Hand</h3><div class="hand-value" id="dealerValue"></div>`;
   
   const dealerValue = calculateHandValue(dealerHand);
@@ -169,7 +177,7 @@ function renderHands() {
   });
   
   dealerHandDiv.appendChild(dealerCardsDiv);
-  gameBoard.appendChild(dealerHandDiv);
+  gameContainer.appendChild(dealerHandDiv);
 
   // Player's hand
   const playerHandDiv = document.createElement('div');
@@ -237,7 +245,10 @@ function renderHands() {
   });
   
   playerHandDiv.appendChild(playerCardsDiv);
-  gameBoard.appendChild(playerHandDiv);
+  gameContainer.appendChild(playerHandDiv);
+  
+  // Add the game container to the board
+  gameBoard.appendChild(gameContainer);
 }
 
 // Start/reset game
