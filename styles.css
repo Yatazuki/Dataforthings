@@ -326,6 +326,18 @@ body {
   font-size: 1.2rem;
   font-weight: bold;
   margin-bottom: 10px;
+  color: #8000ff;
+  text-shadow: 0 0 5px rgba(128, 0, 255, 0.3);
+}
+
+/* Version display */
+.version {
+  font-size: 1rem;
+  color: #8000ff;
+  opacity: 0.8;
+  font-weight: normal;
+  margin-left: 5px;
+  vertical-align: middle;
 }
 
 /* Card Game Styles */
