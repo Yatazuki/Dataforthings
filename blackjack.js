@@ -1,6 +1,12 @@
 // Card deck and game state
 const suits = ['♠️', '♣️', '♥️', '♦️'];
 const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+const suitSymbols = {
+  '♠️': '♠',
+  '♣️': '♣',
+  '♥️': '♥',
+  '♦️': '♦'
+};
 const cardImages = {
   '2♠️': '🂢', '3♠️': '🂣', '4♠️': '🂤', '5♠️': '🂥', '6♠️': '🂦', '7♠️': '🂧', '8♠️': '🂨', '9♠️': '🂩', '10♠️': '🂪', 'J♠️': '🂫', 'Q♠️': '🂭', 'K♠️': '🂮', 'A♠️': '🂡',
   '2♣️': '🃒', '3♣️': '🃓', '4♣️': '🃔', '5♣️': '🃕', '6♣️': '🃖', '7♣️': '🃗', '8♣️': '🃘', '9♣️': '🃙', '10♣️': '🃚', 'J♣️': '🃛', 'Q♣️': '🃝', 'K♣️': '🃞', 'A♣️': '🃑',
@@ -18,6 +24,7 @@ let losses = 0;
 let currentStreak = 0;
 let bestStreak = 0;
 let currentDifficulty = 'easy';
+let checkpoint = balance;
 
 // DOM Elements
 const gameBoard = document.getElementById('game-board');
@@ -114,14 +121,15 @@ function renderHands() {
     } else {
       const cardValue = card.slice(0, -1);
       const cardSuit = card.slice(-1);
+      const suitOnly = suitSymbols[cardSuit] || cardSuit;
       
       // Format card value (10 is too long, J, Q, K, A are fine)
       let displayValue = cardValue;
       
-      // Center big symbol
+      // Center suit symbol only
       const symbolSpan = document.createElement('span');
       symbolSpan.classList.add('card-symbol');
-      symbolSpan.textContent = cardImages[card] || card;
+      symbolSpan.textContent = suitOnly;
       cardElement.appendChild(symbolSpan);
       
       // Top left corner
@@ -134,7 +142,7 @@ function renderHands() {
       
       const suitSpan = document.createElement('span');
       suitSpan.classList.add('suit-small');
-      suitSpan.textContent = cardSuit;
+      suitSpan.textContent = suitOnly;
       topLeftValue.appendChild(suitSpan);
       
       cardElement.appendChild(topLeftValue);
@@ -149,7 +157,7 @@ function renderHands() {
       
       const suitSpan2 = document.createElement('span');
       suitSpan2.classList.add('suit-small');
-      suitSpan2.textContent = cardSuit;
+      suitSpan2.textContent = suitOnly;
       bottomRightValue.appendChild(suitSpan2);
       
       cardElement.appendChild(bottomRightValue);
@@ -184,14 +192,15 @@ function renderHands() {
     
     const cardValue = card.slice(0, -1);
     const cardSuit = card.slice(-1);
+    const suitOnly = suitSymbols[cardSuit] || cardSuit;
     
     // Format card value (10 is too long, J, Q, K, A are fine)
     let displayValue = cardValue;
     
-    // Center big symbol
+    // Center suit symbol only
     const symbolSpan = document.createElement('span');
     symbolSpan.classList.add('card-symbol');
-    symbolSpan.textContent = cardImages[card] || card;
+    symbolSpan.textContent = suitOnly;
     cardElement.appendChild(symbolSpan);
     
     // Top left corner
@@ -204,7 +213,7 @@ function renderHands() {
     
     const suitSpan = document.createElement('span');
     suitSpan.classList.add('suit-small');
-    suitSpan.textContent = cardSuit;
+    suitSpan.textContent = suitOnly;
     topLeftValue.appendChild(suitSpan);
     
     cardElement.appendChild(topLeftValue);
@@ -219,7 +228,7 @@ function renderHands() {
     
     const suitSpan2 = document.createElement('span');
     suitSpan2.classList.add('suit-small');
-    suitSpan2.textContent = cardSuit;
+    suitSpan2.textContent = suitOnly;
     bottomRightValue.appendChild(suitSpan2);
     
     cardElement.appendChild(bottomRightValue);
@@ -269,6 +278,9 @@ function startGame() {
   if (playerValue === 21) {
     endGame('blackjack');
   }
+  
+  // Create a checkpoint for the player's balance
+  checkpoint = balance;
 }
 
 // Hit (take another card)
@@ -357,6 +369,11 @@ function endGame(result) {
       break;
   }
   
+  // Create checkpoint option
+  if (balance > checkpoint) {
+    createCheckpointButton();
+  }
+  
   // Update best streak
   bestStreak = Math.max(bestStreak, currentStreak);
   
@@ -370,7 +387,60 @@ function endGame(result) {
   if (balance <= 0) {
     gameStatusDisplay.textContent = 'Game Over! You ran out of money.';
     startButton.disabled = true;
+    
+    // Allow player to revert to last checkpoint if available
+    if (checkpoint > 0) {
+      createRestoreButton();
+    }
   }
+}
+
+// Create checkpoint button
+function createCheckpointButton() {
+  // Remove existing checkpoint button if it exists
+  const existingButton = document.getElementById('checkpointButton');
+  if (existingButton) {
+    existingButton.remove();
+  }
+  
+  const checkpointButton = document.createElement('button');
+  checkpointButton.id = 'checkpointButton';
+  checkpointButton.classList.add('btn', 'btn-info', 'me-2');
+  checkpointButton.textContent = 'Set Checkpoint';
+  checkpointButton.addEventListener('click', () => {
+    checkpoint = balance;
+    gameStatusDisplay.textContent = `Checkpoint set at $${checkpoint}`;
+    gameStatusDisplay.style.color = '#00bfff';
+    checkpointButton.remove();
+  });
+  
+  const buttonContainer = document.querySelector('.mt-3');
+  buttonContainer.appendChild(checkpointButton);
+}
+
+// Create restore button
+function createRestoreButton() {
+  // Remove existing restore button if it exists
+  const existingButton = document.getElementById('restoreButton');
+  if (existingButton) {
+    existingButton.remove();
+  }
+  
+  const restoreButton = document.createElement('button');
+  restoreButton.id = 'restoreButton';
+  restoreButton.classList.add('btn', 'btn-warning', 'me-2');
+  restoreButton.textContent = 'Restore Checkpoint';
+  restoreButton.addEventListener('click', () => {
+    balance = checkpoint;
+    balanceDisplay.textContent = balance;
+    gameStatusDisplay.textContent = `Restored to checkpoint: $${checkpoint}`;
+    gameStatusDisplay.style.color = '#ffc107';
+    startButton.disabled = false;
+    restoreButton.remove();
+  });
+  
+  const buttonContainer = document.querySelector('.mt-3');
+  buttonContainer.appendChild(restoreButton);
 }
 
 // Set up event listeners
