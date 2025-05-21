@@ -102,15 +102,37 @@ function renderHands() {
     
     // Set color for red cards (hearts and diamonds)
     if (card.includes('♥️') || card.includes('♦️')) {
-      cardElement.style.color = 'red';
+      cardElement.classList.add('red');
+    } else {
+      cardElement.classList.add('black');
     }
     
     // Hide first card if game is in progress and player hasn't stood yet
     if (index === 0 && playerHand.length > 0 && hitButton.disabled === false) {
-      cardElement.textContent = '🂠';
+      cardElement.classList.add('card-back');
+      cardElement.textContent = '';
       dealerValueDisplay.textContent = '';
     } else {
-      cardElement.textContent = cardImages[card] || card;
+      const cardValue = card.slice(0, -1);
+      const cardSuit = card.slice(-1);
+      
+      // Center big symbol
+      const symbolSpan = document.createElement('span');
+      symbolSpan.textContent = cardImages[card] || card;
+      cardElement.appendChild(symbolSpan);
+      
+      // Top left corner
+      const topLeftValue = document.createElement('div');
+      topLeftValue.classList.add('card-value', 'top-left');
+      topLeftValue.textContent = `${cardValue}\n${cardSuit}`;
+      cardElement.appendChild(topLeftValue);
+      
+      // Bottom right corner
+      const bottomRightValue = document.createElement('div');
+      bottomRightValue.classList.add('card-value', 'bottom-right');
+      bottomRightValue.textContent = `${cardValue}\n${cardSuit}`;
+      cardElement.appendChild(bottomRightValue);
+      
       dealerValueDisplay.textContent = `Value: ${dealerValue}`;
     }
     
@@ -134,10 +156,31 @@ function renderHands() {
     
     // Set color for red cards (hearts and diamonds)
     if (card.includes('♥️') || card.includes('♦️')) {
-      cardElement.style.color = 'red';
+      cardElement.classList.add('red');
+    } else {
+      cardElement.classList.add('black');
     }
     
-    cardElement.textContent = cardImages[card] || card;
+    const cardValue = card.slice(0, -1);
+    const cardSuit = card.slice(-1);
+    
+    // Center big symbol
+    const symbolSpan = document.createElement('span');
+    symbolSpan.textContent = cardImages[card] || card;
+    cardElement.appendChild(symbolSpan);
+    
+    // Top left corner
+    const topLeftValue = document.createElement('div');
+    topLeftValue.classList.add('card-value', 'top-left');
+    topLeftValue.textContent = `${cardValue}\n${cardSuit}`;
+    cardElement.appendChild(topLeftValue);
+    
+    // Bottom right corner
+    const bottomRightValue = document.createElement('div');
+    bottomRightValue.classList.add('card-value', 'bottom-right');
+    bottomRightValue.textContent = `${cardValue}\n${cardSuit}`;
+    cardElement.appendChild(bottomRightValue);
+    
     playerCardsDiv.appendChild(cardElement);
   });
   
