@@ -1,6 +1,12 @@
 // Card deck and game state
 const suits = ['♠️', '♣️', '♥️', '♦️'];
 const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+const cardImages = {
+  '2♠️': '🂢', '3♠️': '🂣', '4♠️': '🂤', '5♠️': '🂥', '6♠️': '🂦', '7♠️': '🂧', '8♠️': '🂨', '9♠️': '🂩', '10♠️': '🂪', 'J♠️': '🂫', 'Q♠️': '🂭', 'K♠️': '🂮', 'A♠️': '🂡',
+  '2♣️': '🃒', '3♣️': '🃓', '4♣️': '🃔', '5♣️': '🃕', '6♣️': '🃖', '7♣️': '🃗', '8♣️': '🃘', '9♣️': '🃙', '10♣️': '🃚', 'J♣️': '🃛', 'Q♣️': '🃝', 'K♣️': '🃞', 'A♣️': '🃑',
+  '2♥️': '🂲', '3♥️': '🂳', '4♥️': '🂴', '5♥️': '🂵', '6♥️': '🂶', '7♥️': '🂷', '8♥️': '🂸', '9♥️': '🂹', '10♥️': '🂺', 'J♥️': '🂻', 'Q♥️': '🂽', 'K♥️': '🂾', 'A♥️': '🂱',
+  '2♦️': '🃂', '3♦️': '🃃', '4♦️': '🃄', '5♦️': '🃅', '6♦️': '🃆', '7♦️': '🃇', '8♦️': '🃈', '9♦️': '🃉', '10♦️': '🃊', 'J♦️': '🃋', 'Q♦️': '🃍', 'K♦️': '🃎', 'A♦️': '🃁'
+};
 
 let deck = [];
 let playerHand = [];
@@ -11,6 +17,7 @@ let wins = 0;
 let losses = 0;
 let currentStreak = 0;
 let bestStreak = 0;
+let currentDifficulty = 'easy';
 
 // DOM Elements
 const gameBoard = document.getElementById('game-board');
@@ -81,36 +88,60 @@ function renderHands() {
   // Dealer's hand
   const dealerHandDiv = document.createElement('div');
   dealerHandDiv.classList.add('dealer-hand', 'me-4');
-  dealerHandDiv.innerHTML = `<h3>Dealer's Hand</h3>`;
+  dealerHandDiv.innerHTML = `<h3>Dealer's Hand</h3><div class="hand-value" id="dealerValue"></div>`;
+  
+  const dealerValue = calculateHandValue(dealerHand);
+  const dealerValueDisplay = dealerHandDiv.querySelector('#dealerValue');
+  
+  const dealerCardsDiv = document.createElement('div');
+  dealerCardsDiv.classList.add('cards-container');
+  
   dealerHand.forEach((card, index) => {
     const cardElement = document.createElement('div');
-    cardElement.classList.add('card');
-    cardElement.style.fontSize = '68px';
-    cardElement.style.margin = '0 5px';
+    cardElement.classList.add('blackjack-card');
     
-    // Hide first card if game is in progress
-    if (index === 0 && playerHand.length > 0) {
-      cardElement.textContent = '🂠';
-    } else {
-      cardElement.textContent = card;
+    // Set color for red cards (hearts and diamonds)
+    if (card.includes('♥️') || card.includes('♦️')) {
+      cardElement.style.color = 'red';
     }
     
-    dealerHandDiv.appendChild(cardElement);
+    // Hide first card if game is in progress and player hasn't stood yet
+    if (index === 0 && playerHand.length > 0 && hitButton.disabled === false) {
+      cardElement.textContent = '🂠';
+      dealerValueDisplay.textContent = '';
+    } else {
+      cardElement.textContent = cardImages[card] || card;
+      dealerValueDisplay.textContent = `Value: ${dealerValue}`;
+    }
+    
+    dealerCardsDiv.appendChild(cardElement);
   });
+  
+  dealerHandDiv.appendChild(dealerCardsDiv);
   gameBoard.appendChild(dealerHandDiv);
 
   // Player's hand
   const playerHandDiv = document.createElement('div');
   playerHandDiv.classList.add('player-hand');
-  playerHandDiv.innerHTML = `<h3>Your Hand</h3>`;
+  playerHandDiv.innerHTML = `<h3>Your Hand</h3><div class="hand-value">Value: ${calculateHandValue(playerHand)}</div>`;
+  
+  const playerCardsDiv = document.createElement('div');
+  playerCardsDiv.classList.add('cards-container');
+  
   playerHand.forEach(card => {
     const cardElement = document.createElement('div');
-    cardElement.classList.add('card');
-    cardElement.style.fontSize = '68px';
-    cardElement.style.margin = '0 5px';
-    cardElement.textContent = card;
-    playerHandDiv.appendChild(cardElement);
+    cardElement.classList.add('blackjack-card');
+    
+    // Set color for red cards (hearts and diamonds)
+    if (card.includes('♥️') || card.includes('♦️')) {
+      cardElement.style.color = 'red';
+    }
+    
+    cardElement.textContent = cardImages[card] || card;
+    playerCardsDiv.appendChild(cardElement);
   });
+  
+  playerHandDiv.appendChild(playerCardsDiv);
   gameBoard.appendChild(playerHandDiv);
 }
 
@@ -168,6 +199,10 @@ function hit() {
 
 // Stand (dealer's turn)
 function stand() {
+  // Disable buttons
+  hitButton.disabled = true;
+  standButton.disabled = true;
+  
   // Reveal dealer's first card
   renderHands();
   
@@ -207,27 +242,32 @@ function endGame(result) {
       wins++;
       currentStreak++;
       gameStatusDisplay.textContent = 'Blackjack! You win!';
+      gameStatusDisplay.style.color = '#00ff00';
       break;
     case 'win':
       balance += currentBet;
       wins++;
       currentStreak++;
       gameStatusDisplay.textContent = 'You win!';
+      gameStatusDisplay.style.color = '#00ff00';
       break;
     case 'lose':
       balance -= currentBet;
       losses++;
       currentStreak = 0;
       gameStatusDisplay.textContent = 'Dealer wins!';
+      gameStatusDisplay.style.color = '#ff0000';
       break;
     case 'bust':
       balance -= currentBet;
       losses++;
       currentStreak = 0;
       gameStatusDisplay.textContent = 'Bust! You lose!';
+      gameStatusDisplay.style.color = '#ff0000';
       break;
     case 'push':
       gameStatusDisplay.textContent = 'Push! No money exchanged.';
+      gameStatusDisplay.style.color = '#ffffff';
       break;
   }
   
@@ -244,23 +284,31 @@ function endGame(result) {
   if (balance <= 0) {
     gameStatusDisplay.textContent = 'Game Over! You ran out of money.';
     startButton.disabled = true;
-    hitButton.disabled = true;
-    standButton.disabled = true;
   }
 }
 
-// Difficulty/bet selection
-let currentDifficulty = 'easy';
+// Set up event listeners
 difficultyInputs.forEach(input => {
   input.addEventListener('change', (e) => {
     currentDifficulty = e.target.value;
   });
 });
 
-// Event listeners
 startButton.addEventListener('click', startGame);
 hitButton.addEventListener('click', hit);
 standButton.addEventListener('click', stand);
 
-// Initial game setup
-startGame(); 
+// Initialize game
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize displays
+  balanceDisplay.textContent = balance;
+  winsDisplay.textContent = wins;
+  lossesDisplay.textContent = losses;
+  bestStreakDisplay.textContent = bestStreak;
+
+  // Set default difficulty
+  document.getElementById('easy').checked = true;
+  
+  // Initialize game
+  startGame();
+}); 
