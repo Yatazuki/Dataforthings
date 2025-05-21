@@ -336,13 +336,13 @@ body {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   transition: all 0.3s;
-  width: 100px;
-  height: 140px;
+  width: 130px;
+  height: 180px;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 64px;
-  margin: 8px;
+  margin: 10px;
   position: relative;
   transform-style: preserve-3d;
   perspective: 1000px;
@@ -364,7 +364,7 @@ body {
 }
 
 .card-symbol {
-  font-size: 72px;
+  font-size: 90px;
   z-index: 2;
   position: absolute;
   top: 50%;
@@ -374,7 +374,7 @@ body {
 
 .card-value {
   position: absolute;
-  font-size: 18px;
+  font-size: 24px;
   font-weight: bold;
   line-height: 1;
   z-index: 2;
@@ -382,20 +382,14 @@ body {
 }
 
 .top-left {
-  top: 5px;
-  left: 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  top: 8px;
+  left: 10px;
 }
 
 .bottom-right {
-  bottom: 5px;
-  right: 5px;
+  bottom: 8px;
+  right: 10px;
   transform: rotate(180deg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .suit-small {

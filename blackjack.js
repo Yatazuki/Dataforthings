@@ -7,6 +7,10 @@ const suitSymbols = {
   '♥️': '♥',
   '♦️': '♦'
 };
+const cardValues = {
+  '2': '2', '3': '3', '4': '4', '5': '5', '6': '6', '7': '7', '8': '8', '9': '9', '10': '10',
+  'J': '11', 'Q': '12', 'K': '13', 'A': 'A'
+};
 const cardImages = {
   '2♠️': '🂢', '3♠️': '🂣', '4♠️': '🂤', '5♠️': '🂥', '6♠️': '🂦', '7♠️': '🂧', '8♠️': '🂨', '9♠️': '🂩', '10♠️': '🂪', 'J♠️': '🂫', 'Q♠️': '🂭', 'K♠️': '🂮', 'A♠️': '🂡',
   '2♣️': '🃒', '3♣️': '🃓', '4♣️': '🃔', '5♣️': '🃕', '6♣️': '🃖', '7♣️': '🃗', '8♣️': '🃘', '9♣️': '🃙', '10♣️': '🃚', 'J♣️': '🃛', 'Q♣️': '🃝', 'K♣️': '🃞', 'A♣️': '🃑',
@@ -131,8 +135,8 @@ function renderHands() {
       const cardSuit = card.slice(-1);
       const suitOnly = suitSymbols[cardSuit] || cardSuit;
       
-      // Format card value (10 is too long, J, Q, K, A are fine)
-      let displayValue = cardValue;
+      // Get numerical value for display
+      let displayValue = cardValues[cardValue] || cardValue;
       
       // Center suit symbol only
       const symbolSpan = document.createElement('span');
@@ -140,34 +144,16 @@ function renderHands() {
       symbolSpan.textContent = suitOnly;
       cardElement.appendChild(symbolSpan);
       
-      // Top left corner
+      // Top left corner - just the number
       const topLeftValue = document.createElement('div');
       topLeftValue.classList.add('card-value', 'top-left');
-      
-      const valueSpan = document.createElement('span');
-      valueSpan.textContent = displayValue;
-      topLeftValue.appendChild(valueSpan);
-      
-      const suitSpan = document.createElement('span');
-      suitSpan.classList.add('suit-small');
-      suitSpan.textContent = suitOnly;
-      topLeftValue.appendChild(suitSpan);
-      
+      topLeftValue.textContent = displayValue;
       cardElement.appendChild(topLeftValue);
       
-      // Bottom right corner
+      // Bottom right corner - just the number
       const bottomRightValue = document.createElement('div');
       bottomRightValue.classList.add('card-value', 'bottom-right');
-      
-      const valueSpan2 = document.createElement('span');
-      valueSpan2.textContent = displayValue;
-      bottomRightValue.appendChild(valueSpan2);
-      
-      const suitSpan2 = document.createElement('span');
-      suitSpan2.classList.add('suit-small');
-      suitSpan2.textContent = suitOnly;
-      bottomRightValue.appendChild(suitSpan2);
-      
+      bottomRightValue.textContent = displayValue;
       cardElement.appendChild(bottomRightValue);
       
       dealerValueDisplay.textContent = `Value: ${dealerValue}`;
@@ -202,8 +188,8 @@ function renderHands() {
     const cardSuit = card.slice(-1);
     const suitOnly = suitSymbols[cardSuit] || cardSuit;
     
-    // Format card value (10 is too long, J, Q, K, A are fine)
-    let displayValue = cardValue;
+    // Get numerical value for display
+    let displayValue = cardValues[cardValue] || cardValue;
     
     // Center suit symbol only
     const symbolSpan = document.createElement('span');
@@ -211,34 +197,16 @@ function renderHands() {
     symbolSpan.textContent = suitOnly;
     cardElement.appendChild(symbolSpan);
     
-    // Top left corner
+    // Top left corner - just the number
     const topLeftValue = document.createElement('div');
     topLeftValue.classList.add('card-value', 'top-left');
-    
-    const valueSpan = document.createElement('span');
-    valueSpan.textContent = displayValue;
-    topLeftValue.appendChild(valueSpan);
-    
-    const suitSpan = document.createElement('span');
-    suitSpan.classList.add('suit-small');
-    suitSpan.textContent = suitOnly;
-    topLeftValue.appendChild(suitSpan);
-    
+    topLeftValue.textContent = displayValue;
     cardElement.appendChild(topLeftValue);
     
-    // Bottom right corner
+    // Bottom right corner - just the number
     const bottomRightValue = document.createElement('div');
     bottomRightValue.classList.add('card-value', 'bottom-right');
-    
-    const valueSpan2 = document.createElement('span');
-    valueSpan2.textContent = displayValue;
-    bottomRightValue.appendChild(valueSpan2);
-    
-    const suitSpan2 = document.createElement('span');
-    suitSpan2.classList.add('suit-small');
-    suitSpan2.textContent = suitOnly;
-    bottomRightValue.appendChild(suitSpan2);
-    
+    bottomRightValue.textContent = displayValue;
     cardElement.appendChild(bottomRightValue);
     
     playerCardsDiv.appendChild(cardElement);
