@@ -60,7 +60,7 @@
   
   <script type="module">
     // Add cache-busting parameter to imports
-    import { register, resendVerificationEmail, checkSession } from './auth.js?v=1.0.1';
+    import { register, resendVerificationEmail, checkSession } from './auth.js?v=1.0.2';
     
     document.addEventListener('DOMContentLoaded', function() {
       const registerForm = document.getElementById('register-form');
@@ -81,8 +81,14 @@
       
       let registeredEmail = '';
       
+      // Add submit button click handler
+      document.querySelector('button[type="submit"]').addEventListener('click', function() {
+        console.log('Submit button clicked');
+      });
+      
       registerForm.addEventListener('submit', async function(e) {
         e.preventDefault();
+        console.log('Form submitted');
         
         // Clear previous messages
         errorBox.textContent = '';
@@ -91,6 +97,8 @@
         const username = document.getElementById('username').value.trim();
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value.trim();
+        
+        console.log('Form data:', { username, email, password: '****' });
         
         if (!username || !email || !password) {
           errorBox.textContent = 'Please fill in all fields';
@@ -104,11 +112,14 @@
         }
         
         try {
+          console.log('Calling register function...');
           const result = await register(username, email, password);
+          console.log('Register function result:', result);
           
           if (result.success) {
             // Store the email for resending verification if needed
             registeredEmail = email;
+            console.log('Registration successful, email stored:', registeredEmail);
             
             // Hide the registration form and show verification section
             registerForm.style.display = 'none';
@@ -118,8 +129,10 @@
             successBox.textContent = 'Registration successful! Please verify your email to continue.';
           } else {
             errorBox.textContent = result.error || 'Registration failed';
+            console.error('Registration failed:', result.error);
           }
         } catch (error) {
+          console.error('Registration exception:', error);
           errorBox.textContent = error.message || 'An unexpected error occurred';
         }
       });
