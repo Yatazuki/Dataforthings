@@ -1,9 +1,9 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
 // Initialize the Supabase client
-// TODO: Replace with your new Supabase project URL and anon key
-const supabaseUrl = 'YOUR_NEW_SUPABASE_URL'; // example: 'https://abcdefghijklm.supabase.co'
-const supabaseAnonKey = 'YOUR_NEW_SUPABASE_ANON_KEY'; // example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+
+const supabaseUrl = 'https://rzzqonauufewpyaahvin.supabase.co'
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ6enFvbmF1dWZld3B5YWFodmluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5NzkwNTksImV4cCI6MjA2MzU1NTA1OX0.fdndzqNMsftLEl3PzFV0vVWYKdRmFHZ-te3OlspR4UI'
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Check if user is logged in
@@ -107,3 +107,4 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
