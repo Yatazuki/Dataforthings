@@ -15,12 +15,29 @@ async function checkSession() {
 // Login function
 async function login(email, password) {
   try {
+    console.log('Attempting login for:', email);
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
     });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase login error:', error);
+      // Check if it's an email verification error
+      if (error.message.includes('Email not confirmed') || 
+          error.message.includes('not verified') ||
+          error.message.includes('not confirmed')) {
+        
+        console.log('User tried to login without verifying email');
+        return { 
+          success: false, 
+          error: 'Email verification pending. Please check your email to verify your account.'
+        };
+      }
+      throw error;
+    }
+    
+    console.log('Login successful for:', email);
     return { success: true, user: data.user };
   } catch (error) {
     console.error('Login error:', error.message);
@@ -31,6 +48,8 @@ async function login(email, password) {
 // Register function
 async function register(username, email, password) {
   try {
+    console.log('Registration attempt for:', email);
+    
     // First create the auth user
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
@@ -40,7 +59,12 @@ async function register(username, email, password) {
       }
     });
 
-    if (authError) throw authError;
+    if (authError) {
+      console.error('Auth error during registration:', authError);
+      throw authError;
+    }
+
+    console.log('Auth registration successful:', authData);
 
     // Then insert the user into the login table
     if (authData.user) {
@@ -55,7 +79,12 @@ async function register(username, email, password) {
           }
         ]);
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        console.error('Profile error during registration:', profileError);
+        throw profileError;
+      }
+      
+      console.log('Profile created successfully');
     }
 
     return { success: true, user: authData.user };
@@ -68,8 +97,10 @@ async function register(username, email, password) {
 // Logout function
 async function logout() {
   try {
+    console.log('Attempting to log out');
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+    console.log('Logout successful');
     return { success: true };
   } catch (error) {
     console.error('Logout error:', error.message);
@@ -89,6 +120,27 @@ async function getCurrentUser() {
   }
 }
 
+// Resend verification email
+async function resendVerificationEmail(email) {
+  try {
+    console.log('Attempting to resend verification email to:', email);
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email
+    });
+    
+    if (error) {
+      console.error('Resend verification error:', error);
+      throw error;
+    }
+    console.log('Verification email resent successfully');
+    return { success: true, message: 'Verification email resent. Please check your inbox.' };
+  } catch (error) {
+    console.error('Resend verification error:', error.message);
+    return { success: false, error: error.message };
+  }
+}
+
 // Export all functions
 export { 
   supabase, 
@@ -96,15 +148,7 @@ export {
   register, 
   logout, 
   getCurrentUser, 
-  checkSession 
+  checkSession,
+  resendVerificationEmail
 };
-
-window.addEventListener("DOMContentLoaded", () => {
-  const registerForm = document.getElementById('register-form');
-  if (registerForm) {
-    registerForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-    });
-  }
-});
 
