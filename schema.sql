@@ -1,57 +1,87 @@
--- Users table
+-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- Custom login profile table
+-- This connects to Supabase auth.users
 CREATE TABLE IF NOT EXISTS login (
   id SERIAL PRIMARY KEY,
+  user_id UUID NOT NULL,
   username TEXT NOT NULL UNIQUE,
-  password TEXT NOT NULL,
   email TEXT NOT NULL UNIQUE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Global notes table
-CREATE TABLE IF NOT EXISTS global_notes (
-  id SERIAL PRIMARY KEY,
-  user_id INTEGER REFERENCES login(id) ON DELETE CASCADE,
-  note_text TEXT NOT NULL,
-  link_url TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+-- Create indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_login_user_id ON login(user_id);
+CREATE INDEX IF NOT EXISTS idx_login_username ON login(username);
+
+-- Notes table with RLS
+CREATE TABLE IF NOT EXISTS notes (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID NOT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Enable RLS
-alter table notes enable row level security;
-
--- Create policies
-create policy "Users can read all notes" on notes
-  for select using (true);
-
-create policy "Users can insert their own notes" on notes
-  for insert with check (auth.uid() = user_id);
-
-create policy "Users can update their own notes" on notes
-  for update using (auth.uid() = user_id);
-
-create policy "Users can delete their own notes" on notes
-  for delete using (auth.uid() = user_id);
-
--- Create notes table if it doesn't exist
-create table if not exists notes (
-  id uuid default uuid_generate_v4() primary key,
-  user_id uuid references auth.users(id),
-  content text not null,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
-);
-
+-- Create index for notes
+CREATE INDEX IF NOT EXISTS idx_notes_user_id ON notes(user_id);
 
 -- Game scores table
 CREATE TABLE IF NOT EXISTS game_scores (
   id SERIAL PRIMARY KEY,
-  user_id INTEGER REFERENCES login(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL,
   game_type VARCHAR(20) NOT NULL,
   score INTEGER NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create indexes for better performance
-CREATE INDEX IF NOT EXISTS idx_global_notes_user_id ON global_notes(user_id);
+-- Create indexes for game scores
 CREATE INDEX IF NOT EXISTS idx_game_scores_user_id ON game_scores(user_id);
 CREATE INDEX IF NOT EXISTS idx_game_scores_type ON game_scores(game_type);
+CREATE INDEX IF NOT EXISTS idx_game_scores_score ON game_scores(score);
+
+-- Enable Row Level Security
+ALTER TABLE notes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE game_scores ENABLE ROW LEVEL SECURITY;
+ALTER TABLE login ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies for notes
+CREATE POLICY "Users can view their own notes" 
+  ON notes FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own notes" 
+  ON notes FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own notes" 
+  ON notes FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own notes" 
+  ON notes FOR DELETE USING (auth.uid() = user_id);
+
+-- RLS Policies for game_scores
+CREATE POLICY "Anyone can view game scores" 
+  ON game_scores FOR SELECT USING (true);
+
+CREATE POLICY "Users can insert their own scores" 
+  ON game_scores FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own scores" 
+  ON game_scores FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own scores" 
+  ON game_scores FOR DELETE USING (auth.uid() = user_id);
+
+-- RLS Policies for login
+CREATE POLICY "Users can view their own profile" 
+  ON login FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own profile" 
+  ON login FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "New users can insert their profile" 
+  ON login FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- Allow service role to access profiles
+CREATE POLICY "Service role can access all profiles" 
+  ON login FOR ALL USING (auth.jwt() ->> 'role' = 'service_role');

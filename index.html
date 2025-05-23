@@ -1,49 +1,65 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Login - Yatazuki</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <script>
-    const BACKEND_URL = 'http://0.0.0.0:3000';
-    window.SUPABASE_URL = 'https://qqplzgqhkffwvefbnyte.supabase.co';
-    window.SUPABASE_KEY = 'sbp_1a4f543fb917a5d78183d4576a97e18b960c96a5';
-  </script>
 </head>
 <body>
   <div class="login-container">
     <div class="login-box">
       <h2>Login</h2>
-      <form id="login-form" onsubmit="event.preventDefault(); login();">
-        <input type="text" id="username" class="form-control mb-3" placeholder="Username">
+      <form id="login-form">
+        <input type="email" id="email" class="form-control mb-3" placeholder="Email">
         <input type="password" id="password" class="form-control mb-3" placeholder="Password">
         <button type="submit" class="btn btn-light w-100 mb-3">Login</button>
         <p class="text-center">Don't have an account? <a href="register.html">Register</a></p>
-        <p class="text-center">Want to be annonymous? <a href="dashboard.html">Yes</a></p>
-        <p></p>
-        <p class="text-center">If the Log in does not work tell me! Click <a href="dashboard.html">Here</a> for now.</p>
-        <div id="errorBox" class="error"></div>
+        <div id="errorBox" class="text-danger text-center"></div>
       </form>
     </div>
   </div>
-  <script>
-    window.addEventListener("DOMContentLoaded", () => {
-      // Initialize any page-specific functionality
-      const loginForm = document.getElementById('login-form');
-      if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
-          e.preventDefault();
-          login();
-        });
+  
+  <script type="module">
+    import { login, checkSession } from './auth.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check if user is already logged in
+      const session = await checkSession();
+      if (session) {
+        window.location.href = 'dashboard.html';
+        return;
       }
+
+      const loginForm = document.getElementById('login-form');
+      const errorBox = document.getElementById('errorBox');
+      
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+        
+        if (!email || !password) {
+          errorBox.textContent = 'Please enter both email and password';
+          return;
+        }
+        
+        try {
+          const result = await login(email, password);
+          
+          if (result.success) {
+            window.location.href = 'dashboard.html';
+          } else {
+            errorBox.textContent = result.error || 'Login failed';
+          }
+        } catch (error) {
+          errorBox.textContent = error.message || 'An unexpected error occurred';
+        }
+      });
     });
   </script>
-  <script type="module" src="scripts.js"></script>
-  <p class="text-center">Login as Guest <a href="dashboard.html">Login as guets</a></p>
 </body>
 </html>

@@ -4,14 +4,9 @@
   <meta charset="UTF-8">
   <title>Register - Yatazuki</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <script>
-    window.SUPABASE_URL = 'https://qqplzgqhkffwvefbnyte.supabase.co';
-    window.SUPABASE_KEY = 'sbp_1a4f543fb917a5d78183d4576a97e18b960c96a5';
-  </script>
 </head>
 <body>
   <div class="login-container">
@@ -23,9 +18,59 @@
         <input type="password" id="password" class="form-control mb-3" placeholder="Password" required>
         <button type="submit" class="btn btn-light w-100 mb-3">Register</button>
         <p class="text-center">Already have an account? <a href="index.html">Login</a></p>
+        <div id="errorBox" class="text-danger text-center"></div>
+        <div id="successBox" class="text-success text-center"></div>
       </form>
     </div>
   </div>
-  <script type="module" src="scripts.js"></script>
+  
+  <script type="module">
+    import { register } from './auth.js';
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      const registerForm = document.getElementById('register-form');
+      const errorBox = document.getElementById('errorBox');
+      const successBox = document.getElementById('successBox');
+      
+      registerForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Clear previous messages
+        errorBox.textContent = '';
+        successBox.textContent = '';
+        
+        const username = document.getElementById('username').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+        
+        if (!username || !email || !password) {
+          errorBox.textContent = 'Please fill in all fields';
+          return;
+        }
+        
+        // Basic validation
+        if (password.length < 6) {
+          errorBox.textContent = 'Password must be at least 6 characters';
+          return;
+        }
+        
+        try {
+          const result = await register(username, email, password);
+          
+          if (result.success) {
+            successBox.textContent = 'Registration successful! Please check your email to confirm your account.';
+            registerForm.reset();
+            setTimeout(() => {
+              window.location.href = 'index.html';
+            }, 3000);
+          } else {
+            errorBox.textContent = result.error || 'Registration failed';
+          }
+        } catch (error) {
+          errorBox.textContent = error.message || 'An unexpected error occurred';
+        }
+      });
+    });
+  </script>
 </body>
 </html>
