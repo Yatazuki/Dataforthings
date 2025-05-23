@@ -18,13 +18,15 @@
         <button type="submit" class="btn btn-light w-100 mb-3">Login</button>
         <p class="text-center">Don't have an account? <a href="register.html">Register</a></p>
         <button type="button" id="continue-without-account" class="btn btn-light w-100 mb-3" style="opacity: 0.7;">Continue without account</button>
-        <div id="errorBox" class="text-danger text-center"></div>
+        <div id="errorBox" class="text-danger text-center mb-2"></div>
+        <button type="button" id="resend-verification" class="btn btn-outline-secondary w-100 mb-3" style="display: none;">Resend verification email</button>
+        <div id="successBox" class="text-success text-center"></div>
       </form>
     </div>
   </div>
   
   <script type="module">
-    import { login, checkSession } from './auth.js';
+    import { login, checkSession, resendVerificationEmail } from './auth.js';
 
     document.addEventListener('DOMContentLoaded', async () => {
       // Check if user is already logged in
@@ -36,11 +38,15 @@
 
       const loginForm = document.getElementById('login-form');
       const errorBox = document.getElementById('errorBox');
+      const successBox = document.getElementById('successBox');
+      const resendButton = document.getElementById('resend-verification');
+      let lastEmail = '';
       
       loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const email = document.getElementById('email').value.trim();
+        lastEmail = email; // Store for resend functionality
         const password = document.getElementById('password').value.trim();
         
         if (!email || !password) {
@@ -55,6 +61,18 @@
             window.location.href = 'dashboard.html';
           } else {
             errorBox.textContent = result.error || 'Login failed';
+            
+            // Show resend button if it's a verification error
+            if (result.error && (
+                result.error.includes('email verification') || 
+                result.error.includes('not verified') || 
+                result.error.includes('not confirmed') ||
+                result.error.includes('Email verification pending')
+            )) {
+              resendButton.style.display = 'block';
+            } else {
+              resendButton.style.display = 'none';
+            }
           }
         } catch (error) {
           errorBox.textContent = error.message || 'An unexpected error occurred';
@@ -64,6 +82,26 @@
       // Add event listener for the continue without account button
       document.getElementById('continue-without-account').addEventListener('click', () => {
         window.location.href = 'dashboard.html';
+      });
+      
+      // Add event listener for the resend verification button
+      resendButton.addEventListener('click', async () => {
+        if (!lastEmail) {
+          errorBox.textContent = 'Please enter your email address first';
+          return;
+        }
+        
+        try {
+          const result = await resendVerificationEmail(lastEmail);
+          if (result.success) {
+            successBox.textContent = result.message || 'Verification email resent!';
+            errorBox.textContent = '';
+          } else {
+            errorBox.textContent = result.error || 'Failed to resend verification email';
+          }
+        } catch (error) {
+          errorBox.textContent = error.message || 'An unexpected error occurred';
+        }
       });
     });
   </script>
