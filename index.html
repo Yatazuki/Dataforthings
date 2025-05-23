@@ -17,6 +17,7 @@
         <input type="password" id="password" class="form-control mb-3" placeholder="Password">
         <button type="submit" class="btn btn-light w-100 mb-3">Login</button>
         <p class="text-center">Don't have an account? <a href="register.html">Register</a></p>
+        <button type="button" id="continue-without-account" class="btn btn-light w-100 mb-3" style="opacity: 0.7;">Continue without account</button>
         <div id="errorBox" class="text-danger text-center"></div>
       </form>
     </div>
@@ -58,6 +59,11 @@
         } catch (error) {
           errorBox.textContent = error.message || 'An unexpected error occurred';
         }
+      });
+      
+      // Add event listener for the continue without account button
+      document.getElementById('continue-without-account').addEventListener('click', () => {
+        window.location.href = 'dashboard.html';
       });
     });
   </script>
