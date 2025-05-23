@@ -1,8 +1,9 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
 // Initialize the Supabase client
-const supabaseUrl = 'https://qqplzgqhkffwvefbnyte.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxcGx6Z3Foa2Zmd3ZlZmJueXRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODMwNDEzMDcsImV4cCI6MTk5ODYxNzMwN30.4ZRxJdL24PtDzZJ8G88Y7JbJaLcHdciXZRACk7i60Uc';
+// TODO: Replace with your new Supabase project URL and anon key
+const supabaseUrl = 'YOUR_NEW_SUPABASE_URL'; // example: 'https://abcdefghijklm.supabase.co'
+const supabaseAnonKey = 'YOUR_NEW_SUPABASE_ANON_KEY'; // example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Check if user is logged in

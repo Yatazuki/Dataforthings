@@ -6,14 +6,15 @@ const { createClient } = require('@supabase/supabase-js');
 const app = express();
 
 // Environment variables - MUST be set in the environment
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
+// TODO: Replace with your new Supabase project URL and service key in production
+const SUPABASE_URL = process.env.SUPABASE_URL || 'YOUR_NEW_SUPABASE_URL';
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || 'YOUR_NEW_SUPABASE_SERVICE_KEY';
 const FRONTEND_URL = process.env.FRONTEND_URL || 'https://yatazuki.com';
 const PORT = process.env.PORT || 3000;
 
-// Check for required environment variables
-if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
-  console.error('ERROR: Required environment variables SUPABASE_URL and SUPABASE_SERVICE_KEY must be set');
+// Check for required environment variables in production
+if (process.env.NODE_ENV === 'production' && (!SUPABASE_URL || !SUPABASE_SERVICE_KEY)) {
+  console.error('ERROR: Required environment variables SUPABASE_URL and SUPABASE_SERVICE_KEY must be set in production');
   process.exit(1);
 }
 

@@ -4,15 +4,16 @@
 This document contains information about the Supabase configuration for Yatazuki.com. The site uses Supabase for authentication and data storage.
 
 ## Supabase Connection Details
-- **Project URL**: https://qqplzgqhkffwvefbnyte.supabase.co
-- **API Key**: sbp_1a4f543fb917a5d78183d4576a97e18b960c96a5 (service key - KEEP SECURE)
-- **Project Reference ID**: qqplzgqhkffwvefbnyte
+- **Project URL**: YOUR_NEW_SUPABASE_URL
+- **API Key**: YOUR_NEW_SUPABASE_SERVICE_KEY (service key - KEEP SECURE)
+- **Anon Key**: YOUR_NEW_SUPABASE_ANON_KEY (for client-side code)
+- **Project Reference ID**: YOUR_NEW_PROJECT_ID
 
 > **⚠️ IMPORTANT SECURITY NOTICE**: 
-> - The API key included here is a service key with full access to your database. 
-> - This should NEVER be exposed in client-side code or public repositories.
-> - For client-side code, you should use the "anon" public key instead.
-> - Consider rotating this key if you suspect it has been compromised.
+> - The service key has full access to your database and should NEVER be exposed in client-side code or public repositories.
+> - For client-side code, always use the anon/public key.
+> - Store service keys in environment variables on your server.
+> - Consider rotating keys if you suspect they have been compromised.
 
 ## Database Tables
 
@@ -59,6 +60,19 @@ This document contains information about the Supabase configuration for Yatazuki
   );
   ```
 
+## GitHub Integration
+
+The Supabase project is connected to the GitHub repository, allowing for:
+
+1. Version-controlled database migrations
+2. Automated deployments through GitHub Actions
+3. Consistent development workflow
+
+To make changes to the database schema:
+1. Create migrations in the `supabase/migrations` directory
+2. Push changes to GitHub
+3. Supabase will apply the migrations automatically
+
 ## Row Level Security (RLS) Policies
 
 These policies ensure users can only access their own data:
@@ -68,17 +82,17 @@ These policies ensure users can only access their own data:
 alter table notes enable row level security;
 
 -- Policies for the notes table
-create policy "Users can read all notes" on notes
-  for select using (true);
+create policy "Users can view their own notes" 
+  ON notes FOR SELECT USING (auth.uid() = user_id);
 
-create policy "Users can insert their own notes" on notes
-  for insert with check (auth.uid() = user_id);
+create policy "Users can insert their own notes" 
+  on notes for insert with check (auth.uid() = user_id);
 
-create policy "Users can update their own notes" on notes
-  for update using (auth.uid() = user_id);
+create policy "Users can update their own notes" 
+  on notes for update using (auth.uid() = user_id);
 
-create policy "Users can delete their own notes" on notes
-  for delete using (auth.uid() = user_id);
+create policy "Users can delete their own notes" 
+  on notes for delete using (auth.uid() = user_id);
 ```
 
 ## Domain Configuration
@@ -127,8 +141,8 @@ To secure your Supabase connection:
 For security reasons, store the following values as environment variables on the server:
 
 ```
-SUPABASE_URL=https://qqplzgqhkffwvefbnyte.supabase.co
-SUPABASE_SERVICE_KEY=sbp_1a4f543fb917a5d78183d4576a97e18b960c96a5
-SUPABASE_ANON_KEY=[your_anon_key]
+SUPABASE_URL=YOUR_NEW_SUPABASE_URL
+SUPABASE_SERVICE_KEY=YOUR_NEW_SUPABASE_SERVICE_KEY
+SUPABASE_ANON_KEY=YOUR_NEW_SUPABASE_ANON_KEY
 FRONTEND_URL=https://yatazuki.com
 ``` 
