@@ -1,9 +1,8 @@
-
 async function loadNotes() {
   try {
     const { data, error } = await supabase
       .from('notes')
-      .select('*')
+      .select('*, login(username)')
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -26,9 +25,9 @@ async function loadNotes() {
           `<button onclick="deleteNote('${note.id}')" class="delete-btn">×</button>` : 
           ''
         }
-        <p>${note.note_text}</p>
+        <h4>${note.login?.username || 'Unknown'}</h4>
+        <p>${note.content}</p>
         ${note.link_url ? `<p><a href="${note.link_url}" target="_blank">Link</a></p>` : ''}
-        <small>By: ${note.username || 'Unknown'}</small>
         <small>Posted: ${new Date(note.created_at).toLocaleString()}</small>
       </div>
     `).join('');
@@ -42,10 +41,20 @@ async function addNote(content) {
   if (!userId || !content) return;
 
   try {
+    // First get the user's username
+    const { data: userData, error: userError } = await supabase
+      .from('login')
+      .select('username')
+      .eq('user_id', userId)
+      .single();
+
+    if (userError) throw userError;
+
     const { error } = await supabase
       .from('notes')
       .insert([{
         content,
+        title: userData.username,
         user_id: userId,
         created_at: new Date()
       }]);

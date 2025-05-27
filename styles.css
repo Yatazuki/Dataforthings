@@ -254,6 +254,14 @@ body {
   backdrop-filter: blur(5px);
 }
 
+.note h4 {
+  color: #8000ff;
+  margin-bottom: 10px;
+  font-size: 1.2em;
+  font-weight: bold;
+  text-shadow: 0 0 5px rgba(128, 0, 255, 0.3);
+}
+
 .note p {
   margin-bottom: 10px;
   color: #fff;
