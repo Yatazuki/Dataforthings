@@ -39,15 +39,32 @@ let userId = null;
 
 async function fetchSessionAndUser() {
   const { data: { user } } = await supabase.auth.getUser();
-  userId = user?.id;
-  if (!userId) {
-    document.body.innerHTML = '<div class="text-center mt-5"><h2>❌ You are not logged in.</h2></div>';
-    return;
+  userId = user?.id || localStorage.getItem("user_id");
+  
+  // Instead of replacing content, just check if we can load notes
+  if (userId) {
+    await loadNote();
+  } else {
+    console.log("User is browsing as a guest");
+    
+    // Try to get noteBox element, but don't throw error if it doesn't exist
+    const noteBox = document.getElementById("noteBox");
+    if (noteBox) {
+      noteBox.placeholder = "Log in to save notes";
+      noteBox.disabled = true;
+    }
+    
+    const saveBtn = document.querySelector("button[onclick='saveNote()']");
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveBtn.title = "Login required to save notes";
+    }
   }
-  await loadNote();
 }
 
 async function loadNote() {
+  if (!userId) return; // Skip if not logged in
+  
   try {
     const { data, error } = await supabase
       .from('notes')
@@ -58,9 +75,14 @@ async function loadNote() {
     if (error) throw error;
 
     if (data) {
-      document.getElementById("noteBox").value = data.content || "";
-      if (data.created_at) {
-        document.getElementById("noteTimestamp").innerText = `Last updated: ${new Date(data.created_at).toLocaleString()}`;
+      const noteBox = document.getElementById("noteBox");
+      if (noteBox) {
+        noteBox.value = data.content || "";
+      }
+      
+      const noteTimestamp = document.getElementById("noteTimestamp");
+      if (noteTimestamp && data.created_at) {
+        noteTimestamp.innerText = `Last updated: ${new Date(data.created_at).toLocaleString()}`;
       }
     }
   } catch (error) {
@@ -76,7 +98,16 @@ function logout() {
 }
 
 async function saveNote() {
-  const note = document.getElementById("noteBox").value;
+  // Check if logged in
+  if (!userId) {
+    alert("Please log in to save notes");
+    return;
+  }
+
+  const noteBox = document.getElementById("noteBox");
+  if (!noteBox) return;
+  
+  const note = noteBox.value;
   const status = document.getElementById("saveStatus");
 
   try {
@@ -90,13 +121,18 @@ async function saveNote() {
 
     if (error) throw error;
 
-    status.innerText = "✅ Note saved!";
+    if (status) {
+      status.innerText = "✅ Note saved!";
+      setTimeout(() => status.innerText = '', 3000);
+    }
     await loadNote();
   } catch (error) {
     console.error("Error saving note:", error);
-    status.innerText = "❌ Failed to save.";
+    if (status) {
+      status.innerText = "❌ Failed to save.";
+      setTimeout(() => status.innerText = '', 3000);
+    }
   }
-  setTimeout(() => status.innerText = '', 3000);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -163,9 +199,6 @@ document.addEventListener('DOMContentLoaded', function() {
   if (!excludedPages.includes(currentPage)) {
     loadNavbar();
   }
-  
-  // Check if user is logged in
-  checkAuthStatus();
 });
 
 // Function to load navbar
@@ -188,20 +221,4 @@ function loadNavbar() {
     .catch(error => {
       console.error('Error loading navbar:', error);
     });
-}
-
-// Check if user is logged in
-function checkAuthStatus() {
-  const userId = localStorage.getItem('user_id');
-  const currentPage = window.location.pathname.split('/').pop();
-  const authRequiredPages = ['dashboard.html', 'snake.html', 'tictactoe.html', 'memory.html', 
-                            'clickspeed.html', 'blackjack.html', 'notes.html', 'profile.html'];
-  
-  // If on an auth required page and not logged in, redirect to login
-  if (authRequiredPages.includes(currentPage) && !userId) {
-    document.body.innerHTML = '<div class="text-center mt-5"><h2>❌ You are not logged in.</h2><p>Redirecting to login page...</p></div>';
-    setTimeout(() => {
-      window.location.href = 'index.html';
-    }, 2000);
-  }
 }
