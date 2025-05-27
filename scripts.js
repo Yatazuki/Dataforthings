@@ -154,4 +154,54 @@ document.addEventListener('DOMContentLoaded', function() {
   if (window.location.pathname.includes('dashboard.html')) {
     fetchSessionAndUser();
   }
+
+  // Load navbar on all pages except register, login, and index
+  const currentPage = window.location.pathname.split('/').pop();
+  const excludedPages = ['index.html', 'register.html', 'login.html', ''];
+  
+  // Only load navbar if not on excluded pages
+  if (!excludedPages.includes(currentPage)) {
+    loadNavbar();
+  }
+  
+  // Check if user is logged in
+  checkAuthStatus();
 });
+
+// Function to load navbar
+function loadNavbar() {
+  fetch('navbar.html')
+    .then(response => response.text())
+    .then(data => {
+      // Insert the navbar at the beginning of the body
+      const bodyElement = document.body;
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = data;
+      bodyElement.insertBefore(tempDiv, bodyElement.firstChild);
+      
+      // Now that navbar is loaded, add logout functionality
+      const logoutButton = document.getElementById('logout');
+      if (logoutButton) {
+        logoutButton.addEventListener('click', logout);
+      }
+    })
+    .catch(error => {
+      console.error('Error loading navbar:', error);
+    });
+}
+
+// Check if user is logged in
+function checkAuthStatus() {
+  const userId = localStorage.getItem('user_id');
+  const currentPage = window.location.pathname.split('/').pop();
+  const authRequiredPages = ['dashboard.html', 'snake.html', 'tictactoe.html', 'memory.html', 
+                            'clickspeed.html', 'blackjack.html', 'notes.html', 'profile.html'];
+  
+  // If on an auth required page and not logged in, redirect to login
+  if (authRequiredPages.includes(currentPage) && !userId) {
+    document.body.innerHTML = '<div class="text-center mt-5"><h2>❌ You are not logged in.</h2><p>Redirecting to login page...</p></div>';
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 2000);
+  }
+}

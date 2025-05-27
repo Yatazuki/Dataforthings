@@ -1,0 +1,97 @@
+/* Game-themed navbar styling */
+.navbar {
+  background-color: rgba(0, 0, 0, 0.9);
+  border-bottom: 1px solid rgba(128, 0, 255, 0.5);
+  box-shadow: 0 0 20px rgba(128, 0, 255, 0.3);
+  padding: 12px 0;
+}
+
+.navbar-brand {
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: white;
+  text-shadow: 0 0 10px rgba(128, 0, 255, 0.7);
+  transition: all 0.3s ease;
+}
+
+.navbar-brand:hover {
+  transform: translateY(-2px);
+  text-shadow: 0 0 15px rgba(128, 0, 255, 1);
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  transition: all 0.3s ease;
+  padding: 0.5rem 1rem;
+  margin: 0 2px;
+  border-radius: 4px;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+  color: white;
+  text-shadow: 0 0 10px rgba(128, 0, 255, 0.8);
+  background-color: rgba(128, 0, 255, 0.2);
+}
+
+.navbar-dark .navbar-nav .nav-link.active {
+  color: white;
+  background-color: rgba(128, 0, 255, 0.3);
+  box-shadow: 0 0 10px rgba(128, 0, 255, 0.4);
+}
+
+.dropdown-menu-dark {
+  background-color: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(128, 0, 255, 0.4);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+}
+
+.dropdown-item {
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+  background-color: rgba(128, 0, 255, 0.2);
+  color: white;
+}
+
+.dropdown-item.active {
+  background-color: rgba(128, 0, 255, 0.3);
+  color: white;
+}
+
+/* Add pulsing effect to logout button */
+#logout {
+  position: relative;
+  overflow: hidden;
+}
+
+#logout::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(128, 0, 255, 0.2);
+  border-radius: 4px;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 0.3s ease;
+}
+
+#logout:hover::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .navbar-dark .navbar-nav .nav-link {
+    padding: 0.75rem 1rem;
+    margin: 2px 0;
+  }
+} 

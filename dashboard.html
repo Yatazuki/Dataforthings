@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="navbar.css">
   <style>
     /* Game-inspired styles for dashboard */
     .hero {
@@ -154,41 +155,7 @@
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-      <a class="navbar-brand" href="dashboard.html">Yatazuki</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link active" href="dashboard.html">Dashboard</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="gamesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Games
-            </a>
-            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="gamesDropdown">
-              <li><a class="dropdown-item" href="snake.html">Snake Game</a></li>
-              <li><a class="dropdown-item" href="tictactoe.html">Tic-tac-toe</a></li>
-              <li><a class="dropdown-item" href="memory.html">Memory</a></li>
-              <li><a class="dropdown-item" href="clickspeed.html">Click Speed Test</a></li>
-            </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="notes.html">Notes</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Profile</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" id="logout" onclick="logout()">Logout</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+  <!-- The navbar will be loaded via JavaScript -->
 
   <section class="hero">
     <div class="container">
@@ -239,12 +206,12 @@
             </div>
           </div>
         </div>
-        <div class="col-md-4 mb-4">
-          <div class="card game-card">
+        <div class="col-md-4">
+          <div class="card mb-4 text-center">
             <div class="card-body">
               <h5 class="card-title">Blackjack</h5>
               <p class="card-text">Test your luck and strategy in this classic casino game!</p>
-              <a href="blackjack.html" class="btn btn-primary">Play Blackjack</a>
+              <a href="blackjack.html" class="btn btn-light">Play Now</a>
             </div>
           </div>
         </div>
@@ -281,124 +248,7 @@
     const SUPABASE_KEY = 'sbp_1a4f543fb917a5d78183d4576a97e18b960c96a5';
     const supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY);
     
-    
-
     let userId = null;
-
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas ? canvas.getContext('2d') : null; //Added check for canvas existence.
-
-
-    let snake = [{x: 200, y: 200}];
-    let food = {x: 0, y: 0};
-    let dx = 10;
-    let dy = 0;
-    let score = 0;
-    let highScore = localStorage.getItem('snakeHighScore') || 0;
-    let gameInterval = null;
-    let isGameRunning = false;
-
-    highScoreElement.textContent = highScore;
-
-    function generateFood() {
-      food.x = Math.floor(Math.random() * 40) * 10;
-      food.y = Math.floor(Math.random() * 40) * 10;
-    }
-
-    function drawSnake() {
-      snake.forEach(segment => {
-        ctx.fillStyle = '#0F0';
-        ctx.fillRect(segment.x, segment.y, 10, 10);
-      });
-    }
-
-    function drawFood() {
-      ctx.fillStyle = '#F00';
-      ctx.fillRect(food.x, food.y, 10, 10);
-    }
-
-    function moveSnake() {
-      const head = {x: snake[0].x + dx, y: snake[0].y + dy};
-      snake.unshift(head);
-
-      if(head.x === food.x && head.y === food.y) {
-        score += 10;
-        scoreElement.textContent = score;
-        generateFood();
-      } else {
-        snake.pop();
-      }
-
-      if(head.x < 0 || head.x > 390 || head.y < 0 || head.y > 390) {
-        alert(`Game Over!\nYour Score: ${score}\nHigh Score: ${highScore}`);
-        gameOver();
-      }
-
-      for(let i = 1; i < snake.length; i++) {
-        if(head.x === snake[i].x && head.y === snake[i].y) {
-          gameOver();
-        }
-      }
-    }
-
-    function gameOver() {
-      if(score > highScore) {
-        highScore = score;
-        localStorage.setItem('snakeHighScore', highScore);
-        highScoreElement.textContent = highScore;
-      }
-      score = 0;
-      scoreElement.textContent = score;
-      snake = [{x: 200, y: 200}];
-      dx = 10;
-      dy = 0;
-      clearInterval(gameInterval);
-      isGameRunning = false;
-      startButton.textContent = 'Start Game';
-    }
-
-    function gameLoop() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawFood();
-      moveSnake();
-      drawSnake();
-    }
-
-    function startGame() {
-      if(!isGameRunning) {
-        isGameRunning = true;
-        generateFood();
-        gameInterval = setInterval(gameLoop, 100);
-        startButton.textContent = 'Game Running';
-        canvas.focus();
-      }
-    }
-
-    function handleKeyDown(e) {
-      if(!isGameRunning) return;
-
-      e.preventDefault();
-      if(e.key === 'ArrowUp' && dy === 0) {
-        dx = 0;
-        dy = -10;
-      }
-      if(e.key === 'ArrowDown' && dy === 0) {
-        dx = 0;
-        dy = 10;
-      }
-      if(e.key === 'ArrowLeft' && dx === 0) {
-        dx = -10;
-        dy = 0;
-      }
-      if(e.key === 'ArrowRight' && dx === 0) {
-        dx = 10;
-        dy = 0;
-      }
-    }
-
-    canvas.addEventListener('click', startGame);
-    startButton.addEventListener('click', startGame);
-    document.addEventListener('keydown', handleKeyDown);
 
     async function fetchSessionAndUser() {
       userId = localStorage.getItem("user_id");
@@ -417,5 +267,6 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script type="module" src="sphere.js"></script>
+  <script src="scripts.js"></script>
 </body>
 </html>
