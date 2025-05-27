@@ -11,19 +11,23 @@
   <link rel="stylesheet" href="navbar.css">
   <style>
     body {
+      background-image: url('background1.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
       position: relative;
-      overflow-x: hidden;
     }
     
-    /* Particles background layer */
+    /* Particles overlay */
     #particles-js {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      z-index: -1;
-      background-color: rgba(0, 0, 0, 0.85);
+      z-index: 1;
+      pointer-events: none;
+      background-color: transparent;
     }
     
     /* Content positioning */
@@ -34,14 +38,13 @@
     
     /* Game-inspired styles for dashboard */
     .hero {
-      background-color: rgba(0, 0, 0, 0.7);
+      background-color: rgba(0, 0, 0, 0.85);
       border-radius: 15px;
       box-shadow: 0 0 30px rgba(128, 0, 255, 0.4);
       border: 1px solid rgba(128, 0, 255, 0.3);
       margin-top: 20px;
       position: relative;
       overflow: hidden;
-      backdrop-filter: blur(5px);
     }
     
     .hero::before {
@@ -77,12 +80,11 @@
     
     .section {
       padding: 40px 0;
-      background-color: rgba(0, 0, 0, 0.7);
+      background-color: rgba(128, 0, 255, 0.15);
       border-radius: 15px;
       margin: 20px 0;
       border: 1px solid rgba(128, 0, 255, 0.3);
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(5px);
     }
     
     .section h2 {
@@ -108,14 +110,13 @@
     }
     
     .card {
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(0, 0, 0, 0.85);
       border: 1px solid rgba(128, 0, 255, 0.3);
       box-shadow: 0 0 20px rgba(128, 0, 255, 0.2);
       border-radius: 15px;
       transition: all 0.3s ease;
       overflow: hidden;
       height: 100%;
-      backdrop-filter: blur(5px);
     }
     
     .card:hover {
@@ -164,7 +165,7 @@
     }
     
     .footer {
-      background-color: rgba(0, 0, 0, 0.8);
+      background-color: rgba(0, 0, 0, 0.9);
       padding: 20px 0;
       text-align: center;
       border-top: 1px solid rgba(128, 0, 255, 0.3);
@@ -172,17 +173,12 @@
       margin-top: 30px;
       box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
       border-radius: 15px 15px 0 0;
-      backdrop-filter: blur(5px);
     }
     
     #sphere-container {
       filter: drop-shadow(0 0 20px rgba(128, 0, 255, 0.5));
       position: relative;
       z-index: 1;
-      background-color: rgba(0, 0, 0, 0.7);
-      border-radius: 15px;
-      border: 1px solid rgba(128, 0, 255, 0.4);
-      backdrop-filter: blur(5px);
     }
     
     .container-title {
@@ -197,10 +193,8 @@
   </style>
 </head>
 <body>
-  <!-- Particles background -->
-  <div id="particles-js"></div>
-
   <!-- Navbar will be inserted by navbar.js -->
+  
   <div class="content-wrapper">
     <section class="hero">
       <div class="container">
@@ -290,6 +284,9 @@
       </div>
     </footer>
   </div>
+  
+  <!-- Particles overlay (positioned after content to be on top) -->
+  <div id="particles-js"></div>
 
   <script>
     const BACKEND_URL = 'http://0.0.0.0:3000';
