@@ -10,15 +10,38 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="navbar.css">
   <style>
+    body {
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    /* Particles background layer */
+    #particles-js {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background-color: rgba(0, 0, 0, 0.85);
+    }
+    
+    /* Content positioning */
+    .content-wrapper {
+      position: relative;
+      z-index: 2;
+    }
+    
     /* Game-inspired styles for dashboard */
     .hero {
-      background-color: rgba(0, 0, 0, 0.85);
+      background-color: rgba(0, 0, 0, 0.7);
       border-radius: 15px;
       box-shadow: 0 0 30px rgba(128, 0, 255, 0.4);
       border: 1px solid rgba(128, 0, 255, 0.3);
       margin-top: 20px;
       position: relative;
       overflow: hidden;
+      backdrop-filter: blur(5px);
     }
     
     .hero::before {
@@ -54,11 +77,12 @@
     
     .section {
       padding: 40px 0;
-      background-color: rgba(128, 0, 255, 0.15);
+      background-color: rgba(0, 0, 0, 0.7);
       border-radius: 15px;
       margin: 20px 0;
       border: 1px solid rgba(128, 0, 255, 0.3);
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(5px);
     }
     
     .section h2 {
@@ -84,13 +108,14 @@
     }
     
     .card {
-      background: rgba(0, 0, 0, 0.85);
+      background: rgba(0, 0, 0, 0.75);
       border: 1px solid rgba(128, 0, 255, 0.3);
       box-shadow: 0 0 20px rgba(128, 0, 255, 0.2);
       border-radius: 15px;
       transition: all 0.3s ease;
       overflow: hidden;
       height: 100%;
+      backdrop-filter: blur(5px);
     }
     
     .card:hover {
@@ -139,7 +164,7 @@
     }
     
     .footer {
-      background-color: rgba(0, 0, 0, 0.9);
+      background-color: rgba(0, 0, 0, 0.8);
       padding: 20px 0;
       text-align: center;
       border-top: 1px solid rgba(128, 0, 255, 0.3);
@@ -147,38 +172,17 @@
       margin-top: 30px;
       box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
       border-radius: 15px 15px 0 0;
+      backdrop-filter: blur(5px);
     }
     
     #sphere-container {
       filter: drop-shadow(0 0 20px rgba(128, 0, 255, 0.5));
       position: relative;
       z-index: 1;
-    }
-    
-    #particles-js {
-      width: 100%;
-      height: 300px;
       background-color: rgba(0, 0, 0, 0.7);
       border-radius: 15px;
-      margin-bottom: 30px;
-      position: relative;
-      box-shadow: 0 0 25px rgba(128, 0, 255, 0.6);
       border: 1px solid rgba(128, 0, 255, 0.4);
-      overflow: hidden;
-      filter: drop-shadow(0 0 15px rgba(255, 0, 255, 0.4));
-      z-index: 1;
-    }
-    
-    #particles-js::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at center, rgba(128, 0, 255, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
-      pointer-events: none;
-      z-index: -1;
+      backdrop-filter: blur(5px);
     }
     
     .container-title {
@@ -193,98 +197,99 @@
   </style>
 </head>
 <body>
+  <!-- Particles background -->
+  <div id="particles-js"></div>
+
   <!-- Navbar will be inserted by navbar.js -->
+  <div class="content-wrapper">
+    <section class="hero">
+      <div class="container">
+        <h1>Welcome to Your Dashboard</h1>
+        <p>This is your central hub for managing all things Yatazuki.</p>
+      </div>
+    </section>
 
-  <section class="hero">
-    <div class="container">
-      <h1>Welcome to Your Dashboard</h1>
-      <p>This is your central hub for managing all things Yatazuki.</p>
+    <div class="container mt-4">
+      <h4 class="container-title">3D Sphere Visualization</h4>
+      <div id="sphere-container" style="width: 100%; height: 300px;"></div>
     </div>
-  </section>
 
-  <div class="container mt-4">
-    <h4 class="container-title">3D Sphere Visualization</h4>
-    <div id="sphere-container" style="width: 100%; height: 300px;"></div>
-  
-    <h4 class="container-title mt-5">Interactive Particle Network</h4>
-    <div id="particles-js"></div>
+    <section class="section" id="games">
+      <div class="container">
+        <h2>Games</h2>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card mb-4 text-center">
+              <div class="card-body">
+                <h5 class="card-title">Snake Game</h5>
+                <p class="card-text">Play our classic snake game with modern graphics.</p>
+                <a href="snake.html" class="btn btn-light">Play Now</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card mb-4 text-center">
+              <div class="card-body">
+                <h5 class="card-title">Tic-tac-toe</h5>
+                <p class="card-text">Challenge yourself in a classic game of Tic-tac-toe.</p>
+                <a href="tictactoe.html" class="btn btn-light">Play Now</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card mb-4 text-center">
+              <div class="card-body">
+                <h5 class="card-title">Memory Game</h5>
+                <p class="card-text">Test your memory by matching pairs of cards.</p>
+                <a href="memory.html" class="btn btn-light">Play Now</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card mb-4 text-center">
+              <div class="card-body">
+                <h5 class="card-title">Click Speed Test</h5>
+                <p class="card-text">Test your clicking speed and compete for high scores.</p>
+                <a href="clickspeed.html" class="btn btn-light">Play Now</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card mb-4 text-center">
+              <div class="card-body">
+                <h5 class="card-title">Blackjack</h5>
+                <p class="card-text">Test your luck and strategy in this classic casino game!</p>
+                <a href="blackjack.html" class="btn btn-light">Play Now</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="features">
+      <div class="container">
+        <h2>Features</h2>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card mb-4 text-center">
+              <div class="card-body">
+                <h5 class="card-title">Notes</h5>
+                <p class="card-text">Share and discover notes with the community.</p>
+                <a href="notes.html" class="btn btn-light">View Notes</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container">
+        &copy; 2025 Yatazuki. All rights reserved.
+      </div>
+    </footer>
   </div>
-
-  <section class="section" id="games">
-    <div class="container">
-      <h2>Games</h2>
-      <div class="row">
-        <div class="col-md-4">
-          <div class="card mb-4 text-center">
-            <div class="card-body">
-              <h5 class="card-title">Snake Game</h5>
-              <p class="card-text">Play our classic snake game with modern graphics.</p>
-              <a href="snake.html" class="btn btn-light">Play Now</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card mb-4 text-center">
-            <div class="card-body">
-              <h5 class="card-title">Tic-tac-toe</h5>
-              <p class="card-text">Challenge yourself in a classic game of Tic-tac-toe.</p>
-              <a href="tictactoe.html" class="btn btn-light">Play Now</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card mb-4 text-center">
-            <div class="card-body">
-              <h5 class="card-title">Memory Game</h5>
-              <p class="card-text">Test your memory by matching pairs of cards.</p>
-              <a href="memory.html" class="btn btn-light">Play Now</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card mb-4 text-center">
-            <div class="card-body">
-              <h5 class="card-title">Click Speed Test</h5>
-              <p class="card-text">Test your clicking speed and compete for high scores.</p>
-              <a href="clickspeed.html" class="btn btn-light">Play Now</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card mb-4 text-center">
-            <div class="card-body">
-              <h5 class="card-title">Blackjack</h5>
-              <p class="card-text">Test your luck and strategy in this classic casino game!</p>
-              <a href="blackjack.html" class="btn btn-light">Play Now</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="features">
-    <div class="container">
-      <h2>Features</h2>
-      <div class="row">
-        <div class="col-md-6">
-          <div class="card mb-4 text-center">
-            <div class="card-body">
-              <h5 class="card-title">Notes</h5>
-              <p class="card-text">Share and discover notes with the community.</p>
-              <a href="notes.html" class="btn btn-light">View Notes</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <footer class="footer">
-    <div class="container">
-      &copy; 2025 Yatazuki. All rights reserved.
-    </div>
-  </footer>
 
   <script>
     const BACKEND_URL = 'http://0.0.0.0:3000';
