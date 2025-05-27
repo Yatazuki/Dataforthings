@@ -151,6 +151,44 @@
     
     #sphere-container {
       filter: drop-shadow(0 0 20px rgba(128, 0, 255, 0.5));
+      position: relative;
+      z-index: 1;
+    }
+    
+    #particles-js {
+      width: 100%;
+      height: 300px;
+      background-color: rgba(0, 0, 0, 0.7);
+      border-radius: 15px;
+      margin-bottom: 30px;
+      position: relative;
+      box-shadow: 0 0 25px rgba(128, 0, 255, 0.6);
+      border: 1px solid rgba(128, 0, 255, 0.4);
+      overflow: hidden;
+      filter: drop-shadow(0 0 15px rgba(255, 0, 255, 0.4));
+      z-index: 1;
+    }
+    
+    #particles-js::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(128, 0, 255, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    .container-title {
+      text-align: center;
+      color: white;
+      margin-bottom: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 1.2rem;
+      text-shadow: 0 0 10px rgba(128, 0, 255, 0.7);
     }
   </style>
 </head>
@@ -164,7 +202,13 @@
     </div>
   </section>
 
-  <div id="sphere-container" style="width: 100%; height: 300px; margin-bottom: 30px;"></div>
+  <div class="container mt-4">
+    <h4 class="container-title">3D Sphere Visualization</h4>
+    <div id="sphere-container" style="width: 100%; height: 300px;"></div>
+  
+    <h4 class="container-title mt-5">Interactive Particle Network</h4>
+    <div id="particles-js"></div>
+  </div>
 
   <section class="section" id="games">
     <div class="container">
@@ -264,5 +308,7 @@
   <script src="navbar.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script type="module" src="sphere.js"></script>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script src="particle.js"></script>
 </body>
 </html>
