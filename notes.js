@@ -9,11 +9,6 @@ async function loadNotes() {
       console.error("Error loading notes:", error);
       return;
     }
-    
-    if (!response.ok) {
-      console.error("Error loading notes:", data.error);
-      return;
-    }
 
     const notesContainer = document.getElementById('notes-container');
     if (!notesContainer) return;
@@ -25,7 +20,7 @@ async function loadNotes() {
           `<button onclick="deleteNote('${note.id}')" class="delete-btn">×</button>` : 
           ''
         }
-        <h4>${note.login?.username || 'Unknown'}</h4>
+        <h4>${note.login?.username || note.title || 'Unknown'}</h4>
         <p>${note.content}</p>
         ${note.link_url ? `<p><a href="${note.link_url}" target="_blank">Link</a></p>` : ''}
         <small>Posted: ${new Date(note.created_at).toLocaleString()}</small>
@@ -34,6 +29,11 @@ async function loadNotes() {
   } catch (err) {
     console.error("Failed to load notes:", err);
   }
+}
+
+// Call loadNotes on page load
+if (typeof window !== 'undefined') {
+  window.addEventListener('DOMContentLoaded', loadNotes);
 }
 
 async function addNote(content) {
