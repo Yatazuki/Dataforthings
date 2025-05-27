@@ -1,10 +1,7 @@
-// Import Supabase client
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  'https://qqplzgqhkffwvefbnyte.supabase.co',
-  'sbp_1a4f543fb917a5d78183d4576a97e18b960c96a5'
-);
+// Initialize Supabase client if not already initialized
+const supabase = window.supabase
+  ? window.supabase
+  : supabase.createClient('https://qqplzgqhkffwvefbnyte.supabase.co', 'sbp_1a4f543fb917a5d78183d4576a97e18b960c96a5');
 
 async function login() {
   const user = document.getElementById('username').value;
