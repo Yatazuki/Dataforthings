@@ -248,17 +248,17 @@
     const SUPABASE_KEY = 'sbp_1a4f543fb917a5d78183d4576a97e18b960c96a5';
     const supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY);
     
-    let userId = null;
-
-    async function fetchSessionAndUser() {
-      userId = localStorage.getItem("user_id");
-      if (!userId) {
-        document.body.innerHTML = '<div class="text-center mt-5"><h2>❌ You are not logged in.</h2></div>';
-        return;
-      }
+    // Check for user ID but don't restrict access
+    let userId = localStorage.getItem("user_id");
+    
+    // If logged in, we can do personalized stuff here
+    if (userId) {
+      console.log("User is logged in:", userId);
+      // You can add personalized content here
+    } else {
+      console.log("User is browsing as a guest");
+      // Keep default content for guests
     }
-
-    fetchSessionAndUser();
   </script>
   <script src="scripts.js"></script>
   <script src="navbar.js"></script>

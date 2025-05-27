@@ -60,8 +60,8 @@ document.addEventListener('DOMContentLoaded', function() {
       window.location.href = "index.html";
     });
     
-    // Check authentication
-    checkAuthentication(currentPage);
+    // Update the logout button text based on login status
+    updateLogoutButton();
   }
 });
 
@@ -97,18 +97,22 @@ function setActiveNavItem(currentPage) {
   }
 }
 
-// Function to check if user is authenticated
-function checkAuthentication(currentPage) {
+// Function to update the logout button text based on login status
+function updateLogoutButton() {
   const userId = localStorage.getItem('user_id');
-  const authRequiredPages = [
-    'dashboard.html', 'snake.html', 'tictactoe.html', 'memory.html', 
-    'clickspeed.html', 'blackjack.html', 'notes.html', 'profile.html'
-  ];
+  const logoutButton = document.getElementById('logout');
   
-  if (authRequiredPages.includes(currentPage) && !userId) {
-    document.body.innerHTML = '<div class="text-center mt-5"><h2>❌ You are not logged in.</h2><p>Redirecting to login page...</p></div>';
-    setTimeout(() => {
+  if (userId) {
+    logoutButton.textContent = 'Logout';
+    logoutButton.setAttribute('title', 'Log out of your account');
+  } else {
+    logoutButton.textContent = 'Login';
+    logoutButton.setAttribute('title', 'Log in to your account');
+    
+    // Update logout button to redirect to login page instead
+    logoutButton.addEventListener('click', function(e) {
+      e.preventDefault();
       window.location.href = 'index.html';
-    }, 2000);
+    }, { once: true });
   }
 } 
