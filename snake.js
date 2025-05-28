@@ -91,51 +91,55 @@ async function saveScoreToDatabase() {
   if (userId && supabase && score > 0) {
     console.log('Attempting to save score to database:', {userId, score});
     try {
-      // First, check if the user already has a high score for snake
-      const { data: existingScores, error: fetchError } = await supabase
-        .from('game_scores')
-        .select('id, score')
+      // First, get the user's username
+      const username = localStorage.getItem('username');
+      if (!username) {
+        console.error('Username not found in localStorage');
+        return;
+      }
+      
+      // Check if the user already has a record in user_scores
+      const { data: existingData, error: fetchError } = await supabase
+        .from('user_scores')
+        .select('id, snake_score')
         .eq('user_id', userId)
-        .eq('game_type', 'snake')
-        .order('score', { ascending: false })
-        .limit(1);
+        .single();
         
-      if (fetchError) {
+      if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
         console.error('Error fetching existing score:', fetchError);
         return;
       }
       
-      const existingHighScore = existingScores && existingScores.length > 0 ? existingScores[0] : null;
-      
-      if (!existingHighScore) {
-        // User doesn't have a score yet, create one
+      if (!existingData) {
+        // User doesn't have a record yet, create one
         const { data, error } = await supabase
-          .from('game_scores')
+          .from('user_scores')
           .insert([{
             user_id: userId,
-            game_type: 'snake',
-            score: score
+            username: username,
+            snake_score: score,
+            last_updated: new Date()
           }]);
           
         if (error) {
           console.error('Error inserting new score:', error);
         } else {
-          console.log('New high score record created:', data);
+          console.log('New score record created:', data);
         }
-      } else if (score > existingHighScore.score) {
-        // User has a score but the new score is higher, update it
+      } else if (score > existingData.snake_score) {
+        // User has a record but the new score is higher, update it
         const { data, error } = await supabase
-          .from('game_scores')
+          .from('user_scores')
           .update({
-            score: score,
-            created_at: new Date()
+            snake_score: score,
+            last_updated: new Date()
           })
-          .eq('id', existingHighScore.id);
+          .eq('id', existingData.id);
           
         if (error) {
           console.error('Error updating score:', error);
         } else {
-          console.log('High score updated:', data);
+          console.log('Score updated:', data);
         }
       } else {
         console.log('Score not saved as it\'s not a new high score');

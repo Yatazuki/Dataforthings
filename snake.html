@@ -119,42 +119,22 @@
       try {
         console.log('Loading leaderboard data...');
         
-        // Get highest score per user using a PostgreSQL-specific query
+        // Query the user_scores table directly
         const { data, error } = await supabase
-          .rpc('get_snake_leaderboard', { limit_num: 10 })
-          .select();
-        
-        // Fallback query if RPC function doesn't exist
-        if (error && error.code === 'PGRST301') { // PGRST301 means function not found
-          console.log('RPC function not found, using fallback query');
+          .from('user_scores')
+          .select(`
+            id,
+            user_id,
+            username,
+            snake_score,
+            last_updated
+          `)
+          .order('snake_score', { ascending: false })
+          .limit(10);
           
-          // Use a normal query to get top scores per user
-          const { data: fallbackData, error: fallbackError } = await supabase
-            .from('game_scores')
-            .select(`
-              id,
-              user_id,
-              score,
-              created_at
-            `)
-            .eq('game_type', 'snake')
-            .order('score', { ascending: false });
-            
-          if (fallbackError) {
-            console.error('Supabase error when loading leaderboard:', fallbackError);
-            throw fallbackError;
-          }
-          
-          // Filter to only show highest score per user
-          const highestScores = {};
-          fallbackData.forEach(entry => {
-            if (!highestScores[entry.user_id] || entry.score > highestScores[entry.user_id].score) {
-              highestScores[entry.user_id] = entry;
-            }
-          });
-          
-          // Convert back to array and sort
-          data = Object.values(highestScores).sort((a, b) => b.score - a.score).slice(0, 10);
+        if (error) {
+          console.error('Supabase error when loading leaderboard:', error);
+          throw error;
         }
         
         console.log('Leaderboard data received:', data);
@@ -167,34 +147,17 @@
           // Clear previous entries
           leaderboardBody.innerHTML = '';
           
-          // Get all unique user IDs
-          const userIds = [...new Set(data.map(entry => entry.user_id))];
+          // Filter out entries with zero score
+          const validScores = data.filter(entry => entry.snake_score > 0);
           
-          // Fetch usernames for these IDs
-          const { data: userData, error: userError } = await supabase
-            .from('login')
-            .select('user_id, username')
-            .in('user_id', userIds);
-            
-          if (userError) {
-            console.error('Error fetching usernames:', userError);
-            throw userError;
-          }
-          
-          console.log('User data received:', userData);
-          
-          // Create a map of user_id to username
-          const usernameMap = {};
-          if (userData) {
-            userData.forEach(user => {
-              usernameMap[user.user_id] = user.username;
-            });
+          if (validScores.length === 0) {
+            loadingEl.textContent = 'No scores yet. Be the first to play!';
+            return;
           }
           
           // Add each score to the leaderboard
-          data.forEach((entry, index) => {
-            const username = usernameMap[entry.user_id] || 'Unknown Player';
-            const date = new Date(entry.created_at).toLocaleDateString();
+          validScores.forEach((entry, index) => {
+            const date = new Date(entry.last_updated).toLocaleDateString();
             const currentUserId = localStorage.getItem('user_id');
             
             const row = document.createElement('tr');
@@ -205,8 +168,8 @@
             
             row.innerHTML = `
               <td>${index + 1}</td>
-              <td>${username}</td>
-              <td>${entry.score}</td>
+              <td>${entry.username}</td>
+              <td>${entry.snake_score}</td>
               <td>${date}</td>
             `;
             
