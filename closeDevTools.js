@@ -16,7 +16,8 @@ const checkDevTools = function() {
   if (widthThreshold || heightThreshold) {
     if (!devToolsDetected) {
       devToolsDetected = true;
-      window.close();
+      // Redirect to the scary nun image instead of closing
+      window.location.href = "https://uproxx.com/wp-content/uploads/2018/08/the-nun-trailer.jpg";
     }
   } else {
     devToolsDetected = false;
