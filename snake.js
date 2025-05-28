@@ -1,6 +1,16 @@
 // Import supabase from the window object
 // (This is set by the snake.html script that imports auth.js)
-const { supabase } = window.supabaseAuth || {};
+let supabase = null;
+
+// Wait for the DOM to load before accessing window.supabaseAuth
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.supabaseAuth && window.supabaseAuth.supabase) {
+    supabase = window.supabaseAuth.supabase;
+    console.log('Supabase client loaded successfully');
+  } else {
+    console.error('Supabase client not found in window.supabaseAuth');
+  }
+});
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -79,6 +89,7 @@ function moveSnake() {
 async function saveScoreToDatabase() {
   // Only save if we have a userId and supabase client
   if (userId && supabase && score > 0) {
+    console.log('Attempting to save score to database:', {userId, score});
     try {
       const { data, error } = await supabase
         .from('game_scores')
@@ -93,16 +104,20 @@ async function saveScoreToDatabase() {
       if (error) {
         console.error('Error saving score:', error);
       } else {
-        console.log('Score saved successfully!');
+        console.log('Score saved successfully!', data);
         
         // Reload the leaderboard
-        if (typeof loadLeaderboard === 'function') {
-          setTimeout(loadLeaderboard, 500);
+        if (typeof window.loadLeaderboard === 'function') {
+          setTimeout(window.loadLeaderboard, 500);
+        } else {
+          console.error('loadLeaderboard function not found in window object');
         }
       }
     } catch (err) {
       console.error('Error saving score:', err);
     }
+  } else {
+    console.warn('Not saving score - missing user ID or supabase client, or score is 0', {userId, hasSupabase: !!supabase, score});
   }
 }
 
