@@ -91,12 +91,24 @@ async function saveScoreToDatabase() {
   if (userId && supabase && score > 0) {
     console.log('Attempting to save score to database:', {userId, score});
     try {
-      // First, get the user's username
-      const username = localStorage.getItem('username');
-      if (!username) {
-        console.error('Username not found in localStorage');
+      // First, get the user's username from the database
+      const { data: userData, error: userError } = await supabase
+        .from('login')
+        .select('username')
+        .eq('user_id', userId)
+        .single();
+        
+      if (userError) {
+        console.error('Error fetching username:', userError);
         return;
       }
+      
+      if (!userData || !userData.username) {
+        console.error('Username not found in database');
+        return;
+      }
+      
+      const username = userData.username;
       
       // Check if the user already has a record in user_scores
       const { data: existingData, error: fetchError } = await supabase

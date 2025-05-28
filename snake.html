@@ -76,35 +76,24 @@
         console.log("User is logged in:", user.id);
         localStorage.setItem("user_id", user.id);
         
-        // Get username for player info
-        let username = user.user_metadata?.username;
-        
-        // If not in metadata, try localStorage
-        if (!username) {
-          username = localStorage.getItem("username");
-        }
-        
-        // If still no username, try to fetch from login table
-        if (!username) {
-          try {
-            const { data, error } = await supabase
-              .from('login')
-              .select('username')
-              .eq('user_id', user.id)
-              .single();
-              
-            if (!error && data) {
-              username = data.username;
-              localStorage.setItem("username", username);
-            }
-          } catch (err) {
-            console.error("Error fetching username:", err);
+        // Get username from database
+        try {
+          const { data, error } = await supabase
+            .from('login')
+            .select('username')
+            .eq('user_id', user.id)
+            .single();
+            
+          if (!error && data) {
+            // Display player info using username from database
+            document.getElementById("playerInfo").textContent = `Playing as: ${data.username}`;
+          } else {
+            console.error("Error fetching username:", error);
+            document.getElementById("playerInfo").textContent = `Playing as: User`;
           }
-        }
-        
-        // Display player info
-        if (username) {
-          document.getElementById("playerInfo").textContent = `Playing as: ${username}`;
+        } catch (err) {
+          console.error("Error fetching username:", err);
+          document.getElementById("playerInfo").textContent = `Playing as: User`;
         }
       } else {
         console.log("User is browsing as a guest");
