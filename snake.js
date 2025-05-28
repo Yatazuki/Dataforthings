@@ -1,3 +1,6 @@
+// Import supabase from the window object
+// (This is set by the snake.html script that imports auth.js)
+const { supabase } = window.supabaseAuth || {};
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -13,8 +16,24 @@ let score = 0;
 let highScore = localStorage.getItem('snakeHighScore') || 0;
 let gameInterval = null;
 let isGameRunning = false;
+let userId = null;
+let username = null;
 
 highScoreElement.textContent = highScore;
+
+// Try to get user information
+async function getUserInfo() {
+  userId = localStorage.getItem('user_id');
+  username = localStorage.getItem('username');
+  
+  // If we have a userId but no supabase client, still show the username
+  if (userId && username) {
+    const playerInfoEl = document.getElementById('playerInfo');
+    if (playerInfoEl) {
+      playerInfoEl.textContent = `Playing as: ${username}`;
+    }
+  }
+}
 
 function generateFood() {
   food.x = Math.floor(Math.random() * 40) * 10;
@@ -57,12 +76,48 @@ function moveSnake() {
   }
 }
 
-function gameOver() {
+async function saveScoreToDatabase() {
+  // Only save if we have a userId and supabase client
+  if (userId && supabase && score > 0) {
+    try {
+      const { data, error } = await supabase
+        .from('game_scores')
+        .insert([
+          {
+            user_id: userId,
+            game_type: 'snake',
+            score: score
+          }
+        ]);
+        
+      if (error) {
+        console.error('Error saving score:', error);
+      } else {
+        console.log('Score saved successfully!');
+        
+        // Reload the leaderboard
+        if (typeof loadLeaderboard === 'function') {
+          setTimeout(loadLeaderboard, 500);
+        }
+      }
+    } catch (err) {
+      console.error('Error saving score:', err);
+    }
+  }
+}
+
+async function gameOver() {
   if(score > highScore) {
     highScore = score;
     localStorage.setItem('snakeHighScore', highScore);
     highScoreElement.textContent = highScore;
   }
+  
+  // Save score to database if score is greater than 0
+  if (score > 0) {
+    await saveScoreToDatabase();
+  }
+  
   score = 0;
   scoreElement.textContent = score;
   snake = [{x: 200, y: 200}];
@@ -147,3 +202,6 @@ document.getElementById('rightBtn')?.addEventListener('click', () => {
     dy = 0;
   }
 });
+
+// Initialize when the script loads
+getUserInfo();
