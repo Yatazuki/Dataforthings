@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS user_scores (
   snake_score INTEGER DEFAULT 0,
   tictactoe_wins INTEGER DEFAULT 0,
   memory_best_score INTEGER DEFAULT 0,
-  blackjack_wins INTEGER DEFAULT 0,
+  blackjack_score INTEGER DEFAULT 0,
   clickspeed_best INTEGER DEFAULT 0,
   last_updated TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
