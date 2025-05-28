@@ -118,20 +118,43 @@
     async function loadLeaderboard() {
       try {
         console.log('Loading leaderboard data...');
+        
+        // Get highest score per user using a PostgreSQL-specific query
         const { data, error } = await supabase
-          .from('user_high_scores')
-          .select(`
-            id,
-            user_id,
-            snake_score,
-            last_updated
-          `)
-          .order('snake_score', { ascending: false })
-          .limit(10);
+          .rpc('get_snake_leaderboard', { limit_num: 10 })
+          .select();
+        
+        // Fallback query if RPC function doesn't exist
+        if (error && error.code === 'PGRST301') { // PGRST301 means function not found
+          console.log('RPC function not found, using fallback query');
           
-        if (error) {
-          console.error('Supabase error when loading leaderboard:', error);
-          throw error;
+          // Use a normal query to get top scores per user
+          const { data: fallbackData, error: fallbackError } = await supabase
+            .from('game_scores')
+            .select(`
+              id,
+              user_id,
+              score,
+              created_at
+            `)
+            .eq('game_type', 'snake')
+            .order('score', { ascending: false });
+            
+          if (fallbackError) {
+            console.error('Supabase error when loading leaderboard:', fallbackError);
+            throw fallbackError;
+          }
+          
+          // Filter to only show highest score per user
+          const highestScores = {};
+          fallbackData.forEach(entry => {
+            if (!highestScores[entry.user_id] || entry.score > highestScores[entry.user_id].score) {
+              highestScores[entry.user_id] = entry;
+            }
+          });
+          
+          // Convert back to array and sort
+          data = Object.values(highestScores).sort((a, b) => b.score - a.score).slice(0, 10);
         }
         
         console.log('Leaderboard data received:', data);
@@ -170,11 +193,8 @@
           
           // Add each score to the leaderboard
           data.forEach((entry, index) => {
-            // Skip entries with 0 score
-            if (entry.snake_score <= 0) return;
-            
             const username = usernameMap[entry.user_id] || 'Unknown Player';
-            const date = new Date(entry.last_updated).toLocaleDateString();
+            const date = new Date(entry.created_at).toLocaleDateString();
             const currentUserId = localStorage.getItem('user_id');
             
             const row = document.createElement('tr');
@@ -186,20 +206,16 @@
             row.innerHTML = `
               <td>${index + 1}</td>
               <td>${username}</td>
-              <td>${entry.snake_score}</td>
+              <td>${entry.score}</td>
               <td>${date}</td>
             `;
             
             leaderboardBody.appendChild(row);
           });
           
-          // Show the table or "No scores" message
-          if (leaderboardBody.children.length > 0) {
-            loadingEl.style.display = 'none';
-            tableEl.style.display = 'table';
-          } else {
-            loadingEl.textContent = 'No scores yet. Be the first to play!';
-          }
+          // Show the table
+          loadingEl.style.display = 'none';
+          tableEl.style.display = 'table';
         } else {
           loadingEl.textContent = 'No scores yet. Be the first to play!';
         }

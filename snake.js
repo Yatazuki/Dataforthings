@@ -91,26 +91,30 @@ async function saveScoreToDatabase() {
   if (userId && supabase && score > 0) {
     console.log('Attempting to save score to database:', {userId, score});
     try {
-      // First, check if the user already has a record
-      const { data: existingData, error: fetchError } = await supabase
-        .from('user_high_scores')
-        .select('id, snake_score')
+      // First, check if the user already has a high score for snake
+      const { data: existingScores, error: fetchError } = await supabase
+        .from('game_scores')
+        .select('id, score')
         .eq('user_id', userId)
-        .single();
+        .eq('game_type', 'snake')
+        .order('score', { ascending: false })
+        .limit(1);
         
-      if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+      if (fetchError) {
         console.error('Error fetching existing score:', fetchError);
         return;
       }
       
-      if (!existingData) {
-        // User doesn't have a record yet, create one
+      const existingHighScore = existingScores && existingScores.length > 0 ? existingScores[0] : null;
+      
+      if (!existingHighScore) {
+        // User doesn't have a score yet, create one
         const { data, error } = await supabase
-          .from('user_high_scores')
+          .from('game_scores')
           .insert([{
             user_id: userId,
-            snake_score: score,
-            last_updated: new Date()
+            game_type: 'snake',
+            score: score
           }]);
           
         if (error) {
@@ -118,15 +122,15 @@ async function saveScoreToDatabase() {
         } else {
           console.log('New high score record created:', data);
         }
-      } else if (score > existingData.snake_score) {
-        // User has a record but the new score is higher, update it
+      } else if (score > existingHighScore.score) {
+        // User has a score but the new score is higher, update it
         const { data, error } = await supabase
-          .from('user_high_scores')
+          .from('game_scores')
           .update({
-            snake_score: score,
-            last_updated: new Date()
+            score: score,
+            created_at: new Date()
           })
-          .eq('id', existingData.id);
+          .eq('id', existingHighScore.id);
           
         if (error) {
           console.error('Error updating score:', error);
