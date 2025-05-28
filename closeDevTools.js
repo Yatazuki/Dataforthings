@@ -1,38 +1,7 @@
-// Close window when F12 is pressed or DevTools are detected
+// Close window when F12 is pressed
 document.addEventListener('keydown', function(event) {
   if (event.key === 'F12') {
     event.preventDefault();
     window.close();
   }
-});
-
-// Method 1: Detect DevTools via window size
-let devToolsDetected = false;
-const threshold = 160;
-const checkDevTools = function() {
-  const widthThreshold = window.outerWidth - window.innerWidth > threshold;
-  const heightThreshold = window.outerHeight - window.innerHeight > threshold;
-  
-  if (widthThreshold || heightThreshold) {
-    if (!devToolsDetected) {
-      devToolsDetected = true;
-      // Redirect to the scary nun image instead of closing
-      window.location.href = "https://uproxx.com/wp-content/uploads/2018/08/the-nun-trailer.jpg";
-    }
-  } else {
-    devToolsDetected = false;
-  }
-};
-
-// Method 2: Use console.clear detection
-const originalClear = console.clear;
-console.clear = function() {
-  if (new Error().stack.includes('devtools://')) {
-    window.close();
-  }
-  originalClear.apply(console, arguments);
-};
-
-// Check for DevTools periodically
-window.addEventListener('resize', checkDevTools);
-setInterval(checkDevTools, 1000); 
+}); 
