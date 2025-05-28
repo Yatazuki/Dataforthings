@@ -75,7 +75,6 @@ function moveSnake() {
   }
   
   if(head.x < 0 || head.x > 390 || head.y < 0 || head.y > 390) {
-    alert(`Game Over!\nYour Score: ${score}\nHigh Score: ${highScore}`);
     gameOver();
   }
   
