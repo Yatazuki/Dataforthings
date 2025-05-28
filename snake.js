@@ -138,8 +138,8 @@ async function saveScoreToDatabase() {
         } else {
           console.log('New score record created:', data);
         }
-      } else if (score > existingData.snake_score) {
-        // User has a record but the new score is higher, update it
+      } else if (score > existingData.snake_score || existingData.snake_score === 0) {
+        // Update if the new score is higher OR if the existing score is 0 (placeholder)
         const { data, error } = await supabase
           .from('user_scores')
           .update({

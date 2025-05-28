@@ -87,6 +87,41 @@
           if (!error && data) {
             // Display player info using username from database
             document.getElementById("playerInfo").textContent = `Playing as: ${data.username}`;
+            
+            // Check if user has an entry in user_scores, create one if not
+            const { data: scoreData, error: scoreError } = await supabase
+              .from('user_scores')
+              .select('id')
+              .eq('user_id', user.id)
+              .single();
+              
+            if (scoreError && scoreError.code === 'PGRST116') { // PGRST116 is "no rows returned"
+              console.log('No score entry found for user, creating placeholder...');
+              
+              // Create a placeholder entry with zero scores
+              const { data: newEntry, error: insertError } = await supabase
+                .from('user_scores')
+                .insert([{
+                  user_id: user.id,
+                  username: data.username,
+                  snake_score: 0,
+                  tictactoe_wins: 0,
+                  memory_best_score: 0,
+                  blackjack_wins: 0,
+                  clickspeed_best: 0,
+                  last_updated: new Date()
+                }]);
+                
+              if (insertError) {
+                console.error('Error creating placeholder score entry:', insertError);
+              } else {
+                console.log('Placeholder score entry created successfully');
+              }
+            } else if (scoreError) {
+              console.error('Error checking for user score entry:', scoreError);
+            } else {
+              console.log('User already has a score entry');
+            }
           } else {
             console.error("Error fetching username:", error);
             document.getElementById("playerInfo").textContent = `Playing as: User`;
@@ -136,16 +171,8 @@
           // Clear previous entries
           leaderboardBody.innerHTML = '';
           
-          // Filter out entries with zero score
-          const validScores = data.filter(entry => entry.snake_score > 0);
-          
-          if (validScores.length === 0) {
-            loadingEl.textContent = 'No scores yet. Be the first to play!';
-            return;
-          }
-          
-          // Add each score to the leaderboard
-          validScores.forEach((entry, index) => {
+          // Add each score to the leaderboard, including zero scores
+          data.forEach((entry, index) => {
             const date = new Date(entry.last_updated).toLocaleDateString();
             const currentUserId = localStorage.getItem('user_id');
             
