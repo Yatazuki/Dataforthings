@@ -1,7 +1,5 @@
-// Initialize Supabase client if not already initialized
-const supabase = window.supabase
-  ? window.supabase
-  : supabase.createClient('https://qqplzgqhkffwvefbnyte.supabase.co', 'sbp_1a4f543fb917a5d78183d4576a97e18b960c96a5');
+// Import Supabase client and authentication functions from auth.js
+import { supabase, login as authLogin, getCurrentUser, logout as authLogout, register } from './auth.js';
 
 async function login() {
   const user = document.getElementById('username').value;
@@ -9,17 +7,14 @@ async function login() {
   const errorBox = document.getElementById('errorBox');
 
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: user,
-      password: pass
-    });
-
-    if (error) {
-      errorBox.innerText = "❌ " + error.message;
+    const result = await authLogin(user, pass);
+    
+    if (!result.success) {
+      errorBox.innerText = "❌ " + (result.error || "Login failed");
       return;
     }
 
-    localStorage.setItem("user_id", data.user.id);
+    localStorage.setItem("user_id", result.user.id);
     localStorage.setItem("username", user);
     window.location.href = "dashboard.html";
   } catch (err) {
@@ -35,7 +30,7 @@ export { login };
 let userId = null;
 
 async function fetchSessionAndUser() {
-  const { data: { user } } = await supabase.auth.getUser();
+  const { success, user } = await getCurrentUser();
   userId = user?.id || localStorage.getItem("user_id");
   
   // Instead of replacing content, just check if we can load notes
@@ -88,7 +83,7 @@ async function loadNote() {
 }
 
 function logout() {
-  supabase.auth.signOut();
+  authLogout();
   localStorage.removeItem("user_id");
   localStorage.removeItem("username");
   window.location.href = "index.html";
@@ -149,30 +144,10 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       try {
-        // First create auth user
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: { username }
-          }
-        });
+        // Use the register function from auth.js
+        const { success, error, user } = await register(username, email, password);
 
-        if (authError) throw authError;
-
-        // Then insert into login table
-        const { error: loginError } = await supabase
-          .from('login')
-          .insert([
-            { 
-              user_id: authData.user.id,
-              username: username,
-              email: email,
-              created_at: new Date()
-            }
-          ]);
-
-        if (loginError) throw loginError;
+        if (!success) throw new Error(error);
 
         if (errorBox) errorBox.innerText = "✅ Registration successful! Please check your email.";
         setTimeout(() => window.location.href = "index.html", 2000);

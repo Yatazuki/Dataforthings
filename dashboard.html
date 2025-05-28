@@ -276,23 +276,25 @@
   <!-- Particles overlay (positioned after content to be on top) -->
   <div id="particles-js"></div>
 
-  <script>
-    const BACKEND_URL = 'http://0.0.0.0:3000';
-    const SUPABASE_URL = 'https://qqplzgqhkffwvefbnyte.supabase.co';
-    const SUPABASE_KEY = 'sbp_1a4f543fb917a5d78183d4576a97e18b960c96a5';
-    const supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY);
+  <script type="module">
+    import { supabase, getCurrentUser } from './auth.js';
     
-    // Check for user ID but don't restrict access
-    let userId = localStorage.getItem("user_id");
-    
-    // If logged in, we can do personalized stuff here
-    if (userId) {
-      console.log("User is logged in:", userId);
-      // You can add personalized content here
-    } else {
-      console.log("User is browsing as a guest");
-      // Keep default content for guests
+    // Check for user session
+    async function checkUserSession() {
+      const { success, user } = await getCurrentUser();
+      
+      if (success && user) {
+        console.log("User is logged in:", user.id);
+        localStorage.setItem("user_id", user.id);
+        // You can add personalized content here
+      } else {
+        console.log("User is browsing as a guest");
+        // Keep default content for guests
+      }
     }
+    
+    // Run the check when page loads
+    checkUserSession();
   </script>
   <script src="scripts.js"></script>
   <script src="navbar.js"></script>
