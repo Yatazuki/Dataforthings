@@ -178,6 +178,19 @@
       font-size: 1.2rem;
       text-shadow: 0 0 10px rgba(128, 0, 255, 0.7);
     }
+    
+    .welcome-user {
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
+      margin-top: 10px;
+      font-size: 1.5rem;
+      text-shadow: 0 0 10px rgba(128, 0, 255, 0.6);
+      background: linear-gradient(90deg, #9933ff, #ffffff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -188,6 +201,7 @@
       <div class="container">
         <h1>Welcome to Your Dashboard</h1>
         <p>This is your central hub for managing all things Yatazuki.</p>
+        <h3 id="welcome-message" class="welcome-user"></h3>
       </div>
     </section>
 
@@ -286,7 +300,43 @@
       if (success && user) {
         console.log("User is logged in:", user.id);
         localStorage.setItem("user_id", user.id);
-        // You can add personalized content here
+        
+        // Get username for welcome message
+        const welcomeMessage = document.getElementById("welcome-message");
+        if (welcomeMessage) {
+          // First try to get username from user metadata
+          let username = user.user_metadata?.username;
+          
+          // If not in metadata, try localStorage
+          if (!username) {
+            username = localStorage.getItem("username");
+          }
+          
+          // If still no username, try to fetch from login table
+          if (!username) {
+            try {
+              const { data, error } = await supabase
+                .from('login')
+                .select('username')
+                .eq('user_id', user.id)
+                .single();
+                
+              if (!error && data) {
+                username = data.username;
+                // Save for future use
+                localStorage.setItem("username", username);
+              }
+            } catch (err) {
+              console.error("Error fetching username:", err);
+            }
+          }
+          
+          // Display welcome message if we have a username
+          if (username) {
+            welcomeMessage.textContent = `Welcome, ${username}!`;
+            welcomeMessage.style.display = "block";
+          }
+        }
       } else {
         console.log("User is browsing as a guest");
         // Keep default content for guests
