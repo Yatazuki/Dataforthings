@@ -33,17 +33,6 @@ console.clear = function() {
   originalClear.apply(console, arguments);
 };
 
-// Method 3: Use debugger statement to detect if stepping through code
-function detectDebugger() {
-  const startTime = new Date().getTime();
-  debugger;
-  const endTime = new Date().getTime();
-  if (endTime - startTime > 100) {
-    window.close();
-  }
-}
-
 // Check for DevTools periodically
 window.addEventListener('resize', checkDevTools);
-setInterval(checkDevTools, 1000);
-setInterval(detectDebugger, 1000); 
+setInterval(checkDevTools, 1000); 
