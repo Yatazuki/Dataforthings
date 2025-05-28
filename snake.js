@@ -87,31 +87,61 @@ function moveSnake() {
 }
 
 async function saveScoreToDatabase() {
-  // Only save if we have a userId and supabase client
+  // Only save if we have a userId, supabase client, and score > 0
   if (userId && supabase && score > 0) {
     console.log('Attempting to save score to database:', {userId, score});
     try {
-      const { data, error } = await supabase
-        .from('game_scores')
-        .insert([
-          {
+      // First, check if the user already has a record
+      const { data: existingData, error: fetchError } = await supabase
+        .from('user_high_scores')
+        .select('id, snake_score')
+        .eq('user_id', userId)
+        .single();
+        
+      if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+        console.error('Error fetching existing score:', fetchError);
+        return;
+      }
+      
+      if (!existingData) {
+        // User doesn't have a record yet, create one
+        const { data, error } = await supabase
+          .from('user_high_scores')
+          .insert([{
             user_id: userId,
-            game_type: 'snake',
-            score: score
-          }
-        ]);
-        
-      if (error) {
-        console.error('Error saving score:', error);
-      } else {
-        console.log('Score saved successfully!', data);
-        
-        // Reload the leaderboard
-        if (typeof window.loadLeaderboard === 'function') {
-          setTimeout(window.loadLeaderboard, 500);
+            snake_score: score,
+            last_updated: new Date()
+          }]);
+          
+        if (error) {
+          console.error('Error inserting new score:', error);
         } else {
-          console.error('loadLeaderboard function not found in window object');
+          console.log('New high score record created:', data);
         }
+      } else if (score > existingData.snake_score) {
+        // User has a record but the new score is higher, update it
+        const { data, error } = await supabase
+          .from('user_high_scores')
+          .update({
+            snake_score: score,
+            last_updated: new Date()
+          })
+          .eq('id', existingData.id);
+          
+        if (error) {
+          console.error('Error updating score:', error);
+        } else {
+          console.log('High score updated:', data);
+        }
+      } else {
+        console.log('Score not saved as it\'s not a new high score');
+      }
+      
+      // Reload the leaderboard
+      if (typeof window.loadLeaderboard === 'function') {
+        setTimeout(window.loadLeaderboard, 500);
+      } else {
+        console.error('loadLeaderboard function not found in window object');
       }
     } catch (err) {
       console.error('Error saving score:', err);

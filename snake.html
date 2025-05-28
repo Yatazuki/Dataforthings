@@ -119,15 +119,14 @@
       try {
         console.log('Loading leaderboard data...');
         const { data, error } = await supabase
-          .from('game_scores')
+          .from('user_high_scores')
           .select(`
             id,
             user_id,
-            score,
-            created_at
+            snake_score,
+            last_updated
           `)
-          .eq('game_type', 'snake')
-          .order('score', { ascending: false })
+          .order('snake_score', { ascending: false })
           .limit(10);
           
         if (error) {
@@ -171,8 +170,11 @@
           
           // Add each score to the leaderboard
           data.forEach((entry, index) => {
+            // Skip entries with 0 score
+            if (entry.snake_score <= 0) return;
+            
             const username = usernameMap[entry.user_id] || 'Unknown Player';
-            const date = new Date(entry.created_at).toLocaleDateString();
+            const date = new Date(entry.last_updated).toLocaleDateString();
             const currentUserId = localStorage.getItem('user_id');
             
             const row = document.createElement('tr');
@@ -184,16 +186,20 @@
             row.innerHTML = `
               <td>${index + 1}</td>
               <td>${username}</td>
-              <td>${entry.score}</td>
+              <td>${entry.snake_score}</td>
               <td>${date}</td>
             `;
             
             leaderboardBody.appendChild(row);
           });
           
-          // Show the table
-          loadingEl.style.display = 'none';
-          tableEl.style.display = 'table';
+          // Show the table or "No scores" message
+          if (leaderboardBody.children.length > 0) {
+            loadingEl.style.display = 'none';
+            tableEl.style.display = 'table';
+          } else {
+            loadingEl.textContent = 'No scores yet. Be the first to play!';
+          }
         } else {
           loadingEl.textContent = 'No scores yet. Be the first to play!';
         }
