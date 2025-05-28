@@ -443,3 +443,170 @@ body {
   color: #8000ff;
   text-shadow: 0 0 5px rgba(128, 0, 255, 0.3);
 }
+
+/* Snake Game Styles */
+.game-panel {
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(128, 0, 255, 0.3);
+  box-shadow: 0 0 20px rgba(128, 0, 255, 0.2);
+  border-radius: 15px;
+  padding: 25px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.game-panel:hover {
+  box-shadow: 0 0 30px rgba(128, 0, 255, 0.4);
+  border-color: rgba(128, 0, 255, 0.6);
+}
+
+#gameCanvas {
+  background: rgba(0, 0, 0, 0.7);
+  border: 2px solid rgba(128, 0, 255, 0.5);
+  cursor: pointer;
+  border-radius: 15px;
+  box-shadow: 0 0 15px rgba(128, 0, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+#gameCanvas:hover {
+  box-shadow: 0 0 25px rgba(128, 0, 255, 0.5);
+  transform: scale(1.01);
+}
+
+.score-display {
+  display: flex;
+  justify-content: space-around;
+  font-size: 1.2rem;
+  color: white;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(128, 0, 255, 0.3);
+  box-shadow: 0 0 10px rgba(128, 0, 255, 0.2);
+}
+
+.score-value {
+  color: #bf80ff;
+  font-weight: bold;
+  text-shadow: 0 0 5px rgba(128, 0, 255, 0.5);
+}
+
+.game-instructions {
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+  margin-top: 10px;
+}
+
+.leaderboard {
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(128, 0, 255, 0.3);
+  box-shadow: 0 0 20px rgba(128, 0, 255, 0.2);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 30px;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.leaderboard:hover {
+  box-shadow: 0 0 30px rgba(128, 0, 255, 0.4);
+  border-color: rgba(128, 0, 255, 0.6);
+}
+
+.leaderboard h3 {
+  color: white;
+  text-align: center;
+  margin-bottom: 20px;
+  position: relative;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: white;
+  text-shadow: 0 0 15px rgba(128, 0, 255, 0.6);
+}
+
+.leaderboard h3::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #8000ff, #ff00ea);
+  border-radius: 2px;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 5px;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 12px 8px;
+  text-align: center;
+}
+
+.leaderboard-table th {
+  color: #bf80ff;
+  border-bottom: 1px solid rgba(128, 0, 255, 0.5);
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+.leaderboard-table tr {
+  background: rgba(0, 0, 0, 0.4);
+  transition: all 0.2s;
+}
+
+.leaderboard-table tr:hover {
+  background: rgba(128, 0, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.your-score {
+  background: rgba(128, 0, 255, 0.2) !important;
+  border-left: 3px solid #bf80ff;
+}
+
+.control-btn {
+  width: 60px;
+  height: 60px;
+  background: rgba(128, 0, 255, 0.3);
+  border: 2px solid rgba(128, 0, 255, 0.5);
+  color: white;
+  font-size: 28px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin: 5px;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 15px rgba(128, 0, 255, 0.3);
+}
+
+.control-btn:active {
+  background-color: rgba(128, 0, 255, 0.6);
+  transform: scale(0.95);
+  box-shadow: 0 0 20px rgba(128, 0, 255, 0.5);
+}
+
+#startButton {
+  transition: all 0.3s ease;
+  padding: 10px 30px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+#startButton.running {
+  background: linear-gradient(90deg, #8000ff, #9933ff);
+  color: white;
+  box-shadow: 0 0 15px rgba(128, 0, 255, 0.5);
+}
