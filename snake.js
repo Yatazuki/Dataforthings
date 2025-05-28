@@ -51,15 +51,39 @@ function generateFood() {
 }
 
 function drawSnake() {
-  snake.forEach(segment => {
-    ctx.fillStyle = '#bf80ff'; // Light purple color
+  snake.forEach((segment, index) => {
+    // Create subtle color gradient for snake
+    if (index === 0) {
+      // Head of the snake with slightly stronger purple
+      ctx.fillStyle = '#8855cc';
+    } else {
+      // Body with subtle gradient
+      const gradientPosition = index / snake.length;
+      const r = Math.floor(160 - (gradientPosition * 30));
+      const g = Math.floor(100 - (gradientPosition * 15));
+      const b = Math.floor(210 - (gradientPosition * 15));
+      ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+    }
+    
+    // Draw simple square for snake segments
     ctx.fillRect(segment.x, segment.y, 10, 10);
+    
+    // Add subtle border
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(segment.x, segment.y, 10, 10);
   });
 }
 
 function drawFood() {
-  ctx.fillStyle = '#FFFFFF'; // White color
+  // Simple food square
+  ctx.fillStyle = '#dd65aa';
   ctx.fillRect(food.x, food.y, 10, 10);
+  
+  // Add subtle border
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(food.x, food.y, 10, 10);
 }
 
 function moveSnake() {
@@ -194,7 +218,29 @@ async function gameOver() {
 }
 
 function gameLoop() {
+  // Clear background
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // Draw subtle grid lines
+  ctx.strokeStyle = 'rgba(128, 0, 255, 0.05)';
+  ctx.lineWidth = 1;
+  
+  // Draw vertical grid lines
+  for (let i = 0; i <= canvas.width; i += 20) {
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i, canvas.height);
+    ctx.stroke();
+  }
+  
+  // Draw horizontal grid lines
+  for (let i = 0; i <= canvas.height; i += 20) {
+    ctx.beginPath();
+    ctx.moveTo(0, i);
+    ctx.lineTo(canvas.width, i);
+    ctx.stroke();
+  }
+  
   drawFood();
   moveSnake();
   drawSnake();
