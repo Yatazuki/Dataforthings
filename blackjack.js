@@ -93,75 +93,54 @@ function dealCard(hand) {
 }
 
 // Render hands
-function renderHands() {
+function renderHands(showDealerHole = false) {
   gameBoard.innerHTML = '';
-  
-  // Game board container with spacing
   const gameContainer = document.createElement('div');
   gameContainer.style.display = 'flex';
-  gameContainer.style.flexDirection = 'column';
-  gameContainer.style.gap = '40px';
-  gameContainer.style.alignItems = 'center';
+  gameContainer.style.flexDirection = 'row';
+  gameContainer.style.gap = '60px';
+  gameContainer.style.alignItems = 'flex-start';
+  gameContainer.style.justifyContent = 'center';
   gameContainer.style.width = '100%';
-  
+
   // Dealer's hand
   const dealerHandDiv = document.createElement('div');
   dealerHandDiv.classList.add('dealer-hand');
   dealerHandDiv.innerHTML = `<h3>Dealer's Hand</h3><div class="hand-value" id="dealerValue"></div>`;
-  
   const dealerValue = calculateHandValue(dealerHand);
   const dealerValueDisplay = dealerHandDiv.querySelector('#dealerValue');
-  
   const dealerCardsDiv = document.createElement('div');
   dealerCardsDiv.classList.add('cards-container');
-  
   dealerHand.forEach((card, index) => {
     const cardElement = document.createElement('div');
     cardElement.classList.add('blackjack-card');
-    
-    // Set color for red cards (hearts and diamonds)
-    if (card.includes('♥️') || card.includes('♦️')) {
-      cardElement.classList.add('red');
-    } else {
-      cardElement.classList.add('black');
-    }
-    
-    // Hide first card if game is in progress and player hasn't stood yet
-    if (index === 0 && playerHand.length > 0 && hitButton.disabled === false) {
+    const suit = card.slice(-1);
+    cardElement.classList.add(cardColors[suit] || 'black');
+    if (index === 0 && !showDealerHole && hitButton && !hitButton.disabled) {
       cardElement.classList.add('card-back');
       dealerValueDisplay.textContent = '';
     } else {
-      const cardValue = card.slice(0, -1);
-      const cardSuit = card.slice(-1);
-      const suitOnly = suitSymbols[cardSuit] || cardSuit;
-      
-      // Get numerical value for display in corners
-      let displayValue = cardValues[cardValue] || cardValue;
-      
-      // Center suit symbol only
+      const value = card.slice(0, -1);
+      const suitSymbol = suitSymbols[suit] || suit;
+      // Center suit
       const symbolSpan = document.createElement('span');
       symbolSpan.classList.add('card-symbol');
-      symbolSpan.textContent = suitOnly;
+      symbolSpan.textContent = suitSymbol;
       cardElement.appendChild(symbolSpan);
-      
-      // Top left corner - just the number
-      const topLeftValue = document.createElement('div');
-      topLeftValue.classList.add('card-value', 'top-left');
-      topLeftValue.textContent = displayValue;
-      cardElement.appendChild(topLeftValue);
-      
-      // Bottom right corner - just the number
-      const bottomRightValue = document.createElement('div');
-      bottomRightValue.classList.add('card-value', 'bottom-right');
-      bottomRightValue.textContent = displayValue;
-      cardElement.appendChild(bottomRightValue);
-      
+      // Top left
+      const topLeft = document.createElement('div');
+      topLeft.classList.add('card-value', 'top-left');
+      topLeft.textContent = value;
+      cardElement.appendChild(topLeft);
+      // Bottom right
+      const bottomRight = document.createElement('div');
+      bottomRight.classList.add('card-value', 'bottom-right');
+      bottomRight.textContent = value;
+      cardElement.appendChild(bottomRight);
       dealerValueDisplay.textContent = `Value: ${dealerValue}`;
     }
-    
     dealerCardsDiv.appendChild(cardElement);
   });
-  
   dealerHandDiv.appendChild(dealerCardsDiv);
   gameContainer.appendChild(dealerHandDiv);
 
@@ -170,53 +149,34 @@ function renderHands() {
   playerHandDiv.classList.add('player-hand');
   const playerValue = calculateHandValue(playerHand);
   playerHandDiv.innerHTML = `<h3>Your Hand</h3><div class="hand-value">Value: ${playerValue}</div>`;
-  
   const playerCardsDiv = document.createElement('div');
   playerCardsDiv.classList.add('cards-container');
-  
   playerHand.forEach(card => {
     const cardElement = document.createElement('div');
     cardElement.classList.add('blackjack-card');
-    
-    // Set color for red cards (hearts and diamonds)
-    if (card.includes('♥️') || card.includes('♦️')) {
-      cardElement.classList.add('red');
-    } else {
-      cardElement.classList.add('black');
-    }
-    
-    const cardValue = card.slice(0, -1);
-    const cardSuit = card.slice(-1);
-    const suitOnly = suitSymbols[cardSuit] || cardSuit;
-    
-    // Get numerical value for display in corners
-    let displayValue = cardValues[cardValue] || cardValue;
-    
-    // Center suit symbol only
+    const suit = card.slice(-1);
+    cardElement.classList.add(cardColors[suit] || 'black');
+    const value = card.slice(0, -1);
+    const suitSymbol = suitSymbols[suit] || suit;
+    // Center suit
     const symbolSpan = document.createElement('span');
     symbolSpan.classList.add('card-symbol');
-    symbolSpan.textContent = suitOnly;
+    symbolSpan.textContent = suitSymbol;
     cardElement.appendChild(symbolSpan);
-    
-    // Top left corner - just the number
-    const topLeftValue = document.createElement('div');
-    topLeftValue.classList.add('card-value', 'top-left');
-    topLeftValue.textContent = displayValue;
-    cardElement.appendChild(topLeftValue);
-    
-    // Bottom right corner - just the number
-    const bottomRightValue = document.createElement('div');
-    bottomRightValue.classList.add('card-value', 'bottom-right');
-    bottomRightValue.textContent = displayValue;
-    cardElement.appendChild(bottomRightValue);
-    
+    // Top left
+    const topLeft = document.createElement('div');
+    topLeft.classList.add('card-value', 'top-left');
+    topLeft.textContent = value;
+    cardElement.appendChild(topLeft);
+    // Bottom right
+    const bottomRight = document.createElement('div');
+    bottomRight.classList.add('card-value', 'bottom-right');
+    bottomRight.textContent = value;
+    cardElement.appendChild(bottomRight);
     playerCardsDiv.appendChild(cardElement);
   });
-  
   playerHandDiv.appendChild(playerCardsDiv);
   gameContainer.appendChild(playerHandDiv);
-  
-  // Add the game container to the board
   gameBoard.appendChild(gameContainer);
 }
 
