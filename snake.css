@@ -40,6 +40,7 @@ body {
   justify-content: center;
   width: 70vw;
   max-width: 1200px;
+  text-align: center;
 }
 .game-container:hover {
   box-shadow: 0 0 25px rgba(128, 0, 255, 0.4);
@@ -57,6 +58,7 @@ body {
   margin-bottom: 32px;
   width: 100%;
   max-width: 600px;
+  text-align: center;
 }
 #gameCanvas {
   background: rgba(0,0,0,0.85);
@@ -76,6 +78,7 @@ body {
   display: flex;
   gap: 30px;
   justify-content: center;
+  text-align: center;
 }
 .score-value {
   font-weight: bold;
@@ -104,6 +107,7 @@ body {
   font-size: 1.1rem;
   margin-top: 10px;
   text-shadow: 0 0 8px #8000ff;
+  text-align: center;
 }
 .leaderboard {
   background: rgba(128, 0, 255, 0.15);
@@ -117,6 +121,9 @@ body {
   text-align: center;
   width: 100%;
   align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .leaderboard h3 {
   color: #a065dd;
@@ -130,6 +137,7 @@ body {
   background: transparent;
   border-radius: 10px;
   overflow: hidden;
+  text-align: center;
 }
 .leaderboard-table th, .leaderboard-table td {
   background: rgba(128, 0, 255, 0.08);
