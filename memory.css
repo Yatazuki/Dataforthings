@@ -19,6 +19,11 @@ body {
   position: relative;
   z-index: 2;
 }
+.container.mt-5 {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
 .game-container {
   background: rgba(0, 0, 0, 0.85);
   border: 1px solid rgba(128, 0, 255, 0.3);
@@ -27,14 +32,12 @@ body {
   padding: 30px;
   margin-top: 30px;
   transition: all 0.3s ease;
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   width: auto;
   max-width: 100vw;
-  margin-left: auto;
-  margin-right: auto;
 }
 .game-container:hover {
   box-shadow: 0 0 25px rgba(128, 0, 255, 0.4);
