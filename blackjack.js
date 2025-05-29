@@ -7,16 +7,6 @@ const suitSymbols = {
   '♥': '♥',
   '♦': '♦'
 };
-const cardValues = {
-  '2': '2', '3': '3', '4': '4', '5': '5', '6': '6', '7': '7', '8': '8', '9': '9', '10': '10',
-  'J': '11', 'Q': '12', 'K': '13', 'A': 'A'
-};
-const cardImages = {
-  '2♠️': '🂢', '3♠️': '🂣', '4♠️': '🂤', '5♠️': '🂥', '6♠️': '🂦', '7♠️': '🂧', '8♠️': '🂨', '9♠️': '🂩', '10♠️': '🂪', 'J♠️': '🂫', 'Q♠️': '🂭', 'K♠️': '🂮', 'A♠️': '🂡',
-  '2♣️': '🃒', '3♣️': '🃓', '4♣️': '🃔', '5♣️': '🃕', '6♣️': '🃖', '7♣️': '🃗', '8♣️': '🃘', '9♣️': '🃙', '10♣️': '🃚', 'J♣️': '🃛', 'Q♣️': '🃝', 'K♣️': '🃞', 'A♣️': '🃑',
-  '2♥️': '🂲', '3♥️': '🂳', '4♥️': '🂴', '5♥️': '🂵', '6♥️': '🂶', '7♥️': '🂷', '8♥️': '🂸', '9♥️': '🂹', '10♥️': '🂺', 'J♥️': '🂻', 'Q♥️': '🂽', 'K♥️': '🂾', 'A♥️': '🂱',
-  '2♦️': '🃂', '3♦️': '🃃', '4♦️': '🃄', '5♦️': '🃅', '6♦️': '🃆', '7♦️': '🃇', '8♦️': '🃈', '9♦️': '🃉', '10♦️': '🃊', 'J♦️': '🃋', 'Q♦️': '🃍', 'K♦️': '🃎', 'A♦️': '🃁'
-};
 
 let deck = [];
 let playerHand = [];
@@ -114,13 +104,18 @@ function renderHands(showDealerHole = false) {
   dealerHand.forEach((card, index) => {
     const cardElement = document.createElement('div');
     cardElement.classList.add('blackjack-card');
-    const suit = card.slice(-1);
+    // Extract value and suit robustly
+    const match = card.match(/^(10|[2-9JQKA])([♠♣♥♦])$/);
+    let value = '', suit = '';
+    if (match) {
+      value = match[1];
+      suit = match[2];
+    }
     cardElement.classList.add(cardColors[suit] || 'black');
     if (index === 0 && !showDealerHole && hitButton && !hitButton.disabled) {
       cardElement.classList.add('card-back');
       dealerValueDisplay.textContent = '';
     } else {
-      const value = card.slice(0, -1);
       const suitSymbol = suitSymbols[suit] || suit;
       // Center suit
       const symbolSpan = document.createElement('span');
@@ -154,25 +149,30 @@ function renderHands(showDealerHole = false) {
   playerHand.forEach(card => {
     const cardElement = document.createElement('div');
     cardElement.classList.add('blackjack-card');
-    const suit = card.slice(-1);
-    cardElement.classList.add(cardColors[suit] || 'black');
-    const value = card.slice(0, -1);
-    const suitSymbol = suitSymbols[suit] || suit;
+    // Extract value and suit robustly
+    const matchP = card.match(/^(10|[2-9JQKA])([♠♣♥♦])$/);
+    let valueP = '', suitP = '';
+    if (matchP) {
+      valueP = matchP[1];
+      suitP = matchP[2];
+    }
+    cardElement.classList.add(cardColors[suitP] || 'black');
+    const suitSymbolP = suitSymbols[suitP] || suitP;
     // Center suit
-    const symbolSpan = document.createElement('span');
-    symbolSpan.classList.add('card-symbol');
-    symbolSpan.textContent = suitSymbol;
-    cardElement.appendChild(symbolSpan);
+    const symbolSpanP = document.createElement('span');
+    symbolSpanP.classList.add('card-symbol');
+    symbolSpanP.textContent = suitSymbolP;
+    cardElement.appendChild(symbolSpanP);
     // Top left
-    const topLeft = document.createElement('div');
-    topLeft.classList.add('card-value', 'top-left');
-    topLeft.textContent = value;
-    cardElement.appendChild(topLeft);
+    const topLeftP = document.createElement('div');
+    topLeftP.classList.add('card-value', 'top-left');
+    topLeftP.textContent = valueP;
+    cardElement.appendChild(topLeftP);
     // Bottom right
-    const bottomRight = document.createElement('div');
-    bottomRight.classList.add('card-value', 'bottom-right');
-    bottomRight.textContent = value;
-    cardElement.appendChild(bottomRight);
+    const bottomRightP = document.createElement('div');
+    bottomRightP.classList.add('card-value', 'bottom-right');
+    bottomRightP.textContent = valueP;
+    cardElement.appendChild(bottomRightP);
     playerCardsDiv.appendChild(cardElement);
   });
   playerHandDiv.appendChild(playerCardsDiv);
