@@ -23,27 +23,66 @@ async function updateTicTacToeWins() {
   const userId = localStorage.getItem('user_id');
   if (!userId || !supabase) return;
   try {
-    // Get the user's row in user_scores
-    const { data: userScore, error: fetchError } = await supabase
+    // 1. Fetch username from login table
+    const { data: userData, error: userError } = await supabase
+      .from('login')
+      .select('username')
+      .eq('user_id', userId)
+      .single();
+    if (userError) {
+      console.error('Error fetching username:', userError);
+      return;
+    }
+    if (!userData || !userData.username) {
+      console.error('Username not found in database');
+      return;
+    }
+    const username = userData.username;
+
+    // 2. Check if user already has a record in user_scores
+    const { data: existingData, error: fetchError } = await supabase
       .from('user_scores')
       .select('id, tictactoe_wins')
       .eq('user_id', userId)
       .single();
-    if (fetchError) {
-      console.error('Error fetching user_scores for tictactoe win:', fetchError);
+    if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+      console.error('Error fetching existing tictactoe_wins:', fetchError);
       return;
     }
-    if (!userScore) return;
-    // Increment tictactoe_wins
-    const { data, error } = await supabase
-      .from('user_scores')
-      .update({
-        tictactoe_wins: (userScore.tictactoe_wins || 0) + 1,
-        last_updated: new Date()
-      })
-      .eq('id', userScore.id);
-    if (error) {
-      console.error('Error updating tictactoe_wins:', error);
+
+    if (!existingData) {
+      // No record: insert new row with tictactoe_wins = 1
+      const { data, error } = await supabase
+        .from('user_scores')
+        .insert([{
+          user_id: userId,
+          username: username,
+          snake_score: 0,
+          tictactoe_wins: 1,
+          memory_score: 0,
+          clickspeed_score: 0,
+          blackjack_score: 0,
+          last_updated: new Date()
+        }]);
+      if (error) {
+        console.error('Error inserting new tictactoe_wins row:', error);
+      } else {
+        console.log('New tictactoe_wins record created:', data);
+      }
+    } else {
+      // Record exists: increment tictactoe_wins
+      const { data, error } = await supabase
+        .from('user_scores')
+        .update({
+          tictactoe_wins: (existingData.tictactoe_wins || 0) + 1,
+          last_updated: new Date()
+        })
+        .eq('id', existingData.id);
+      if (error) {
+        console.error('Error updating tictactoe_wins:', error);
+      } else {
+        console.log('tictactoe_wins updated:', data);
+      }
     }
   } catch (err) {
     console.error('Exception updating tictactoe_wins:', err);
