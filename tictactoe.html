@@ -146,6 +146,13 @@
     </div>
   </div>
 
+  <script type="module">
+    import { supabase, getCurrentUser } from './auth.js';
+    window.supabaseAuth = {
+      supabase,
+      getCurrentUser
+    };
+  </script>
   <script>
     function logout() {
       localStorage.removeItem("user_id");
