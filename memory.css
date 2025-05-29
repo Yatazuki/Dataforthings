@@ -1,0 +1,88 @@
+body {
+  background-image: url('background1.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  position: relative;
+}
+#particles-js {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  background-color: transparent;
+}
+.content-wrapper {
+  position: relative;
+  z-index: 2;
+}
+.game-container {
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(128, 0, 255, 0.3);
+  box-shadow: 0 0 20px rgba(128, 0, 255, 0.2);
+  border-radius: 15px;
+  padding: 30px;
+  margin-top: 30px;
+  transition: all 0.3s ease;
+}
+.game-container:hover {
+  box-shadow: 0 0 25px rgba(128, 0, 255, 0.4);
+  border-color: rgba(128, 0, 255, 0.6);
+}
+.game-title {
+  font-weight: 800;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #ffffff, #d0b0ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 15px rgba(128, 0, 255, 0.5);
+  margin-bottom: 30px;
+}
+.btn-group .btn {
+  background: rgba(128, 0, 255, 0.2);
+  border: 1px solid rgba(128, 0, 255, 0.3);
+  color: white;
+  transition: all 0.3s ease;
+}
+.btn-group .btn:hover {
+  background: rgba(128, 0, 255, 0.3);
+  border-color: rgba(128, 0, 255, 0.5);
+  box-shadow: 0 0 15px rgba(128, 0, 255, 0.3);
+}
+.btn-check:checked + .btn {
+  background: linear-gradient(90deg, #8000ff, #9933ff);
+  border-color: rgba(128, 0, 255, 0.6);
+  box-shadow: 0 0 15px rgba(128, 0, 255, 0.4);
+}
+#startButton {
+  background: linear-gradient(90deg, #8000ff, #9933ff);
+  border: none;
+  padding: 8px 20px;
+  font-weight: 600;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(128, 0, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+#startButton:hover {
+  background: linear-gradient(90deg, #9933ff, #8000ff);
+  box-shadow: 0 0 20px rgba(128, 0, 255, 0.7);
+  transform: translateY(-3px);
+}
+.memory-stats {
+  color: rgba(255,255,255,0.8);
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+#memory-status {
+  min-height: 32px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 0 8px #8000ff;
+} 
