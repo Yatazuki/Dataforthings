@@ -4,6 +4,8 @@ body {
   background-position: center;
   background-attachment: fixed;
   position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 #particles-js {
   position: fixed;
@@ -17,10 +19,12 @@ body {
 }
 .snake-center-wrapper {
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  align-items: flex-start;
-  min-height: 80vh;
+  align-items: center;
+  min-height: 100vh;
   width: 100vw;
+  padding-bottom: 40px;
 }
 .game-container {
   background: rgba(0, 0, 0, 0.85);
@@ -28,7 +32,7 @@ body {
   box-shadow: 0 0 20px rgba(128, 0, 255, 0.2);
   border-radius: 15px;
   padding: 30px;
-  margin-top: 30px;
+  margin: 40px auto 0 auto;
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
@@ -155,4 +159,20 @@ body {
   background-color: rgba(128, 0, 255, 0.6);
   transform: scale(0.95);
   box-shadow: 0 0 20px rgba(128, 0, 255, 0.5);
+}
+@media (max-width: 600px) {
+  .game-container {
+    padding: 10px;
+    max-width: 98vw;
+  }
+  .leaderboard {
+    max-width: 98vw;
+    padding: 10px 2vw 8px 2vw;
+  }
+  #gameCanvas {
+    width: 98vw !important;
+    height: 98vw !important;
+    max-width: 98vw;
+    max-height: 98vw;
+  }
 } 
