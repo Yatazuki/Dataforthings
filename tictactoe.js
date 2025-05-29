@@ -19,6 +19,39 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// Show and update the Tic Tac Toe wins box
+async function updateWinsBox() {
+  const userId = localStorage.getItem('user_id');
+  const box = document.getElementById('tictactoe-wins-box');
+  const count = document.getElementById('tictactoe-wins-count');
+  if (!userId || !supabase || !box || !count) {
+    if (box) box.style.display = 'none';
+    return;
+  }
+  try {
+    const { data, error } = await supabase
+      .from('user_scores')
+      .select('tictactoe_wins')
+      .eq('user_id', userId)
+      .single();
+    if (error || !data) {
+      box.style.display = 'none';
+      return;
+    }
+    count.textContent = data.tictactoe_wins || 0;
+    box.style.display = '';
+  } catch (err) {
+    box.style.display = 'none';
+  }
+}
+
+// Call updateWinsBox on page load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', updateWinsBox);
+} else {
+  updateWinsBox();
+}
+
 async function updateTicTacToeWins() {
   const userId = localStorage.getItem('user_id');
   if (!userId || !supabase) return;
@@ -84,6 +117,8 @@ async function updateTicTacToeWins() {
         console.log('tictactoe_wins updated:', data);
       }
     }
+    // Update the wins box after DB update
+    updateWinsBox();
   } catch (err) {
     console.error('Exception updating tictactoe_wins:', err);
   }
