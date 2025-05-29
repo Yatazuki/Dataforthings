@@ -1,4 +1,3 @@
-
 # Yatazuki Web Application - Complete Documentation
 
 ## Project Overview
@@ -126,11 +125,6 @@ CREATE TABLE game_scores (
 - Memory card matching game
 - Multiple difficulty levels
 - Score tracking system
-
-#### clickspeed.js & clickspeed.html
-- Click speed testing game
-- CPS measurement
-- High score tracking
 
 ### 4. Utility Files
 

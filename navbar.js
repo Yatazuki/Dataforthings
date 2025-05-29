@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
                   <li><a class="dropdown-item" id="nav-snake" href="snake.html">Snake Game</a></li>
                   <li><a class="dropdown-item" id="nav-tictactoe" href="tictactoe.html">Tic-tac-toe</a></li>
                   <li><a class="dropdown-item" id="nav-memory" href="memory.html">Memory</a></li>
-                  <li><a class="dropdown-item" id="nav-clickspeed" href="clickspeed.html">Click Speed Test</a></li>
                   <li><a class="dropdown-item" id="nav-blackjack" href="blackjack.html">Blackjack</a></li>
                 </ul>
               </li>
@@ -83,9 +82,6 @@ function setActiveNavItem(currentPage) {
     document.getElementById('gamesDropdown').classList.add('active');
   } else if (currentPage === 'memory.html') {
     document.getElementById('nav-memory').classList.add('active');
-    document.getElementById('gamesDropdown').classList.add('active');
-  } else if (currentPage === 'clickspeed.html') {
-    document.getElementById('nav-clickspeed').classList.add('active');
     document.getElementById('gamesDropdown').classList.add('active');
   } else if (currentPage === 'blackjack.html') {
     document.getElementById('nav-blackjack').classList.add('active');
