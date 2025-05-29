@@ -47,7 +47,7 @@ body {
   border-color: rgba(128, 0, 255, 0.6);
 }
 .game-panel {
-  background: rgba(0, 0, 0, 0.7);
+  background: #181824;
   border: 2px solid rgba(128, 0, 255, 0.3);
   border-radius: 15px;
   box-shadow: 0 0 15px rgba(128, 0, 255, 0.2);
