@@ -256,6 +256,14 @@ function makeBotMove() {
   }
 }
 
+function setStatusMessage(msg, color) {
+  const status = document.getElementById('tictactoe-status');
+  if (status) {
+    status.textContent = msg || '';
+    status.style.color = color || '#fff';
+  }
+}
+
 function handleCellClick(index) {
   const cells = board.children;
   
@@ -269,7 +277,7 @@ function handleCellClick(index) {
     
     if (checkWin()) {
       setTimeout(() => {
-        alert(`Player ${currentPlayer} wins!`);
+        setStatusMessage(`Player ${currentPlayer} wins!`, currentPlayer === 'X' ? '#ff5555' : '#55ff55');
         gameActive = false;
         // Update wins in Supabase if user is logged in
         updateTicTacToeWins();
@@ -279,7 +287,7 @@ function handleCellClick(index) {
     
     if (checkDraw()) {
       setTimeout(() => {
-        alert("It's a draw!");
+        setStatusMessage("It's a draw!", '#d0b0ff');
         gameActive = false;
       }, 100);
       return;
@@ -290,6 +298,7 @@ function handleCellClick(index) {
     currentPlayerDisplay.style.color = currentPlayer === 'X' ? '#ff5555' : '#55ff55';
     currentPlayerDisplay.style.textShadow = `0 0 10px ${currentPlayer === 'X' ? 'rgba(255, 0, 0, 0.5)' : 'rgba(0, 255, 0, 0.5)'}`;
 
+    setStatusMessage('', '');
     if (botDifficulty !== 'human' && currentPlayer === 'O' && gameActive) {
       makeBotMove();
     }
@@ -322,6 +331,7 @@ function resetGame() {
   currentPlayerDisplay.textContent = currentPlayer;
   currentPlayerDisplay.style.color = currentPlayer === 'X' ? '#ff5555' : '#55ff55';
   currentPlayerDisplay.style.textShadow = `0 0 10px ${currentPlayer === 'X' ? 'rgba(255, 0, 0, 0.5)' : 'rgba(0, 255, 0, 0.5)'}`;
+  setStatusMessage('', '');
   
   const cells = board.children;
   for (let cell of cells) {
