@@ -24,6 +24,13 @@ body {
   justify-content: center;
   align-items: flex-start;
 }
+.memory-center-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 80vh;
+  width: 100vw;
+}
 .game-container {
   background: rgba(0, 0, 0, 0.85);
   border: 1px solid rgba(128, 0, 255, 0.3);

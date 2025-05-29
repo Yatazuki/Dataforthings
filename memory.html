@@ -14,37 +14,31 @@
 <body>
   <!-- Navbar will be inserted by navbar.js -->
   <div id="particles-js"></div>
-  <div class="content-wrapper">
-    <div class="container mt-5">
-      <div class="row justify-content-center">
-        <div class="col-md-8">
-          <div class="game-container">
-            <h2 class="game-title text-center">Memory Game</h2>
-            <div id="memory-wins-box" class="mb-4" style="display:none;">
-              <div class="card text-center" style="background:rgba(128,0,255,0.15);border:1px solid #a065dd;box-shadow:0 0 15px rgba(128,0,255,0.2);border-radius:12px;max-width:300px;margin:0 auto;">
-                <div class="card-body">
-                  <h5 class="card-title" style="color:#a065dd;text-shadow:0 0 8px #a065dd;">Your Memory Wins</h5>
-                  <p class="card-text" style="font-size:2rem;font-weight:bold;" id="memory-wins-count">0</p>
-                </div>
-              </div>
-            </div>
-            <div id="memory-status" class="mb-3 text-center"></div>
-            <div class="memory-stats">Moves: <span id="moves">0</span> | Best Score: <span id="bestScore">-</span></div>
-            <div class="mb-4">
-              <div class="btn-group" role="group">
-                <input type="radio" class="btn-check" name="difficulty" id="easy" value="easy" checked>
-                <label class="btn btn-outline-light" for="easy">Easy</label>
-                <input type="radio" class="btn-check" name="difficulty" id="medium" value="medium">
-                <label class="btn btn-outline-light" for="medium">Medium</label>
-                <input type="radio" class="btn-check" name="difficulty" id="hard" value="hard">
-                <label class="btn btn-outline-light" for="hard">Hard</label>
-              </div>
-            </div>
-            <button id="startButton" class="btn mb-2">New Game</button>
-            <div id="game-board" class="mt-4 mx-auto"></div>
+  <div class="memory-center-wrapper">
+    <div class="game-container">
+      <h2 class="game-title text-center">Memory Game</h2>
+      <div id="memory-wins-box" class="mb-4" style="display:none;">
+        <div class="card text-center" style="background:rgba(128,0,255,0.15);border:1px solid #a065dd;box-shadow:0 0 15px rgba(128,0,255,0.2);border-radius:12px;max-width:300px;margin:0 auto;">
+          <div class="card-body">
+            <h5 class="card-title" style="color:#a065dd;text-shadow:0 0 8px #a065dd;">Your Memory Wins</h5>
+            <p class="card-text" style="font-size:2rem;font-weight:bold;" id="memory-wins-count">0</p>
           </div>
         </div>
       </div>
+      <div id="memory-status" class="mb-3 text-center"></div>
+      <div class="memory-stats">Moves: <span id="moves">0</span> | Best Score: <span id="bestScore">-</span></div>
+      <div class="mb-4">
+        <div class="btn-group" role="group">
+          <input type="radio" class="btn-check" name="difficulty" id="easy" value="easy" checked>
+          <label class="btn btn-outline-light" for="easy">Easy</label>
+          <input type="radio" class="btn-check" name="difficulty" id="medium" value="medium">
+          <label class="btn btn-outline-light" for="medium">Medium</label>
+          <input type="radio" class="btn-check" name="difficulty" id="hard" value="hard">
+          <label class="btn btn-outline-light" for="hard">Hard</label>
+        </div>
+      </div>
+      <button id="startButton" class="btn mb-2">New Game</button>
+      <div id="game-board" class="mt-4 mx-auto"></div>
     </div>
   </div>
   <script type="module">
