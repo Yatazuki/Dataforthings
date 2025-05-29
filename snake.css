@@ -27,7 +27,7 @@ body {
   padding-bottom: 40px;
 }
 .game-container {
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(24, 24, 36, 0.97);
   border: 1px solid rgba(128, 0, 255, 0.3);
   box-shadow: 0 0 20px rgba(128, 0, 255, 0.2);
   border-radius: 15px;
@@ -112,7 +112,7 @@ body {
   text-align: center;
 }
 .leaderboard {
-  background: rgba(128, 0, 255, 0.15);
+  background: rgba(128, 0, 255, 0.25);
   border: 1px solid #a065dd;
   box-shadow: 0 0 15px rgba(128,0,255,0.2);
   border-radius: 16px;
