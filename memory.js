@@ -1,4 +1,3 @@
-
 const easyCards = ['🐱', '🐶', '🐭', '🐹', '🐰', '🦊'];
 const mediumCards = ['🐱', '🐶', '🐭', '🐹', '🐰', '🦊', '🐼', '🐨', '🦁', '🐯', '🐮', '🐷'];
 const hardCards = ['🐱', '🐶', '🐭', '🐹', '🐰', '🦊', '🐼', '🐨', '🦁', '🐯', '🐮', '🐷', '🐸', '🐙', '🦋', '🦉', '🐝', '🐞', '🦗', '🦒', '🦘', '🦬', '🦙', '🦥', '🦦', '🦨', '🦡', '🐘', '🦏', '🦛', '🦌', '🐪', '🦍', '🦧', '🐅', '🐆', '🦓', '🦃', '🦩', '🦫', '🦎', '🦕', '🦖', '🐊', '🐢', '🦂', '🕷️', '🦗', '🦟', '🦋', '🐌', '🐛', '🦄', '🦮', '🐕', '🐈', '🦤', '🦢', '🦆', '🦅', '🦜', '🕊️', '🐧', '🦭', '🦈', '🐠', '🐟', '🐡', '🐋', '🐳', '🦐', '🦑', '🦞', '🦀', '🐚', '🦪', '🌺', '🌸', '🏵️', '💐', '🌷', '🌹', '🌻', '🍄'];
@@ -24,6 +23,47 @@ const startButton = document.getElementById('startButton');
 const difficultyInputs = document.querySelectorAll('input[name="difficulty"]');
 
 bestScoreDisplay.textContent = bestScore;
+
+// Supabase best score update logic for Memory Game
+let supabase = null;
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.supabaseAuth && window.supabaseAuth.supabase) {
+    supabase = window.supabaseAuth.supabase;
+  }
+});
+
+async function updateMemoryBestScore(difficulty, moves) {
+  const userId = localStorage.getItem('user_id');
+  if (!userId || !supabase) return;
+  const col = difficulty === 'easy' ? 'memory_easy' : difficulty === 'medium' ? 'memory_medium' : 'memory_hard';
+  try {
+    // Get the user's row in user_scores
+    const { data: userScore, error: fetchError } = await supabase
+      .from('user_scores')
+      .select(`id, ${col}`)
+      .eq('user_id', userId)
+      .single();
+    if (fetchError) {
+      console.error('Error fetching user_scores for memory best score:', fetchError);
+      return;
+    }
+    if (!userScore) return;
+    const prev = userScore[col] || 0;
+    if (prev === 0 || moves < prev) {
+      const { data, error } = await supabase
+        .from('user_scores')
+        .update({ [col]: moves, last_updated: new Date() })
+        .eq('id', userScore.id);
+      if (error) {
+        console.error('Error updating memory best score:', error);
+      } else {
+        console.log('Memory best score updated:', data);
+      }
+    }
+  } catch (err) {
+    console.error('Exception updating memory best score:', err);
+  }
+}
 
 function getCardsForDifficulty(difficulty) {
   switch(difficulty) {
@@ -117,6 +157,7 @@ function flipCard(card) {
             localStorage.setItem(`memoryBestScore_${currentDifficulty}`, moves);
             bestScoreDisplay.textContent = moves;
           }
+          updateMemoryBestScore(currentDifficulty, moves);
           alert(`Congratulations! You won in ${moves} moves!`);
         }, 500);
       }
