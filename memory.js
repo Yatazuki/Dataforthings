@@ -155,10 +155,9 @@ function flipCard(card) {
           if (bestScores[currentDifficulty] === '-' || moves < bestScores[currentDifficulty]) {
             bestScores[currentDifficulty] = moves;
             localStorage.setItem(`memoryBestScore_${currentDifficulty}`, moves);
-            bestScoreDisplay.textContent = moves;
+            updateBestScoreDisplay();
           }
           updateMemoryBestScore(currentDifficulty, moves);
-          alert(`Congratulations! You won in ${moves} moves!`);
         }, 500);
       }
     } else {
@@ -186,10 +185,14 @@ function startGame() {
   createBoard();
 }
 
+function updateBestScoreDisplay() {
+  bestScoreDisplay.textContent = bestScores[currentDifficulty];
+}
+
 difficultyInputs.forEach(input => {
   input.addEventListener('change', (e) => {
     currentDifficulty = e.target.value;
-    bestScoreDisplay.textContent = bestScores[currentDifficulty];
+    updateBestScoreDisplay();
     startGame();
   });
 });
