@@ -148,6 +148,95 @@
       background: linear-gradient(90deg, #8000ff, #ff00ea);
       margin: 0 auto;
     }
+    
+    .file-network {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin: 30px 0;
+      padding: 20px;
+    }
+    
+    .file-node {
+      background: rgba(128, 0, 255, 0.2);
+      border: 1px solid rgba(128, 0, 255, 0.5);
+      border-radius: 10px;
+      padding: 15px;
+      color: white;
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .file-node:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 20px rgba(128, 0, 255, 0.4);
+    }
+    
+    .file-type {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: rgba(128, 0, 255, 0.8);
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 0.8em;
+      text-transform: uppercase;
+    }
+    
+    .file-connections {
+      margin-top: 10px;
+      font-size: 0.9em;
+      color: #d0b0ff;
+    }
+    
+    .dependency-list {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0;
+    }
+    
+    .dependency-list li {
+      margin: 5px 0;
+      padding: 5px;
+      background: rgba(128, 0, 255, 0.1);
+      border-radius: 5px;
+    }
+    
+    .tech-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    
+    .tech-badge {
+      background: linear-gradient(90deg, #8000ff, #ff00ea);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.9em;
+    }
+    
+    .architecture-diagram {
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid rgba(128, 0, 255, 0.3);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    
+    .architecture-layer {
+      margin: 15px 0;
+      padding: 15px;
+      background: rgba(128, 0, 255, 0.1);
+      border-radius: 8px;
+    }
+    
+    .architecture-layer h4 {
+      color: #9933ff;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
@@ -157,21 +246,158 @@
     <section class="hero">
       <div class="container">
         <h1>Yatazuki Documentation</h1>
-        <p>Comprehensive documentation of all functions and page relationships</p>
+        <p>Comprehensive documentation of all functions, page relationships, and system architecture</p>
       </div>
     </section>
 
     <div class="container">
       <section class="section">
-        <h2>Page Network</h2>
+        <h2>Technology Stack</h2>
+        <div class="tech-stack">
+          <span class="tech-badge">HTML5</span>
+          <span class="tech-badge">CSS3</span>
+          <span class="tech-badge">JavaScript</span>
+          <span class="tech-badge">Bootstrap 5</span>
+          <span class="tech-badge">Supabase</span>
+          <span class="tech-badge">Particles.js</span>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>System Architecture</h2>
+        <div class="architecture-diagram">
+          <div class="architecture-layer">
+            <h4>Frontend Layer</h4>
+            <ul class="dependency-list">
+              <li>HTML Templates (dashboard.html, games/*.html)</li>
+              <li>CSS Styling (styles.css, navbar.css)</li>
+              <li>Client-side JavaScript (games/*.js, auth.js)</li>
+            </ul>
+          </div>
+          <div class="architecture-layer">
+            <h4>Backend Layer</h4>
+            <ul class="dependency-list">
+              <li>Supabase Authentication</li>
+              <li>Database Operations (backend.js)</li>
+              <li>API Integration</li>
+            </ul>
+          </div>
+          <div class="architecture-layer">
+            <h4>Data Layer</h4>
+            <ul class="dependency-list">
+              <li>User Profiles</li>
+              <li>Game Scores</li>
+              <li>Session Management</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>File Network</h2>
+        <div class="file-network">
+          <div class="file-node">
+            <span class="file-type">HTML</span>
+            <div>dashboard.html</div>
+            <div class="file-connections">
+              Dependencies:
+              <ul class="dependency-list">
+                <li>styles.css</li>
+                <li>navbar.css</li>
+                <li>navbar.js</li>
+                <li>particle.js</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="file-node">
+            <span class="file-type">HTML</span>
+            <div>snake.html</div>
+            <div class="file-connections">
+              Dependencies:
+              <ul class="dependency-list">
+                <li>snake.js</li>
+                <li>styles.css</li>
+                <li>navbar.js</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="file-node">
+            <span class="file-type">HTML</span>
+            <div>tictactoe.html</div>
+            <div class="file-connections">
+              Dependencies:
+              <ul class="dependency-list">
+                <li>tictactoe.js</li>
+                <li>styles.css</li>
+                <li>navbar.js</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="file-node">
+            <span class="file-type">HTML</span>
+            <div>memory.html</div>
+            <div class="file-connections">
+              Dependencies:
+              <ul class="dependency-list">
+                <li>memory.js</li>
+                <li>styles.css</li>
+                <li>navbar.js</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="file-node">
+            <span class="file-type">JS</span>
+            <div>auth.js</div>
+            <div class="file-connections">
+              Dependencies:
+              <ul class="dependency-list">
+                <li>backend.js</li>
+                <li>supabase-js</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="file-node">
+            <span class="file-type">JS</span>
+            <div>backend.js</div>
+            <div class="file-connections">
+              Dependencies:
+              <ul class="dependency-list">
+                <li>supabase-js</li>
+                <li>schema.sql</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Page Flow Diagram</h2>
         <div class="page-network">
+          <div class="page-node">Login/Register</div>
+          <div class="connection-line"></div>
           <div class="page-node">Dashboard</div>
           <div class="connection-line"></div>
-          <div class="page-node">Games</div>
+          <div class="page-node">Games Hub</div>
           <div class="connection-line"></div>
           <div class="page-node">Profile</div>
           <div class="connection-line"></div>
           <div class="page-node">Notes</div>
+        </div>
+        <div class="page-network" style="margin-top: 20px;">
+          <div class="page-node">Games Hub</div>
+          <div class="connection-line"></div>
+          <div class="page-node">Snake</div>
+          <div class="connection-line"></div>
+          <div class="page-node">Tic-tac-toe</div>
+          <div class="connection-line"></div>
+          <div class="page-node">Memory</div>
+          <div class="connection-line"></div>
+          <div class="page-node">Click Speed</div>
         </div>
       </section>
 
@@ -267,6 +493,42 @@
             - getUserData(): Retrieves user information
             - updateProfile(): Modifies user profiles
             - getLeaderboard(): Fetches high scores
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Security Implementation</h2>
+        <div class="function-doc">
+          <div class="function-name">Authentication & Authorization</div>
+          <div class="function-description">
+            Implementation of secure user authentication and session management.
+          </div>
+          <div class="code-block">
+            Security Features:
+            - JWT-based authentication
+            - Secure password hashing
+            - Session management
+            - CSRF protection
+            - XSS prevention
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Performance Optimization</h2>
+        <div class="function-doc">
+          <div class="function-name">Optimization Techniques</div>
+          <div class="function-description">
+            Methods implemented to ensure optimal performance.
+          </div>
+          <div class="code-block">
+            Optimizations:
+            - Lazy loading of game assets
+            - Efficient DOM manipulation
+            - Caching strategies
+            - Database query optimization
+            - Asset compression
           </div>
         </div>
       </section>
