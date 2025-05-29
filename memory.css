@@ -85,4 +85,34 @@ body {
   font-weight: 600;
   color: #fff;
   text-shadow: 0 0 8px #8000ff;
+}
+.memory-card {
+  width: 100px;
+  height: 100px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 2px solid rgba(128, 0, 255, 0.3);
+  border-radius: 15px;
+  box-shadow: 0 0 15px rgba(128, 0, 255, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.8rem;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  user-select: none;
+  position: relative;
+}
+.memory-card:hover {
+  box-shadow: 0 0 25px rgba(128, 0, 255, 0.4);
+  border-color: rgba(128, 0, 255, 0.6);
+  transform: scale(1.05);
+}
+.memory-card.matched {
+  background: rgba(0, 255, 128, 0.2);
+  border-color: #55ffbb;
+  color: #55ffbb;
+  box-shadow: 0 0 25px #55ffbb99;
+  text-shadow: 0 0 10px #55ffbb;
 } 
