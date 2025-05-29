@@ -26,45 +26,43 @@
           <h3 id="playerInfo" class="welcome-user">Playing as: Guest</h3>
         </div>
       </section>
-      <div class="snake-game-flex">
-        <div class="game-panel">
-          <canvas id="gameCanvas" width="400" height="400"></canvas>
-          <div class="mt-3">
-            <div class="score-display mb-3">
-              <span>Score: <span id="score" class="score-value">0</span></span>
-              <span>High Score: <span id="highScore" class="score-value">0</span></span>
-            </div>
-            <button id="startButton" class="btn mb-3">Start Game</button>
-            <p class="game-instructions">Click Start or canvas to begin!</p>
-            <div class="mobile-controls d-md-none mt-4">
-              <div class="d-flex flex-column align-items-center">
-                <button id="upBtn" class="control-btn mb-2">↑</button>
-                <div class="d-flex justify-content-center align-items-center">
-                  <button id="leftBtn" class="control-btn me-4">←</button>
-                  <button id="downBtn" class="control-btn mx-2">↓</button>
-                  <button id="rightBtn" class="control-btn ms-4">→</button>
-                </div>
+      <div class="game-panel">
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
+        <div class="mt-3">
+          <div class="score-display mb-3">
+            <span>Score: <span id="score" class="score-value">0</span></span>
+            <span>High Score: <span id="highScore" class="score-value">0</span></span>
+          </div>
+          <button id="startButton" class="btn mb-3">Start Game</button>
+          <p class="game-instructions">Click Start or canvas to begin!</p>
+          <div class="mobile-controls d-md-none mt-4">
+            <div class="d-flex flex-column align-items-center">
+              <button id="upBtn" class="control-btn mb-2">↑</button>
+              <div class="d-flex justify-content-center align-items-center">
+                <button id="leftBtn" class="control-btn me-4">←</button>
+                <button id="downBtn" class="control-btn mx-2">↓</button>
+                <button id="rightBtn" class="control-btn ms-4">→</button>
               </div>
             </div>
           </div>
         </div>
-        <div class="leaderboard">
-          <h3>Leaderboard</h3>
-          <div id="leaderboardLoading" class="text-center py-4">Loading scores...</div>
-          <table id="leaderboardTable" class="leaderboard-table" style="display: none;">
-            <thead>
-              <tr>
-                <th>Rank</th>
-                <th>Player</th>
-                <th>Score</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody id="leaderboardBody">
-              <!-- Leaderboard entries will be inserted here -->
-            </tbody>
-          </table>
-        </div>
+      </div>
+      <div class="leaderboard">
+        <h3>Leaderboard</h3>
+        <div id="leaderboardLoading" class="text-center py-4">Loading scores...</div>
+        <table id="leaderboardTable" class="leaderboard-table" style="display: none;">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Player</th>
+              <th>Score</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody">
+            <!-- Leaderboard entries will be inserted here -->
+          </tbody>
+        </table>
       </div>
     </div>
   </div>

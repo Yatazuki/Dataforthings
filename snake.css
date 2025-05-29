@@ -41,20 +41,6 @@ body {
   box-shadow: 0 0 25px rgba(128, 0, 255, 0.4);
   border-color: rgba(128, 0, 255, 0.6);
 }
-.snake-game-flex {
-  display: flex;
-  flex-direction: row;
-  gap: 40px;
-  justify-content: center;
-  align-items: flex-start;
-}
-@media (max-width: 900px) {
-  .snake-game-flex {
-    flex-direction: column;
-    gap: 20px;
-    align-items: center;
-  }
-}
 .game-panel {
   background: rgba(0, 0, 0, 0.7);
   border: 2px solid rgba(128, 0, 255, 0.3);
@@ -110,15 +96,16 @@ body {
   text-shadow: 0 0 8px #8000ff;
 }
 .leaderboard {
-  background: rgba(0, 0, 0, 0.7);
-  border: 2px solid rgba(128, 0, 255, 0.3);
-  border-radius: 15px;
-  box-shadow: 0 0 15px rgba(128, 0, 255, 0.2);
-  padding: 20px;
-  margin-bottom: 20px;
+  background: rgba(128, 0, 255, 0.15);
+  border: 1px solid #a065dd;
+  box-shadow: 0 0 15px rgba(128,0,255,0.2);
+  border-radius: 12px;
+  max-width: 350px;
+  margin: 30px auto 0 auto;
+  padding: 18px 18px 10px 18px;
   color: #fff;
-  min-width: 320px;
-  max-width: 400px;
+  text-align: center;
+  width: 100%;
 }
 .leaderboard h3 {
   color: #a065dd;
