@@ -9,6 +9,47 @@ let gameActive = true;
 let botEnabled = false;
 let botDifficulty = 'human';
 
+// Supabase win update logic for Tic Tac Toe
+let supabase = null;
+
+// Wait for DOMContentLoaded to get supabase from window (like snake.js)
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.supabaseAuth && window.supabaseAuth.supabase) {
+    supabase = window.supabaseAuth.supabase;
+  }
+});
+
+async function updateTicTacToeWins() {
+  const userId = localStorage.getItem('user_id');
+  if (!userId || !supabase) return;
+  try {
+    // Get the user's row in user_scores
+    const { data: userScore, error: fetchError } = await supabase
+      .from('user_scores')
+      .select('id, tictactoe_wins')
+      .eq('user_id', userId)
+      .single();
+    if (fetchError) {
+      console.error('Error fetching user_scores for tictactoe win:', fetchError);
+      return;
+    }
+    if (!userScore) return;
+    // Increment tictactoe_wins
+    const { data, error } = await supabase
+      .from('user_scores')
+      .update({
+        tictactoe_wins: (userScore.tictactoe_wins || 0) + 1,
+        last_updated: new Date()
+      })
+      .eq('id', userScore.id);
+    if (error) {
+      console.error('Error updating tictactoe_wins:', error);
+    }
+  } catch (err) {
+    console.error('Exception updating tictactoe_wins:', err);
+  }
+}
+
 function createBoard() {
   board.style.display = 'grid';
   board.style.gridTemplateColumns = 'repeat(3, 100px)';
@@ -156,6 +197,8 @@ function handleCellClick(index) {
       setTimeout(() => {
         alert(`Player ${currentPlayer} wins!`);
         gameActive = false;
+        // Update wins in Supabase if user is logged in
+        updateTicTacToeWins();
       }, 100);
       return;
     }
