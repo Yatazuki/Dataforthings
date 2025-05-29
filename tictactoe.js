@@ -1,4 +1,3 @@
-
 const board = document.getElementById('game-board');
 const currentPlayerDisplay = document.getElementById('current-player');
 const resetButton = document.getElementById('resetButton');
@@ -12,25 +11,44 @@ let botDifficulty = 'human';
 
 function createBoard() {
   board.style.display = 'grid';
-  board.style.gridTemplateColumns = 'repeat(3, 80px)';
-  board.style.gap = '5px';
+  board.style.gridTemplateColumns = 'repeat(3, 100px)';
+  board.style.gap = '10px';
   board.style.margin = '0 auto';
+  board.style.width = 'fit-content';
   
   for (let i = 0; i < 9; i++) {
     const cell = document.createElement('div');
-    cell.style.width = '80px';
-    cell.style.height = '80px';
+    cell.style.width = '100px';
+    cell.style.height = '100px';
     cell.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    cell.style.border = '2px solid rgba(255, 255, 255, 0.2)';
+    cell.style.border = '2px solid rgba(128, 0, 255, 0.3)';
     cell.style.display = 'flex';
     cell.style.justifyContent = 'center';
     cell.style.alignItems = 'center';
-    cell.style.fontSize = '40px';
+    cell.style.fontSize = '48px';
+    cell.style.fontWeight = 'bold';
     cell.style.color = '#fff';
     cell.style.cursor = 'pointer';
     cell.style.backdropFilter = 'blur(5px)';
-    cell.style.boxShadow = '0 0 15px rgba(255, 255, 255, 0.1)';
+    cell.style.boxShadow = '0 0 15px rgba(128, 0, 255, 0.2)';
     cell.style.borderRadius = '15px';
+    cell.style.transition = 'all 0.3s ease';
+    
+    cell.addEventListener('mouseover', () => {
+      if (gameBoard[i] === '' && gameActive) {
+        cell.style.transform = 'scale(1.05)';
+        cell.style.boxShadow = '0 0 20px rgba(128, 0, 255, 0.4)';
+        cell.style.borderColor = 'rgba(128, 0, 255, 0.6)';
+      }
+    });
+    
+    cell.addEventListener('mouseout', () => {
+      if (gameBoard[i] === '' && gameActive) {
+        cell.style.transform = 'scale(1)';
+        cell.style.boxShadow = '0 0 15px rgba(128, 0, 255, 0.2)';
+        cell.style.borderColor = 'rgba(128, 0, 255, 0.3)';
+      }
+    });
     
     cell.addEventListener('click', () => handleCellClick(i));
     board.appendChild(cell);
@@ -129,6 +147,10 @@ function handleCellClick(index) {
   if (gameBoard[index] === '' && gameActive) {
     gameBoard[index] = currentPlayer;
     cells[index].textContent = currentPlayer;
+    cells[index].style.color = currentPlayer === 'X' ? '#ff5555' : '#55ff55';
+    cells[index].style.textShadow = `0 0 10px ${currentPlayer === 'X' ? 'rgba(255, 0, 0, 0.5)' : 'rgba(0, 255, 0, 0.5)'}`;
+    cells[index].style.transform = 'scale(1.1)';
+    cells[index].style.boxShadow = `0 0 20px ${currentPlayer === 'X' ? 'rgba(255, 0, 0, 0.4)' : 'rgba(0, 255, 0, 0.4)'}`;
     
     if (checkWin()) {
       setTimeout(() => {
@@ -148,6 +170,8 @@ function handleCellClick(index) {
     
     currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
     currentPlayerDisplay.textContent = currentPlayer;
+    currentPlayerDisplay.style.color = currentPlayer === 'X' ? '#ff5555' : '#55ff55';
+    currentPlayerDisplay.style.textShadow = `0 0 10px ${currentPlayer === 'X' ? 'rgba(255, 0, 0, 0.5)' : 'rgba(0, 255, 0, 0.5)'}`;
 
     if (botDifficulty !== 'human' && currentPlayer === 'O' && gameActive) {
       makeBotMove();
@@ -179,10 +203,15 @@ function resetGame() {
   gameActive = true;
   currentPlayer = Math.random() < 0.5 ? 'X' : 'O';
   currentPlayerDisplay.textContent = currentPlayer;
+  currentPlayerDisplay.style.color = currentPlayer === 'X' ? '#ff5555' : '#55ff55';
+  currentPlayerDisplay.style.textShadow = `0 0 10px ${currentPlayer === 'X' ? 'rgba(255, 0, 0, 0.5)' : 'rgba(0, 255, 0, 0.5)'}`;
   
   const cells = board.children;
   for (let cell of cells) {
     cell.textContent = '';
+    cell.style.transform = 'scale(1)';
+    cell.style.boxShadow = '0 0 15px rgba(128, 0, 255, 0.2)';
+    cell.style.borderColor = 'rgba(128, 0, 255, 0.3)';
   }
 
   if (botDifficulty !== 'human' && currentPlayer === 'O') {
