@@ -50,11 +50,13 @@ body {
   border: 2px solid rgba(128, 0, 255, 0.3);
   border-radius: 15px;
   box-shadow: 0 0 15px rgba(128, 0, 255, 0.2);
-  padding: 20px 20px 10px 20px;
+  padding: 32px 32px 18px 32px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 32px;
+  width: 100%;
+  max-width: 600px;
 }
 #gameCanvas {
   background: rgba(0,0,0,0.85);
@@ -62,6 +64,10 @@ body {
   box-shadow: 0 0 20px #8000ff44;
   border: 2px solid rgba(128, 0, 255, 0.3);
   margin-bottom: 10px;
+  width: 500px;
+  height: 500px;
+  max-width: 100%;
+  max-height: 60vw;
 }
 .score-display {
   color: rgba(255,255,255,0.8);
@@ -103,13 +109,14 @@ body {
   background: rgba(128, 0, 255, 0.15);
   border: 1px solid #a065dd;
   box-shadow: 0 0 15px rgba(128,0,255,0.2);
-  border-radius: 12px;
-  max-width: 350px;
-  margin: 30px auto 0 auto;
-  padding: 18px 18px 10px 18px;
+  border-radius: 16px;
+  max-width: 600px;
+  margin: 40px auto 0 auto;
+  padding: 28px 28px 18px 28px;
   color: #fff;
   text-align: center;
   width: 100%;
+  align-self: center;
 }
 .leaderboard h3 {
   color: #a065dd;
@@ -166,14 +173,18 @@ body {
     width: 98vw;
     max-width: 98vw;
   }
-  .leaderboard {
+  .game-panel {
     max-width: 98vw;
-    padding: 10px 2vw 8px 2vw;
+    padding: 10px;
   }
   #gameCanvas {
     width: 98vw !important;
     height: 98vw !important;
     max-width: 98vw;
     max-height: 98vw;
+  }
+  .leaderboard {
+    max-width: 98vw;
+    padding: 10px 2vw 8px 2vw;
   }
 } 
