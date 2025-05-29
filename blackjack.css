@@ -1,0 +1,197 @@
+body {
+  background-image: url('background1.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+#particles-js {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  background-color: transparent;
+}
+.blackjack-center-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100vw;
+  padding-bottom: 40px;
+}
+.blackjack-container {
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(128, 0, 255, 0.3);
+  box-shadow: 0 0 20px rgba(128, 0, 255, 0.2);
+  border-radius: 15px;
+  padding: 30px;
+  margin: 40px auto 0 auto;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 70vw;
+  max-width: 900px;
+  text-align: center;
+}
+.game-title {
+  font-weight: 800;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #ffffff, #d0b0ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 15px rgba(128, 0, 255, 0.5);
+  margin-bottom: 30px;
+  font-size: 2.5rem;
+}
+.blackjack-stats {
+  color: rgba(255,255,255,0.8);
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  text-align: center;
+}
+.neon-btn {
+  background: linear-gradient(90deg, #8000ff, #9933ff);
+  border: none;
+  padding: 8px 20px;
+  font-weight: 600;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(128, 0, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #fff;
+  margin: 0 8px 12px 8px;
+}
+.neon-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.neon-btn:hover:not(:disabled) {
+  background: linear-gradient(90deg, #9933ff, #8000ff);
+  box-shadow: 0 0 20px rgba(128, 0, 255, 0.7);
+  transform: translateY(-3px);
+}
+.blackjack-controls {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.blackjack-status {
+  min-height: 32px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 0 8px #8000ff;
+  margin-bottom: 10px;
+}
+.blackjack-board {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+.blackjack-card {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s;
+  width: 110px;
+  height: 160px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 48px;
+  margin: 10px;
+  position: relative;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+.blackjack-card.red {
+  color: #ff5555;
+  text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
+}
+.blackjack-card.black {
+  color: white;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+.card-symbol {
+  font-size: 60px;
+  z-index: 2;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+.card-value {
+  position: absolute;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1;
+  z-index: 2;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+.top-left {
+  top: 8px;
+  left: 10px;
+}
+.bottom-right {
+  bottom: 8px;
+  right: 10px;
+  transform: rotate(180deg);
+}
+.blackjack-howto {
+  color: rgba(255,255,255,0.8);
+  font-size: 1.1rem;
+  margin-top: 20px;
+  text-align: left;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (max-width: 900px) {
+  .blackjack-container {
+    padding: 10px;
+    width: 98vw;
+    max-width: 98vw;
+  }
+  .blackjack-board {
+    max-width: 98vw;
+    padding: 10px 2vw 8px 2vw;
+  }
+  .blackjack-card {
+    width: 80px;
+    height: 120px;
+    font-size: 32px;
+  }
+} 

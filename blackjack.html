@@ -9,51 +9,47 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="navbar.css">
+  <link rel="stylesheet" href="blackjack.css">
 </head>
 <body>
   <!-- Navbar will be inserted by navbar.js -->
-
-  <div class="container mt-5">
-    <div class="text-center">
-      <h1>Blackjack <span class="version">v1.6</span></h1>
-      <div class="mt-3">
-        <p>Wins: <span id="wins">0</span> | Losses: <span id="losses">0</span> | Best Streak: <span id="bestStreak">0</span></p>
-        <div class="mb-3 text-center">
-          <div class="btn-group" role="group">
-            <input type="radio" class="btn-check" name="difficulty" id="easy" value="easy" checked>
-            <label class="btn btn-outline-light" for="easy">$10 Bet</label>
-            
-            <input type="radio" class="btn-check" name="difficulty" id="medium" value="medium">
-            <label class="btn btn-outline-light" for="medium">$50 Bet</label>
-            
-            <input type="radio" class="btn-check" name="difficulty" id="hard" value="hard">
-            <label class="btn btn-outline-light" for="hard">$100 Bet</label>
-          </div>
+  <div id="particles-js"></div>
+  <div class="blackjack-center-wrapper">
+    <div class="blackjack-container">
+      <h1 class="game-title">Blackjack</h1>
+      <div class="blackjack-stats">
+        <span>Wins: <span id="wins">0</span></span>
+        <span>Losses: <span id="losses">0</span></span>
+        <span>Best Streak: <span id="bestStreak">0</span></span>
+        <span>Balance: $<span id="balance">1000</span></span>
+      </div>
+      <div class="blackjack-controls">
+        <div class="btn-group" role="group">
+          <input type="radio" class="btn-check" name="difficulty" id="easy" value="easy" checked>
+          <label class="btn btn-outline-light" for="easy">$10 Bet</label>
+          <input type="radio" class="btn-check" name="difficulty" id="medium" value="medium">
+          <label class="btn btn-outline-light" for="medium">$50 Bet</label>
+          <input type="radio" class="btn-check" name="difficulty" id="hard" value="hard">
+          <label class="btn btn-outline-light" for="hard">$100 Bet</label>
         </div>
-        <div class="mb-3">
-          <p>Total Balance: $<span id="balance">1000</span></p>
-        </div>
-        <button id="startButton" class="btn btn-success mb-2">Deal New Hand</button>
-        <div id="game-board" class="mt-4 d-flex justify-content-center flex-wrap"></div>
-        <div class="mt-3">
-          <button id="hitButton" class="btn btn-primary me-2" disabled>Hit</button>
-          <button id="standButton" class="btn btn-warning me-2" disabled>Stand</button>
-        </div>
-        <div id="gameStatus" class="mt-3"></div>
-        <div class="mt-4">
-          <h4>How to Play:</h4>
-          <p>Try to get as close to 21 as possible without going over. Face cards are worth 10, Aces are 1 or 11.</p>
-          <ul class="list-unstyled">
-            <li><strong>Hit</strong> - Take another card</li>
-            <li><strong>Stand</strong> - End your turn</li>
-            <li>Dealer must hit until they have at least 17</li>
-            <li>Blackjack (21 with first two cards) pays 1.5x your bet</li>
-          </ul>
-        </div>
+        <button id="startButton" class="btn neon-btn">Deal New Hand</button>
+        <button id="hitButton" class="btn neon-btn" disabled>Hit</button>
+        <button id="standButton" class="btn neon-btn" disabled>Stand</button>
+      </div>
+      <div id="gameStatus" class="blackjack-status"></div>
+      <div id="game-board" class="blackjack-board"></div>
+      <div class="blackjack-howto">
+        <h4>How to Play:</h4>
+        <ul>
+          <li>Try to get as close to 21 as possible without going over. Face cards are worth 10, Aces are 1 or 11.</li>
+          <li><strong>Hit</strong> - Take another card</li>
+          <li><strong>Stand</strong> - End your turn</li>
+          <li>Dealer must hit until they have at least 17</li>
+          <li>Blackjack (21 with first two cards) pays 1.5x your bet</li>
+        </ul>
       </div>
     </div>
   </div>
-
   <script>
     function logout() {
       localStorage.removeItem("user_id");
