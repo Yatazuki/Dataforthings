@@ -61,9 +61,22 @@ body {
   min-width: 400px;
   min-height: 600px;
   text-align: center;
+  position: relative;
+  z-index: 3;
+}
+.game-panel::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.97);
+  border-radius: 15px;
+  z-index: 2;
+  pointer-events: none;
 }
 #gameCanvas {
   background: rgba(0,0,0,0.95);
+  position: relative;
+  z-index: 3;
   border-radius: 12px;
   box-shadow: 0 0 20px #8000ff44;
   border: 2px solid rgba(128, 0, 255, 0.3);
