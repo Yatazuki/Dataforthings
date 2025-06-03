@@ -274,6 +274,134 @@
       background: rgba(128, 0, 255, 0.2);
       border-radius: 15px;
     }
+
+    /* File Structure Diagram Styles */
+    .file-structure-diagram {
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid rgba(128, 0, 255, 0.3);
+      border-radius: 10px;
+      padding: 30px;
+      margin: 20px auto;
+      max-width: 1000px;
+      text-align: left;
+    }
+
+    .folder-tree {
+      font-family: 'Courier New', monospace;
+      color: #fff;
+      line-height: 1.8;
+    }
+
+    .tree-item {
+      display: block;
+      margin: 5px 0;
+      padding: 5px 0;
+      position: relative;
+    }
+
+    .tree-item.root {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #9933ff;
+      margin-bottom: 15px;
+    }
+
+    .tree-children {
+      margin-left: 30px;
+      border-left: 2px solid rgba(128, 0, 255, 0.3);
+      padding-left: 20px;
+      margin-top: 10px;
+    }
+
+    .tree-item.folder {
+      color: #d0b0ff;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .tree-item.folder > .item-name {
+      color: #9933ff;
+    }
+
+    .tree-item.file {
+      color: #fff;
+      padding: 3px 0;
+      transition: all 0.3s ease;
+    }
+
+    .tree-item.file:hover {
+      background: rgba(128, 0, 255, 0.1);
+      border-radius: 5px;
+      padding-left: 10px;
+    }
+
+    .folder-icon, .file-icon {
+      display: inline-block;
+      width: 25px;
+      margin-right: 10px;
+      font-size: 1.1em;
+    }
+
+    .item-name {
+      font-weight: 600;
+      margin-right: 15px;
+    }
+
+    .file-desc {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.9em;
+      font-style: italic;
+    }
+
+    /* File type specific styling */
+    .tree-item.html .item-name {
+      color: #ff6b6b;
+    }
+
+    .tree-item.js .item-name {
+      color: #ffd93d;
+    }
+
+    .tree-item.css .item-name {
+      color: #6bcf7f;
+    }
+
+    .tree-item.json .item-name {
+      color: #ff9f43;
+    }
+
+    .tree-item.md .item-name {
+      color: #74b9ff;
+    }
+
+    .tree-item.sql .item-name {
+      color: #fd79a8;
+    }
+
+    .tree-item.img .item-name {
+      color: #00b894;
+    }
+
+    .tree-item.config .item-name {
+      color: #a29bfe;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .file-structure-diagram {
+        padding: 20px;
+        margin: 10px;
+      }
+      
+      .tree-children {
+        margin-left: 20px;
+        padding-left: 15px;
+      }
+      
+      .folder-tree {
+        font-size: 0.9em;
+      }
+    }
   </style>
 </head>
 <body>
@@ -576,7 +704,7 @@
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 30px auto; padding: 20px;">
           
           <!-- Project Overview Box -->
-          <div class="function-doc" style="transform: rotate(-1deg); margin-top: 20px; max-width: 450px;">
+          <div class="function-doc" style="margin-top: 20px; max-width: 450px;">
             <div class="function-name">🎯 Project Overview</div>
             <div class="function-description">
               <strong>Yatazuki</strong> is a comprehensive web-based gaming platform that combines user authentication, multiple games, note-taking capabilities, and a modern UI. Built as a full-stack application with both frontend and backend components.
@@ -592,7 +720,7 @@
           </div>
 
           <!-- Architecture Box -->
-          <div class="function-doc" style="transform: rotate(1.5deg); margin-top: -10px; max-width: 380px;">
+          <div class="function-doc" style="margin-top: -10px; max-width: 380px;">
             <div class="function-name">🏗️ Architecture & Tech Stack</div>
             <div class="function-description">
               Modern full-stack architecture with separation of concerns and scalable design patterns.
@@ -606,7 +734,7 @@
           </div>
 
           <!-- Games Collection Box -->
-          <div class="function-doc" style="transform: rotate(-0.8deg); margin-top: 40px; max-width: 420px;">
+          <div class="function-doc" style="margin-top: 40px; max-width: 420px;">
             <div class="function-name">🎮 Gaming Platform (5 Games)</div>
             <div class="function-description">
               Complete collection of classic games with modern implementations and scoring systems.
@@ -621,7 +749,7 @@
           </div>
 
           <!-- Authentication System Box -->
-          <div class="function-doc" style="transform: rotate(1.2deg); margin-top: 15px; max-width: 360px;">
+          <div class="function-doc" style="margin-top: 15px; max-width: 360px;">
             <div class="function-name">🔐 Authentication System</div>
             <div class="function-description">
               Comprehensive user management with Supabase integration and security best practices.
@@ -638,7 +766,7 @@
           </div>
 
           <!-- Database Schema Box -->
-          <div class="function-doc" style="transform: rotate(-1.8deg); margin-top: 25px; max-width: 480px;">
+          <div class="function-doc" style="margin-top: 25px; max-width: 480px;">
             <div class="function-name">🗄️ Database Architecture</div>
             <div class="function-description">
               PostgreSQL database with Row Level Security and optimized schema design.
@@ -656,7 +784,7 @@
           </div>
 
           <!-- Snake Game Details Box -->
-          <div class="function-doc" style="transform: rotate(0.7deg); margin-top: -5px; max-width: 340px;">
+          <div class="function-doc" style="margin-top: -5px; max-width: 340px;">
             <div class="function-name">🐍 Snake Game Implementation</div>
             <div class="function-description">
               Classic snake gameplay with modern graphics and responsive controls.
@@ -673,7 +801,7 @@
           </div>
 
           <!-- Tic-Tac-Toe AI Box -->
-          <div class="function-doc" style="transform: rotate(-1.3deg); margin-top: 35px; max-width: 390px;">
+          <div class="function-doc" style="margin-top: 35px; max-width: 390px;">
             <div class="function-name">⭕ Tic-Tac-Toe AI System</div>
             <div class="function-description">
               Advanced AI opponent using minimax algorithm with multiple difficulty levels.
@@ -690,7 +818,7 @@
           </div>
 
           <!-- Memory Game Box -->
-          <div class="function-doc" style="transform: rotate(1.6deg); margin-top: 10px; max-width: 370px;">
+          <div class="function-doc" style="margin-top: 10px; max-width: 370px;">
             <div class="function-name">🧠 Memory Game Mechanics</div>
             <div class="function-description">
               Card matching game with sophisticated shuffle algorithms and difficulty scaling.
@@ -707,7 +835,7 @@
           </div>
 
           <!-- Blackjack System Box -->
-          <div class="function-doc" style="transform: rotate(-0.9deg); margin-top: 30px; max-width: 440px;">
+          <div class="function-doc" style="margin-top: 30px; max-width: 440px;">
             <div class="function-name">🃏 Blackjack Implementation</div>
             <div class="function-description">
               Complete blackjack game with betting system, dealer AI, and advanced features.
@@ -725,7 +853,7 @@
           </div>
 
           <!-- UI/UX Design Box -->
-          <div class="function-doc" style="transform: rotate(1.1deg); margin-top: 5px; max-width: 350px;">
+          <div class="function-doc" style="margin-top: 5px; max-width: 350px;">
             <div class="function-name">🎨 Design System</div>
             <div class="function-description">
               Modern gaming-inspired UI with consistent visual language and responsive design.
@@ -742,7 +870,7 @@
           </div>
 
           <!-- Notes System Box -->
-          <div class="function-doc" style="transform: rotate(-1.7deg); margin-top: 20px; max-width: 380px;">
+          <div class="function-doc" style="margin-top: 20px; max-width: 380px;">
             <div class="function-name">📝 Notes Management System</div>
             <div class="function-description">
               Personal note-taking system with real-time CRUD operations and user-specific storage.
@@ -759,7 +887,7 @@
           </div>
 
           <!-- Backend API Box -->
-          <div class="function-doc" style="transform: rotate(0.6deg); margin-top: 40px; max-width: 460px;">
+          <div class="function-doc" style="margin-top: 40px; max-width: 460px;">
             <div class="function-name">🔧 Backend API Architecture</div>
             <div class="function-description">
               RESTful API with Express.js, comprehensive error handling, and security middleware.
@@ -776,7 +904,7 @@
           </div>
 
           <!-- File Structure Box -->
-          <div class="function-doc" style="transform: rotate(-1.4deg); margin-top: 15px; max-width: 400px;">
+          <div class="function-doc" style="margin-top: 15px; max-width: 400px;">
             <div class="function-name">📁 File Organization</div>
             <div class="function-description">
               Well-structured codebase with clear separation of concerns and modular architecture.
@@ -792,7 +920,7 @@
           </div>
 
           <!-- Security Features Box -->
-          <div class="function-doc" style="transform: rotate(1.4deg); margin-top: 25px; max-width: 420px;">
+          <div class="function-doc" style="margin-top: 25px; max-width: 420px;">
             <div class="function-name">🛡️ Security Implementation</div>
             <div class="function-description">
               Multi-layered security approach with authentication, authorization, and data protection.
@@ -809,7 +937,7 @@
           </div>
 
           <!-- Deployment Box -->
-          <div class="function-doc" style="transform: rotate(-0.5deg); margin-top: 35px; max-width: 370px;">
+          <div class="function-doc" style="margin-top: 35px; max-width: 370px;">
             <div class="function-name">🚀 Deployment & Configuration</div>
             <div class="function-description">
               Production-ready deployment with automated workflows and custom domain configuration.
@@ -825,7 +953,7 @@
           </div>
 
           <!-- Performance Box -->
-          <div class="function-doc" style="transform: rotate(1.8deg); margin-top: 10px; max-width: 390px;">
+          <div class="function-doc" style="margin-top: 10px; max-width: 390px;">
             <div class="function-name">⚡ Performance Features</div>
             <div class="function-description">
               Optimized for speed and efficiency with modern web performance best practices.
@@ -842,7 +970,7 @@
           </div>
 
           <!-- Code Quality Box -->
-          <div class="function-doc" style="transform: rotate(-1.1deg); margin-top: 45px; max-width: 410px;">
+          <div class="function-doc" style="margin-top: 45px; max-width: 410px;">
             <div class="function-name">📋 Code Quality & Standards</div>
             <div class="function-description">
               High-quality codebase following modern development practices and maintainability standards.
@@ -859,7 +987,7 @@
           </div>
 
           <!-- Future Scalability Box -->
-          <div class="function-doc" style="transform: rotate(0.8deg); margin-top: 20px; max-width: 450px;">
+          <div class="function-doc" style="margin-top: 20px; max-width: 450px;">
             <div class="function-name">🔮 Future-Ready Architecture</div>
             <div class="function-description">
               Designed for scalability and extensibility with modular systems and comprehensive documentation.
@@ -875,6 +1003,277 @@
             </div>
           </div>
 
+        </div>
+      </section>
+
+      <!-- FILE STRUCTURE DIAGRAM SECTION -->
+      <section class="section">
+        <h2>📁 Visual File Structure Diagram</h2>
+        <div class="file-structure-diagram">
+          <div class="folder-tree">
+            <div class="tree-item root">
+              <span class="folder-icon">📁</span>
+              <span class="item-name">Yatazuki Project Root</span>
+              
+              <div class="tree-children">
+                <!-- Frontend Files -->
+                <div class="tree-item folder">
+                  <span class="folder-icon">📂</span>
+                  <span class="item-name">Frontend Pages</span>
+                  <div class="tree-children">
+                    <div class="tree-item file html">
+                      <span class="file-icon">🌐</span>
+                      <span class="item-name">index.html</span>
+                      <span class="file-desc">Login/Entry Point</span>
+                    </div>
+                    <div class="tree-item file html">
+                      <span class="file-icon">🌐</span>
+                      <span class="item-name">register.html</span>
+                      <span class="file-desc">User Registration</span>
+                    </div>
+                    <div class="tree-item file html">
+                      <span class="file-icon">🌐</span>
+                      <span class="item-name">dashboard.html</span>
+                      <span class="file-desc">Main Hub</span>
+                    </div>
+                    <div class="tree-item file html">
+                      <span class="file-icon">🌐</span>
+                      <span class="item-name">profile.html</span>
+                      <span class="file-desc">User Profile</span>
+                    </div>
+                    <div class="tree-item file html">
+                      <span class="file-icon">🌐</span>
+                      <span class="item-name">notes.html</span>
+                      <span class="file-desc">Note Management</span>
+                    </div>
+                    <div class="tree-item file html">
+                      <span class="file-icon">🌐</span>
+                      <span class="item-name">docu.html</span>
+                      <span class="file-desc">Documentation</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Game Files -->
+                <div class="tree-item folder">
+                  <span class="folder-icon">🎮</span>
+                  <span class="item-name">Games</span>
+                  <div class="tree-children">
+                    <div class="tree-item file html">
+                      <span class="file-icon">🐍</span>
+                      <span class="item-name">snake.html</span>
+                      <span class="file-desc">Snake Game</span>
+                    </div>
+                    <div class="tree-item file js">
+                      <span class="file-icon">⚡</span>
+                      <span class="item-name">snake.js</span>
+                      <span class="file-desc">Snake Logic</span>
+                    </div>
+                    <div class="tree-item file css">
+                      <span class="file-icon">🎨</span>
+                      <span class="item-name">snake.css</span>
+                      <span class="file-desc">Snake Styling</span>
+                    </div>
+                    <div class="tree-item file html">
+                      <span class="file-icon">⭕</span>
+                      <span class="item-name">tictactoe.html</span>
+                      <span class="file-desc">Tic-Tac-Toe Game</span>
+                    </div>
+                    <div class="tree-item file js">
+                      <span class="file-icon">⚡</span>
+                      <span class="item-name">tictactoe.js</span>
+                      <span class="file-desc">AI & Game Logic</span>
+                    </div>
+                    <div class="tree-item file html">
+                      <span class="file-icon">🧠</span>
+                      <span class="item-name">memory.html</span>
+                      <span class="file-desc">Memory Game</span>
+                    </div>
+                    <div class="tree-item file js">
+                      <span class="file-icon">⚡</span>
+                      <span class="item-name">memory.js</span>
+                      <span class="file-desc">Card Matching Logic</span>
+                    </div>
+                    <div class="tree-item file css">
+                      <span class="file-icon">🎨</span>
+                      <span class="item-name">memory.css</span>
+                      <span class="file-desc">Card Styling</span>
+                    </div>
+                    <div class="tree-item file html">
+                      <span class="file-icon">🃏</span>
+                      <span class="item-name">blackjack.html</span>
+                      <span class="file-desc">Blackjack Game</span>
+                    </div>
+                    <div class="tree-item file js">
+                      <span class="file-icon">⚡</span>
+                      <span class="item-name">blackjack.js</span>
+                      <span class="file-desc">Card Game Logic</span>
+                    </div>
+                    <div class="tree-item file css">
+                      <span class="file-icon">🎨</span>
+                      <span class="item-name">blackjack.css</span>
+                      <span class="file-desc">Card Styling</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Core JavaScript -->
+                <div class="tree-item folder">
+                  <span class="folder-icon">⚡</span>
+                  <span class="item-name">Core JavaScript</span>
+                  <div class="tree-children">
+                    <div class="tree-item file js">
+                      <span class="file-icon">🔐</span>
+                      <span class="item-name">auth.js</span>
+                      <span class="file-desc">Authentication Module</span>
+                    </div>
+                    <div class="tree-item file js">
+                      <span class="file-icon">🔧</span>
+                      <span class="item-name">scripts.js</span>
+                      <span class="file-desc">Core Functions</span>
+                    </div>
+                    <div class="tree-item file js">
+                      <span class="file-icon">📝</span>
+                      <span class="item-name">notes.js</span>
+                      <span class="file-desc">Notes Management</span>
+                    </div>
+                    <div class="tree-item file js">
+                      <span class="file-icon">🧭</span>
+                      <span class="item-name">navbar.js</span>
+                      <span class="file-desc">Navigation System</span>
+                    </div>
+                    <div class="tree-item file js">
+                      <span class="file-icon">✨</span>
+                      <span class="item-name">particle.js</span>
+                      <span class="file-desc">Particle Effects</span>
+                    </div>
+                    <div class="tree-item file js">
+                      <span class="file-icon">🌐</span>
+                      <span class="item-name">sphere.js</span>
+                      <span class="file-desc">3D Sphere Visualization</span>
+                    </div>
+                    <div class="tree-item file js">
+                      <span class="file-icon">🔧</span>
+                      <span class="item-name">closeDevTools.js</span>
+                      <span class="file-desc">Dev Tools Handler</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Styling -->
+                <div class="tree-item folder">
+                  <span class="folder-icon">🎨</span>
+                  <span class="item-name">Styling</span>
+                  <div class="tree-children">
+                    <div class="tree-item file css">
+                      <span class="file-icon">🎨</span>
+                      <span class="item-name">styles.css</span>
+                      <span class="file-desc">Global Styles</span>
+                    </div>
+                    <div class="tree-item file css">
+                      <span class="file-icon">🧭</span>
+                      <span class="item-name">navbar.css</span>
+                      <span class="file-desc">Navigation Styling</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Backend -->
+                <div class="tree-item folder">
+                  <span class="folder-icon">🔧</span>
+                  <span class="item-name">Backend</span>
+                  <div class="tree-children">
+                    <div class="tree-item file js">
+                      <span class="file-icon">🔧</span>
+                      <span class="item-name">backend.js</span>
+                      <span class="file-desc">Express Server</span>
+                    </div>
+                    <div class="tree-item file sql">
+                      <span class="file-icon">🗄️</span>
+                      <span class="item-name">schema.sql</span>
+                      <span class="file-desc">Database Schema</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Configuration -->
+                <div class="tree-item folder">
+                  <span class="folder-icon">⚙️</span>
+                  <span class="item-name">Configuration</span>
+                  <div class="tree-children">
+                    <div class="tree-item file json">
+                      <span class="file-icon">📦</span>
+                      <span class="item-name">package.json</span>
+                      <span class="file-desc">Dependencies</span>
+                    </div>
+                    <div class="tree-item file json">
+                      <span class="file-icon">🔒</span>
+                      <span class="item-name">package-lock.json</span>
+                      <span class="file-desc">Dependency Lock</span>
+                    </div>
+                    <div class="tree-item file config">
+                      <span class="file-icon">🚀</span>
+                      <span class="item-name">.replit</span>
+                      <span class="file-desc">Deployment Config</span>
+                    </div>
+                    <div class="tree-item file config">
+                      <span class="file-icon">🚫</span>
+                      <span class="item-name">.gitignore</span>
+                      <span class="file-desc">Git Ignore Rules</span>
+                    </div>
+                    <div class="tree-item file config">
+                      <span class="file-icon">🌐</span>
+                      <span class="item-name">CNAME</span>
+                      <span class="file-desc">Domain Config</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Documentation -->
+                <div class="tree-item folder">
+                  <span class="folder-icon">📚</span>
+                  <span class="item-name">Documentation</span>
+                  <div class="tree-children">
+                    <div class="tree-item file md">
+                      <span class="file-icon">📖</span>
+                      <span class="item-name">documentation.md</span>
+                      <span class="file-desc">Project Documentation</span>
+                    </div>
+                    <div class="tree-item file md">
+                      <span class="file-icon">🗄️</span>
+                      <span class="item-name">DB_INFO.md</span>
+                      <span class="file-desc">Database Information</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Assets -->
+                <div class="tree-item folder">
+                  <span class="folder-icon">🖼️</span>
+                  <span class="item-name">Assets</span>
+                  <div class="tree-children">
+                    <div class="tree-item file img">
+                      <span class="file-icon">🖼️</span>
+                      <span class="item-name">background1.jpg</span>
+                      <span class="file-desc">Main Background</span>
+                    </div>
+                    <div class="tree-item folder">
+                      <span class="folder-icon">📎</span>
+                      <span class="item-name">attached_assets/</span>
+                      <div class="tree-children">
+                        <div class="tree-item file img">
+                          <span class="file-icon">🖼️</span>
+                          <span class="item-name">*.png files</span>
+                          <span class="file-desc">Additional Images</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </div>
