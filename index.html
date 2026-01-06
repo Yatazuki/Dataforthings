@@ -551,6 +551,24 @@
       .replace(/'/g,"&apos;");
   }
 
+  // Make a safe filename from user title (Windows/Mac/Linux safe-ish)
+  function sanitizeFilename(name){
+    const n = String(name || "").trim();
+    if (!n) return "";
+    return n
+      .replace(/[\\\/:*?"<>|]/g, "-")   // illegal in Windows
+      .replace(/\s+/g, " ")            // collapse whitespace
+      .replace(/\./g, ".")             // keep dots, but we'll trim ends below
+      .trim()
+      .replace(/^[. ]+|[. ]+$/g, "");  // no trailing/leading dot/space
+  }
+
+  function getExportBaseName(){
+    // If user typed a title -> use that for filename; otherwise fallback to page title
+    const t = sanitizeFilename(titleInput.value);
+    return t || sanitizeFilename(PAGE.headerTitle) || "export";
+  }
+
   function applyThemeFromHue(){
     const h = Number(hueSlider.value);
     document.documentElement.style.setProperty("--hue", h);
@@ -613,7 +631,7 @@
       t.setAttribute("text-anchor", ax > 0.35 ? "start" : (ax < -0.35 ? "end" : "middle"));
       t.setAttribute("dominant-baseline", ay > 0.35 ? "hanging" : (ay < -0.35 ? "ideographic" : "middle"));
 
-      t.textContent = hexCornerNames[i]; // ONLY numbers around hex
+      t.textContent = hexCornerNames[i];
       labelsG.appendChild(t);
     }
   }
@@ -1084,7 +1102,9 @@
     const titleText = titleInput.value;
 
     const exportSvg = buildExportSvgString(vals, avg, hue, titleText, uploadedImageDataUrl);
-    downloadTextFile(`hexagon_export_h${hue}.svg`, exportSvg, "image/svg+xml;charset=utf-8");
+
+    const base = getExportBaseName();
+    downloadTextFile(`${base}.svg`, exportSvg, "image/svg+xml;charset=utf-8");
   }
 
   async function exportPNG(){
@@ -1096,10 +1116,11 @@
     const exportSvg = buildExportSvgString(vals, avg, hue, titleText, uploadedImageDataUrl);
     const pngBlob = await svgToPng(exportSvg);
 
+    const base = getExportBaseName();
     const url = URL.createObjectURL(pngBlob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `hexagon_export_h${hue}.png`;
+    a.download = `${base}.png`;
     document.body.appendChild(a);
     a.click();
     a.remove();
