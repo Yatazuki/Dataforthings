@@ -380,7 +380,7 @@
         <input id="s2" type="range" min="0" max="10" value="8" />
       </div>
       <div class="row">
-        <div class="label"><span id="n3">4) Character</span><span id="v3">5</span></div>
+        <div class="label"><span id="n3">4) Characters</span><span id="v3">5</span></div>
         <input id="s3" type="range" min="0" max="10" value="5" />
       </div>
       <div class="row">
@@ -441,7 +441,7 @@
     "1) Animation/Cinematography",
     "2) Plot",
     "3) Art style",
-    "4) Character",
+    "4) Characters",
     "5) Worldbuilding",
     "6) Would rewatch"
   ];
@@ -620,7 +620,6 @@
 
   // ===== Render =====
   function render(){
-    // Keep right-side labels consistent (also used in export)
     cornerNames.forEach((n,i)=> nameSpans[i].textContent = n);
 
     const vals = sliders.map(s => Number(s.value));
@@ -680,7 +679,6 @@
     hueSlider.value = 270;
     titleInput.value = "";
 
-    // keep mode
     uploadedImageDataUrl = null;
     previewImg.removeAttribute("src");
     previewImg.style.display = "none";
@@ -827,7 +825,6 @@
       `;
     }).join("");
 
-    // TOP title: use user title if provided, otherwise use the page header title
     const exportTitle = (titleText && titleText.trim()) ? titleText.trim() : PAGE.headerTitle;
     const safeTitle = escapeXml(exportTitle);
 
@@ -851,11 +848,8 @@
            ${escapeXml(PAGE.noImage)}
          </text>`;
 
-    // RIGHT PANEL TEXT: match the page scale text exactly
     const rightTitle = PAGE.headerTitle;
     const rightSub = PAGE.scaleText;
-
-    // AVG LABEL: match the page exactly
     const avgLabel = PAGE.overallLabel;
 
     return `
@@ -1129,4 +1123,3 @@
 </script>
 </body>
 </html>
-
