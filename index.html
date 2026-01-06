@@ -1,0 +1,974 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hexagon Skill Diagramm (Theme + Bild + Titel + Export)</title>
+
+  <style>
+    :root{
+      --hue: 270;
+      --bg: #0b0816;
+
+      --accent: hsl(var(--hue) 95% 68%);
+      --accentSoft: hsla(var(--hue) 95% 60% / 0.28);
+
+      --grid: hsla(var(--hue) 55% 75% / 0.30);
+      --grid2: hsla(var(--hue) 55% 75% / 0.16);
+
+      --panel: hsla(var(--hue) 30% 80% / 0.06);
+      --panelBorder: hsla(var(--hue) 70% 75% / 0.22);
+
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.65);
+
+      --chartBg: rgba(0,0,0,0.18);
+      --chartBorder: hsla(var(--hue) 70% 75% / 0.18);
+
+      --avgGradA: hsla(var(--hue) 95% 60% / 0.22);
+      --avgGradB: hsla(var(--hue) 70% 45% / 0.32);
+
+      --btnBg: hsla(var(--hue) 95% 60% / 0.14);
+      --btnBgHover: hsla(var(--hue) 95% 60% / 0.22);
+      --btnBorder: hsla(var(--hue) 70% 75% / 0.28);
+
+      --shadow: 0 25px 80px hsla(var(--hue) 75% 35% / 0.40);
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background:
+        radial-gradient(900px 600px at 15% 10%, hsla(var(--hue) 95% 65% / 0.22), transparent 60%),
+        radial-gradient(800px 600px at 85% 90%, hsla(calc(var(--hue) + 35) 95% 62% / 0.18), transparent 65%),
+        radial-gradient(900px 700px at 55% 55%, hsla(calc(var(--hue) - 25) 95% 60% / 0.08), transparent 70%),
+        var(--bg);
+      color: var(--text);
+    }
+
+    .wrap{
+      width:min(1100px, 95vw);
+      display:grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap:18px;
+      align-items:start;
+    }
+
+    .card{
+      background: var(--panel);
+      border:1px solid var(--panelBorder);
+      border-radius:18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
+    }
+
+    .chart-card{ padding:16px; }
+    .controls{ padding:10px; }
+
+    h1{
+      margin:0 0 10px;
+      font-size:16px;
+      letter-spacing:0.3px;
+    }
+
+    .chart{
+      width:100%;
+      aspect-ratio:1;
+      background: var(--chartBg);
+      border-radius:14px;
+      border:1px solid var(--chartBorder);
+      overflow:hidden;
+      display:block;
+    }
+
+    .row{
+      padding:10px;
+      border-bottom:1px solid hsla(var(--hue) 70% 75% / 0.14);
+    }
+    .row:last-child{ border-bottom:none; }
+
+    .label{
+      display:flex;
+      justify-content:space-between;
+      font-size:13px;
+      margin-bottom:6px;
+      gap:12px;
+      align-items:center;
+    }
+    .label span:last-child{
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    input[type="range"]{
+      width:100%;
+      accent-color: var(--accent);
+    }
+
+    .mini{
+      margin-top:10px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      font-size:12px;
+      color: var(--muted);
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    button{
+      padding:10px 14px;
+      border-radius:12px;
+      background: var(--btnBg);
+      border:1px solid var(--btnBorder);
+      color: var(--text);
+      cursor:pointer;
+      transition: transform .08s ease, background .18s ease, border-color .18s ease;
+      white-space:nowrap;
+    }
+    button:hover{
+      background: var(--btnBgHover);
+      border-color: hsla(var(--hue) 80% 75% / 0.36);
+    }
+    button:active{ transform: scale(0.98); }
+
+    /* Ø box under hexagon (the only average box) */
+    .avg-under{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:14px;
+      background: linear-gradient(135deg, var(--avgGradA), var(--avgGradB));
+      border:1px solid hsla(var(--hue) 70% 75% / 0.35);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      box-shadow:
+        inset 0 0 28px hsla(var(--hue) 95% 60% / 0.16),
+        0 0 25px hsla(var(--hue) 95% 60% / 0.06);
+    }
+    .avg-under .t{
+      font-size:12px;
+      color: var(--muted);
+      letter-spacing:0.2px;
+    }
+    .avg-under .v{
+      font-size:26px;
+      font-weight:800;
+      color:#f6f2ff;
+      text-shadow: 0 0 14px hsla(var(--hue) 95% 70% / 0.55);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .color-preview{
+      width:14px;
+      height:14px;
+      border-radius:999px;
+      background: var(--accent);
+      box-shadow: 0 0 14px hsla(var(--hue) 95% 70% / 0.45);
+      border:1px solid rgba(255,255,255,0.25);
+      flex:0 0 auto;
+    }
+
+    .title-input{
+      height: 38px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid hsla(var(--hue) 70% 75% / 0.24);
+      background: rgba(0,0,0,0.18);
+      color: var(--text);
+      outline: none;
+      min-width: 220px;
+    }
+    .title-input::placeholder{ color: rgba(255,255,255,0.45); }
+    .title-input:focus{
+      border-color: hsla(var(--hue) 95% 70% / 0.45);
+      box-shadow: 0 0 0 3px hsla(var(--hue) 95% 60% / 0.10);
+    }
+
+    .upload-box{
+      display:grid;
+      gap:10px;
+    }
+    .upload-preview{
+      width: 100%;
+      height: 160px;
+      border-radius: 14px;
+      border: 1px solid hsla(var(--hue) 70% 75% / 0.18);
+      background: rgba(0,0,0,0.16);
+      overflow:hidden;
+      display:grid;
+      place-items:center;
+      position: relative;
+    }
+    .upload-preview img{
+      max-width: 92%;
+      max-height: 88%;
+      object-fit: contain;
+      display:none;
+      border-radius: 10px;
+    }
+    .upload-hint{
+      color: rgba(255,255,255,0.55);
+      font-size: 12px;
+      text-align:center;
+      padding: 0 12px;
+    }
+    .file-input{
+      width: 100%;
+      color: rgba(255,255,255,0.8);
+      font-size: 12px;
+    }
+
+    /* SVG */
+    .grid-line{ stroke: var(--grid2); stroke-width:1; fill:none; }
+    .grid-main{ stroke: var(--grid); stroke-width:1.6; fill:none; }
+    .axis{ stroke: hsla(var(--hue) 70% 75% / 0.18); stroke-width:1; }
+
+    .lbl{
+      fill: rgba(230,210,255,0.85);
+      font-size:12px;
+      letter-spacing:0.2px;
+    }
+
+    .skill-fill{
+      fill: var(--accentSoft);
+      stroke: var(--accent);
+      stroke-width:2.6;
+      filter: url(#glow);
+    }
+
+    .dot{
+      fill: rgba(255,255,255,0.95);
+      stroke: var(--accent);
+      stroke-width:1.2;
+      filter: url(#dotGlow);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="card chart-card">
+      <h1>Hexagon Skill Diagramm</h1>
+
+      <svg id="chartSvg" class="chart" viewBox="0 0 400 400" aria-label="Hexagon Skill Chart">
+        <defs>
+          <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="3.1" result="b"/>
+            <feMerge>
+              <feMergeNode in="b"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+          <filter id="dotGlow" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="2.1" result="bb"/>
+            <feMerge>
+              <feMergeNode in="bb"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+
+        <polygon id="ring2" class="grid-line" />
+        <polygon id="ring4" class="grid-line" />
+        <polygon id="ring6" class="grid-line" />
+        <polygon id="ring8" class="grid-line" />
+        <polygon id="ring10" class="grid-main" />
+
+        <g id="axes"></g>
+        <g id="labels"></g>
+
+        <polygon id="skills" class="skill-fill" />
+        <g id="dots"></g>
+
+        <circle cx="200" cy="200" r="2.9" fill="rgba(230,210,255,0.75)"/>
+      </svg>
+
+      <div class="avg-under">
+        <div class="t">Durchschnitt (nur Skills)</div>
+        <div class="v" id="avgValue">6.2</div>
+      </div>
+
+      <div class="mini">
+        <span>Skala: 0 (Zentrum) – 10 (außen)</span>
+
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end; width:100%;">
+          <input id="titleInput" class="title-input" type="text" placeholder="Titel für Export (z.B. Skill Profil)" />
+          <button id="exportSvgBtn" type="button">Export SVG</button>
+          <button id="exportPngBtn" type="button">Export PNG</button>
+          <button id="resetBtn" type="button">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card controls">
+      <div class="row">
+        <div class="label"><span id="n0">Skill 1</span><span id="v0">7</span></div>
+        <input id="s0" type="range" min="0" max="10" value="7" />
+      </div>
+      <div class="row">
+        <div class="label"><span id="n1">Skill 2</span><span id="v1">6</span></div>
+        <input id="s1" type="range" min="0" max="10" value="6" />
+      </div>
+      <div class="row">
+        <div class="label"><span id="n2">Skill 3</span><span id="v2">8</span></div>
+        <input id="s2" type="range" min="0" max="10" value="8" />
+      </div>
+      <div class="row">
+        <div class="label"><span id="n3">Skill 4</span><span id="v3">5</span></div>
+        <input id="s3" type="range" min="0" max="10" value="5" />
+      </div>
+      <div class="row">
+        <div class="label"><span id="n4">Skill 5</span><span id="v4">7</span></div>
+        <input id="s4" type="range" min="0" max="10" value="7" />
+      </div>
+      <div class="row">
+        <div class="label"><span id="n5">Skill 6</span><span id="v5">4</span></div>
+        <input id="s5" type="range" min="0" max="10" value="4" />
+      </div>
+
+      <div class="row">
+        <div class="label">
+          <span style="display:flex; gap:10px; align-items:center;">
+            <span class="color-preview" id="colorPreview"></span>
+            Theme Farbe (Hue)
+          </span>
+          <span id="hueVal">270°</span>
+        </div>
+        <input id="hueSlider" type="range" min="0" max="360" value="270" />
+      </div>
+
+      <div class="row">
+        <div class="upload-box">
+          <div class="label" style="margin-bottom:0;">
+            <span>Bild für Export (links)</span>
+            <span id="imgStatus">kein Bild</span>
+          </div>
+
+          <div class="upload-preview" id="uploadPreview">
+            <img id="previewImg" alt="Vorschau" />
+            <div class="upload-hint" id="previewHint">
+              Bild wird im Export links neben dem Hexagon angezeigt.<br>
+              Skalierung: proportional, mit Padding.
+            </div>
+          </div>
+
+          <input id="imgInput" class="file-input" type="file" accept="image/*" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ===== Config =====
+  const N = 6;
+  const MAX = 10;
+  const cx = 200, cy = 200;
+  const R = 150;
+  const startAngleDeg = -90;
+
+  const cornerNames = ["Skill 1","Skill 2","Skill 3","Skill 4","Skill 5","Skill 6"];
+  const defaults = [7,6,8,5,7,4];
+
+  // ===== State =====
+  let uploadedImageDataUrl = null;
+
+  // ===== DOM =====
+  const sliders = Array.from({length:N}, (_,i)=>document.getElementById(`s${i}`));
+  const valueSpans = Array.from({length:N}, (_,i)=>document.getElementById(`v${i}`));
+  const nameSpans  = Array.from({length:N}, (_,i)=>document.getElementById(`n${i}`));
+  const avgValueEl = document.getElementById("avgValue");
+
+  const hueSlider = document.getElementById("hueSlider");
+  const hueVal = document.getElementById("hueVal");
+  const colorPreview = document.getElementById("colorPreview");
+
+  const titleInput = document.getElementById("titleInput");
+
+  const imgInput = document.getElementById("imgInput");
+  const imgStatus = document.getElementById("imgStatus");
+  const previewImg = document.getElementById("previewImg");
+  const previewHint = document.getElementById("previewHint");
+
+  const skillPoly = document.getElementById("skills");
+  const dotsG = document.getElementById("dots");
+  const axesG = document.getElementById("axes");
+  const labelsG = document.getElementById("labels");
+
+  // ===== Helpers =====
+  const toRad = (deg) => deg * Math.PI / 180;
+
+  function pointAt(i, value, radius = R) {
+    const angle = toRad(startAngleDeg + (360 / N) * i);
+    const r = (value / MAX) * radius;
+    return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r, angle };
+  }
+
+  function polygonPoints(values) {
+    return values.map((v, i) => {
+      const p = pointAt(i, v);
+      return `${p.x.toFixed(2)},${p.y.toFixed(2)}`;
+    }).join(" ");
+  }
+
+  function ringPoints(level) {
+    return polygonPoints(Array.from({length:N}, ()=>level));
+  }
+
+  function average(values) {
+    return values.reduce((a,b)=>a+b,0) / values.length;
+  }
+
+  function escapeXml(s){
+    return String(s)
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;")
+      .replace(/'/g,"&apos;");
+  }
+
+  function applyThemeFromHue(){
+    const h = Number(hueSlider.value);
+    document.documentElement.style.setProperty("--hue", h);
+    hueVal.textContent = `${h}°`;
+    colorPreview.style.background = `hsl(${h} 95% 68%)`;
+  }
+
+  function accentFromHue(h){
+    const accent = `hsl(${h} 95% 68%)`;
+    const accentSoft = `hsla(${h} 95% 60% / 0.28)`;
+    const grid = `hsla(${h} 55% 75% / 0.30)`;
+    const grid2 = `hsla(${h} 55% 75% / 0.16)`;
+    const axis = `hsla(${h} 70% 75% / 0.18)`;
+    return { accent, accentSoft, grid, grid2, axis };
+  }
+
+  // ===== Build static rings =====
+  ring2.setAttribute("points", ringPoints(2));
+  ring4.setAttribute("points", ringPoints(4));
+  ring6.setAttribute("points", ringPoints(6));
+  ring8.setAttribute("points", ringPoints(8));
+  ring10.setAttribute("points", ringPoints(10));
+
+  // ===== Axes + Labels =====
+  function buildAxesAndLabels(){
+    axesG.innerHTML = "";
+    labelsG.innerHTML = "";
+
+    for (let i=0;i<N;i++){
+      const outer = pointAt(i, MAX);
+
+      const line = document.createElementNS("http://www.w3.org/2000/svg","line");
+      line.setAttribute("x1", cx);
+      line.setAttribute("y1", cy);
+      line.setAttribute("x2", outer.x);
+      line.setAttribute("y2", outer.y);
+      line.setAttribute("class","axis");
+      axesG.appendChild(line);
+
+      const labelR = R + 22;
+      const lx = cx + Math.cos(outer.angle) * labelR;
+      const ly = cy + Math.sin(outer.angle) * labelR;
+
+      const t = document.createElementNS("http://www.w3.org/2000/svg","text");
+      t.setAttribute("x", lx);
+      t.setAttribute("y", ly);
+      t.setAttribute("class","lbl");
+
+      const ax = Math.cos(outer.angle), ay = Math.sin(outer.angle);
+      t.setAttribute("text-anchor", ax > 0.35 ? "start" : (ax < -0.35 ? "end" : "middle"));
+      t.setAttribute("dominant-baseline", ay > 0.35 ? "hanging" : (ay < -0.35 ? "ideographic" : "middle"));
+
+      t.textContent = cornerNames[i];
+      labelsG.appendChild(t);
+    }
+  }
+
+  // ===== Render =====
+  function render(){
+    cornerNames.forEach((n,i)=> nameSpans[i].textContent = n);
+
+    const vals = sliders.map(s => Number(s.value));
+    vals.forEach((v,i)=> valueSpans[i].textContent = v);
+
+    const avg = average(vals);
+    avgValueEl.textContent = avg.toFixed(1);
+
+    skillPoly.setAttribute("points", polygonPoints(vals));
+
+    dotsG.innerHTML = "";
+    vals.forEach((v,i)=>{
+      const p = pointAt(i, v);
+      const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
+      c.setAttribute("cx", p.x);
+      c.setAttribute("cy", p.y);
+      c.setAttribute("r", 4.4);
+      c.setAttribute("class", "dot");
+      dotsG.appendChild(c);
+    });
+  }
+
+  sliders.forEach(s => s.addEventListener("input", render));
+  hueSlider.addEventListener("input", () => applyThemeFromHue());
+
+  // ===== Image upload =====
+  imgInput.addEventListener("change", () => {
+    const file = imgInput.files && imgInput.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Bitte eine Bilddatei auswählen.");
+      imgInput.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      uploadedImageDataUrl = String(reader.result);
+      previewImg.src = uploadedImageDataUrl;
+      previewImg.style.display = "block";
+      previewHint.style.display = "none";
+      imgStatus.textContent = "geladen";
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // ===== Reset =====
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    defaults.forEach((v,i)=> sliders[i].value = v);
+    hueSlider.value = 270;
+    titleInput.value = "";
+
+    uploadedImageDataUrl = null;
+    previewImg.removeAttribute("src");
+    previewImg.style.display = "none";
+    previewHint.style.display = "block";
+    imgStatus.textContent = "kein Bild";
+    imgInput.value = "";
+
+    applyThemeFromHue();
+    buildAxesAndLabels();
+    render();
+  });
+
+  // ===== Export SVG builder (image clipped to inner box + rounded corners) =====
+  function buildExportSvgString(vals, avg, hue, titleText, imageDataUrl){
+    const theme = accentFromHue(hue);
+
+    const W = 1100, H = 660;
+    const margin = 18;
+    const gap = 18;
+
+    const titleCardH = 92;
+    const rowY = margin + titleCardH + gap;
+    const cardH = H - rowY - margin;
+
+    const availableW = W - margin*2 - gap*2;
+    const cardW = Math.floor(availableW / 3);
+    const imageCardW = cardW;
+    const hexCardW = cardW;
+    const legendCardW = availableW - imageCardW - hexCardW;
+
+    const imageCardX = margin;
+    const hexCardX = imageCardX + imageCardW + gap;
+    const legendCardX = hexCardX + hexCardW + gap;
+
+    const pad = 16;
+
+    // Image inner box
+    const imgX = imageCardX + pad;
+    const imgY = rowY + pad;
+    const imgW = imageCardW - pad*2;
+    const imgH = cardH - pad*2;
+
+    // Hex inner: chart + avg
+    const hexInnerX = hexCardX + pad;
+    const hexInnerY = rowY + pad;
+    const hexInnerW = hexCardW - pad*2;
+    const hexInnerH = cardH - pad*2;
+
+    const avgBoxH = 72;
+    const avgGap = 12;
+    const chartBoxSize = Math.min(hexInnerW, hexInnerH - avgGap - avgBoxH);
+    const chartBoxX = hexInnerX + (hexInnerW - chartBoxSize)/2;
+    const chartBoxY = hexInnerY;
+
+    const avgBoxX = hexInnerX;
+    const avgBoxY = chartBoxY + chartBoxSize + avgGap;
+    const avgBoxW = hexInnerW;
+
+    const s = chartBoxSize / 400;
+
+    // Legend layout (NO avg box here)
+    const rpX = legendCardX + 22;
+    const rightTitleY = rowY + 44;
+    const rightSubY = rightTitleY + 26;
+
+    const legendTitleY = rightSubY + 46;
+    const legendStartY = legendTitleY + 28;
+
+    const rowH = 36;
+    const dotX = rpX + 10;
+    const nameX = rpX + 28;
+    const valueX = legendCardX + legendCardW - 26;
+
+    const bg1 = `hsla(${hue} 95% 65% / 0.22)`;
+    const bg2 = `hsla(${(hue + 35) % 360} 95% 62% / 0.18)`;
+    const bg3 = `hsla(${(hue + 335) % 360} 95% 60% / 0.08)`;
+
+    function expPointAt(i, value){
+      const angle = toRad(startAngleDeg + (360 / N) * i);
+      const r = (value / MAX) * 150;
+      return { x: 200 + Math.cos(angle)*r, y: 200 + Math.sin(angle)*r, angle };
+    }
+    function expPolyPoints(values){
+      return values.map((v,i)=>{
+        const p = expPointAt(i,v);
+        return `${p.x.toFixed(2)},${p.y.toFixed(2)}`;
+      }).join(" ");
+    }
+    function expRing(level){ return expPolyPoints(Array(N).fill(level)); }
+
+    const rings = [2,4,6,8,10].map(lvl=>{
+      const cls = (lvl === 10) ? "grid-main" : "grid-line";
+      return `<polygon class="${cls}" points="${expRing(lvl)}" />`;
+    }).join("");
+
+    const axes = Array.from({length:N},(_,i)=>{
+      const p = expPointAt(i, 10);
+      return `<line class="axis" x1="200" y1="200" x2="${p.x.toFixed(2)}" y2="${p.y.toFixed(2)}" />`;
+    }).join("");
+
+    const labels = Array.from({length:N},(_,i)=>{
+      const p = expPointAt(i, 10);
+      const labelR = 150 + 22;
+      const lx = 200 + Math.cos(p.angle)*labelR;
+      const ly = 200 + Math.sin(p.angle)*labelR;
+      const ax = Math.cos(p.angle), ay = Math.sin(p.angle);
+      const anchor = ax > 0.35 ? "start" : (ax < -0.35 ? "end" : "middle");
+      const baseline = ay > 0.35 ? "hanging" : (ay < -0.35 ? "ideographic" : "middle");
+      return `<text class="lbl" x="${lx.toFixed(2)}" y="${ly.toFixed(2)}" text-anchor="${anchor}" dominant-baseline="${baseline}">${escapeXml(cornerNames[i])}</text>`;
+    }).join("");
+
+    const poly = `<polygon class="skill-fill" points="${expPolyPoints(vals)}" />`;
+    const dots = vals.map((v,i)=>{
+      const p = expPointAt(i,v);
+      return `<circle class="dot" cx="${p.x.toFixed(2)}" cy="${p.y.toFixed(2)}" r="4.4" />`;
+    }).join("");
+
+    const legendRows = cornerNames.map((name,i)=>{
+      const y = legendStartY + i*rowH;
+      return `
+        <circle cx="${dotX}" cy="${y-4}" r="5" class="legendDot" />
+        <text x="${nameX}" y="${y}" class="legendName">${escapeXml(name)}</text>
+        <text x="${valueX}" y="${y}" class="legendValue" text-anchor="end">${vals[i]}</text>
+      `;
+    }).join("");
+
+    const exportTitle = (titleText && titleText.trim()) ? titleText.trim() : "Skill Profil";
+    const safeTitle = escapeXml(exportTitle);
+
+    // Image: clip to INNER box + rounded corners like cards
+    const imgPad = 10;     // space inside inner box
+    const imgRx = 16;      // same as inner box corner radius
+    const imgIX = imgX + imgPad;
+    const imgIY = imgY + imgPad;
+    const imgIW = imgW - imgPad * 2;
+    const imgIH = imgH - imgPad * 2;
+
+    const imageNode = imageDataUrl
+      ? `
+        <g clip-path="url(#imgClip)">
+          <image x="${imgIX}" y="${imgIY}" width="${imgIW}" height="${imgIH}"
+                 href="${imageDataUrl}"
+                 preserveAspectRatio="xMidYMid meet" />
+          <!-- optional: border to match inner box feel -->
+          <rect x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" rx="${imgRx}" fill="none" />
+        </g>
+      `
+      : `<text x="${imgX + imgW/2}" y="${imgY + imgH/2}" class="imgHint" text-anchor="middle" dominant-baseline="middle">
+           Kein Bild
+         </text>`;
+
+    return `
+<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+  <defs>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="3.2" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="dotGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="2.1" result="bb"/>
+      <feMerge>
+        <feMergeNode in="bb"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <radialGradient id="bgGlow1" cx="15%" cy="10%" r="70%">
+      <stop offset="0" stop-color="${bg1}"/>
+      <stop offset="1" stop-color="rgba(0,0,0,0)"/>
+    </radialGradient>
+    <radialGradient id="bgGlow2" cx="85%" cy="90%" r="70%">
+      <stop offset="0" stop-color="${bg2}"/>
+      <stop offset="1" stop-color="rgba(0,0,0,0)"/>
+    </radialGradient>
+    <radialGradient id="bgGlow3" cx="55%" cy="55%" r="80%">
+      <stop offset="0" stop-color="${bg3}"/>
+      <stop offset="1" stop-color="rgba(0,0,0,0)"/>
+    </radialGradient>
+
+    <linearGradient id="avgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="hsla(${hue} 95% 60% / 0.22)"/>
+      <stop offset="1" stop-color="hsla(${hue} 70% 45% / 0.32)"/>
+    </linearGradient>
+
+    <!-- Clip: image stays inside the inner box (rounded corners) -->
+    <clipPath id="imgClip">
+      <rect x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" rx="${imgRx}" />
+    </clipPath>
+  </defs>
+
+  <style>
+    .bgBase { fill:#0b0816; }
+    .bg1 { fill:url(#bgGlow1); }
+    .bg2 { fill:url(#bgGlow2); }
+    .bg3 { fill:url(#bgGlow3); }
+
+    .card { fill: hsla(${hue} 30% 80% / 0.06); stroke: hsla(${hue} 70% 75% / 0.22); }
+    .inner { fill: rgba(0,0,0,0.18); stroke: hsla(${hue} 70% 75% / 0.18); }
+
+    .grid-line{ stroke: ${theme.grid2}; stroke-width:1; fill:none; }
+    .grid-main{ stroke: ${theme.grid}; stroke-width:1.6; fill:none; }
+    .axis{ stroke: ${theme.axis}; stroke-width:1; }
+
+    .lbl{
+      fill: rgba(230,210,255,0.85);
+      font-size: 12px;
+      letter-spacing: 0.2px;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    .skill-fill{
+      fill: ${theme.accentSoft};
+      stroke: ${theme.accent};
+      stroke-width: 2.6;
+      filter: url(#glow);
+    }
+
+    .dot{
+      fill: rgba(255,255,255,0.95);
+      stroke: ${theme.accent};
+      stroke-width: 1.2;
+      filter: url(#dotGlow);
+    }
+
+    .topTitle{
+      fill: rgba(255,255,255,0.94);
+      font-size: 26px;
+      font-weight: 800;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    .title{
+      fill: rgba(255,255,255,0.92);
+      font-size: 20px;
+      font-weight: 750;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    .subtitle{
+      fill: rgba(255,255,255,0.65);
+      font-size: 13px;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    .avgBox{
+      fill: url(#avgGrad);
+      stroke: hsla(${hue} 70% 75% / 0.35);
+    }
+
+    .avgLabel{
+      fill: rgba(255,255,255,0.70);
+      font-size: 13px;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    .avgValue{
+      fill: #f6f2ff;
+      font-size: 30px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    .legendHead{
+      fill: rgba(255,255,255,0.92);
+      font-size: 15px;
+      font-weight: 750;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    .legendDot{
+      fill: rgba(255,255,255,0.95);
+      stroke: ${theme.accent};
+      stroke-width: 1.2;
+      filter: url(#dotGlow);
+    }
+
+    .legendName{
+      fill: rgba(230,210,255,0.88);
+      font-size: 14px;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    .legendValue{
+      fill: rgba(255,255,255,0.78);
+      font-size: 14px;
+      font-variant-numeric: tabular-nums;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    .imgHint{
+      fill: rgba(255,255,255,0.55);
+      font-size: 14px;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+  </style>
+
+  <rect class="bgBase" x="0" y="0" width="${W}" height="${H}"/>
+  <rect class="bg1" x="0" y="0" width="${W}" height="${H}"/>
+  <rect class="bg2" x="0" y="0" width="${W}" height="${H}"/>
+  <rect class="bg3" x="0" y="0" width="${W}" height="${H}"/>
+
+  <!-- Top title card -->
+  <rect class="card" x="${margin}" y="${margin}" width="${W - margin*2}" height="92" rx="22"/>
+  <text x="${W/2}" y="${margin + 58}" class="topTitle" text-anchor="middle">${safeTitle}</text>
+
+  <!-- Image card -->
+  <rect class="card" x="${imageCardX}" y="${rowY}" width="${imageCardW}" height="${cardH}" rx="22"/>
+  <rect class="inner" x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" rx="${imgRx}"/>
+  ${imageNode}
+
+  <!-- Hex card -->
+  <rect class="card" x="${hexCardX}" y="${rowY}" width="${hexCardW}" height="${cardH}" rx="22"/>
+  <rect class="inner" x="${chartBoxX}" y="${chartBoxY}" width="${chartBoxSize}" height="${chartBoxSize}" rx="16"/>
+
+  <g transform="translate(${chartBoxX},${chartBoxY}) scale(${s})">
+    ${rings}
+    ${axes}
+    ${labels}
+    ${poly}
+    ${dots}
+    <circle cx="200" cy="200" r="2.9" fill="rgba(230,210,255,0.75)"/>
+  </g>
+
+  <!-- ONLY average box (under hex card) -->
+  <rect class="avgBox" x="${avgBoxX}" y="${avgBoxY}" width="${avgBoxW}" height="${avgBoxH}" rx="16"/>
+  <text x="${avgBoxX + 16}" y="${avgBoxY + 30}" class="avgLabel">Durchschnitt</text>
+  <text x="${avgBoxX + 16}" y="${avgBoxY + 58}" class="avgValue">${avg.toFixed(1)}</text>
+
+  <!-- Legend card (NO avg box here) -->
+  <rect class="card" x="${legendCardX}" y="${rowY}" width="${legendCardW}" height="${cardH}" rx="22"/>
+
+  <text x="${rpX}" y="${rightTitleY}" class="title">Skill Übersicht</text>
+  <text x="${rpX}" y="${rightSubY}" class="subtitle">Skala: 0 (Zentrum) bis 10 (außen)</text>
+
+  <text x="${rpX}" y="${legendTitleY}" class="legendHead">Legende</text>
+  ${legendRows}
+</svg>
+    `.trim();
+  }
+
+  function downloadTextFile(filename, content, mime){
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function svgToPng(svgString, outWidth = 2200, outHeight = 1320){
+    return new Promise((resolve, reject) => {
+      const svgBlob = new Blob([svgString], {type:"image/svg+xml;charset=utf-8"});
+      const url = URL.createObjectURL(svgBlob);
+
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = outWidth;
+        canvas.height = outHeight;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, outWidth, outHeight);
+        URL.revokeObjectURL(url);
+        canvas.toBlob((blob)=>{
+          if(!blob) return reject(new Error("PNG export failed"));
+          resolve(blob);
+        }, "image/png");
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error("Could not load SVG for PNG conversion"));
+      };
+      img.src = url;
+    });
+  }
+
+  async function exportSVG(){
+    const vals = sliders.map(s => Number(s.value));
+    const avg = average(vals);
+    const hue = Number(hueSlider.value);
+    const titleText = titleInput.value;
+
+    const exportSvg = buildExportSvgString(vals, avg, hue, titleText, uploadedImageDataUrl);
+    downloadTextFile(`hexagon_export_h${hue}.svg`, exportSvg, "image/svg+xml;charset=utf-8");
+  }
+
+  async function exportPNG(){
+    const vals = sliders.map(s => Number(s.value));
+    const avg = average(vals);
+    const hue = Number(hueSlider.value);
+    const titleText = titleInput.value;
+
+    const exportSvg = buildExportSvgString(vals, avg, hue, titleText, uploadedImageDataUrl);
+    const pngBlob = await svgToPng(exportSvg);
+
+    const url = URL.createObjectURL(pngBlob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `hexagon_export_h${hue}.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById("exportSvgBtn").addEventListener("click", () => {
+    exportSVG().catch(err => alert("Export SVG fehlgeschlagen: " + err.message));
+  });
+
+  document.getElementById("exportPngBtn").addEventListener("click", () => {
+    exportPNG().catch(err => alert("Export PNG fehlgeschlagen: " + err.message));
+  });
+
+  // ===== Init =====
+  applyThemeFromHue();
+  buildAxesAndLabels();
+  render();
+</script>
+</body>
+</html>
