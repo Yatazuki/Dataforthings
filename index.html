@@ -1,1146 +1,2251 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Score for Series</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SoftwareVault — Digital Software Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Rajdhani:wght@500;600;700&family=Barlow+Condensed:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="data.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --nav: #0f1623;
+    --nav-border: rgba(255,255,255,0.07);
+    --bg: #f7f6f4;
+    --surface: #ffffff;
+    --surface2: #f0efe d;
+    --border: #e8e6e2;
+    --text: #1a1814;
+    --text2: #6b6760;
+    --text3: #9b9893;
+    --accent: oklch(52% 0.22 268);
+    --accent-hover: oklch(46% 0.22 268);
+    --accent-light: oklch(96% 0.04 268);
+    --amber: oklch(68% 0.18 75);
+    --amber-light: oklch(96% 0.05 75);
+    --green: oklch(55% 0.18 145);
+    --green-light: oklch(95% 0.04 145);
+    --red: oklch(55% 0.20 25);
+    --red-light: oklch(96% 0.04 25);
+    --radius: 10px;
+    --radius-sm: 6px;
+    --radius-lg: 16px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05);
+    --shadow-hover: 0 4px 12px rgba(0,0,0,0.08), 0 12px 40px rgba(0,0,0,0.10);
+    --font-head: 'Sora', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --transition: 0.18s cubic-bezier(0.4,0,0.2,1);
+  }
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.5; }
+  #root { min-height: 100vh; display: flex; flex-direction: column; }
+  img { display: block; max-width: 100%; }
+  button { cursor: pointer; border: none; background: none; font-family: inherit; }
+  input { font-family: inherit; }
+  a { text-decoration: none; color: inherit; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+  /* Gaming mode overrides */
+  body.gaming {
+    --bg: #080b10;
+    --surface: #0e1420;
+    --border: rgba(255,255,255,0.08);
+    --text: #e8eaf0;
+    --text2: #8a90a0;
+    --text3: #4a5060;
+    --nav: #050709;
+    --nav-border: rgba(0,200,255,0.12);
+    --accent: oklch(62% 0.25 195);
+    --accent-hover: oklch(55% 0.25 195);
+    --accent-light: rgba(0,200,255,0.08);
+    --amber: oklch(72% 0.22 55);
+    --amber-light: rgba(255,180,0,0.1);
+    --green: oklch(62% 0.22 145);
+    --green-light: rgba(0,255,100,0.08);
+    --red: oklch(60% 0.24 25);
+    --red-light: rgba(255,50,50,0.08);
+    --shadow: 0 2px 12px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04);
+    --shadow-hover: 0 4px 24px rgba(0,200,255,0.15), 0 0 0 1px rgba(0,200,255,0.2);
+    --font-head: 'Barlow Condensed', sans-serif;
+    --font-body: 'Rajdhani', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+  }
+  body.gaming ::-webkit-scrollbar-thumb { background: rgba(0,200,255,0.2); }
 
-  <style>
-    :root{
-      --hue: 270;
+  /* Animations */
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes slideDown { from { opacity:0; transform: translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes scaleIn { from { opacity:0; transform: scale(0.96); } to { opacity:1; transform:scale(1); } }
+  @keyframes splitReveal { from { opacity:0; transform: scale(1.04); } to { opacity:1; transform:scale(1); } }
+  @keyframes glowPulse { 0%,100% { opacity:0.5; } 50% { opacity:1; } }
+  @keyframes scanline { from { transform: translateY(-100%); } to { transform: translateY(100vh); } }
+  .animate-in { animation: fadeIn 0.3s ease both; }
 
-      /* ===== Dark (default) ===== */
-      --bg: #0b0816;
+  /* Landing split styles */
+  .split-landing { display:flex; height:100vh; overflow:hidden; cursor:default; }
+  .split-side { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    position:relative; overflow:hidden; transition: flex 0.55s cubic-bezier(0.77,0,0.18,1); }
+  .split-side:hover { flex: 1.45; }
+  .split-divider { width:2px; background:rgba(255,255,255,0.12); flex-shrink:0; position:relative; z-index:10; }
+  .split-divider::after { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:36px; height:36px; border-radius:50%; background:#0f1623; border:2px solid rgba(255,255,255,0.15);
+    display:flex; align-items:center; justify-content:center; }
 
-      --text: rgba(255,255,255,0.92);
-      --muted: rgba(255,255,255,0.65);
-
-      --panel: hsla(var(--hue) 30% 80% / 0.06);
-      --panelBorder: hsla(var(--hue) 70% 75% / 0.22);
-
-      --chartBg: rgba(0,0,0,0.18);
-      --chartBorder: hsla(var(--hue) 70% 75% / 0.18);
-
-      --btnBg: hsla(var(--hue) 95% 60% / 0.14);
-      --btnBgHover: hsla(var(--hue) 95% 60% / 0.22);
-      --btnBorder: hsla(var(--hue) 70% 75% / 0.28);
-
-      --shadow: 0 25px 80px hsla(var(--hue) 75% 35% / 0.40);
-
-      /* Accent */
-      --accent: hsl(var(--hue) 95% 68%);
-      --accentSoft: hsla(var(--hue) 95% 60% / 0.28);
-
-      /* Lines / outlines */
-      --grid: hsla(var(--hue) 55% 75% / 0.30);
-      --grid2: hsla(var(--hue) 55% 75% / 0.16);
-      --axis: hsla(var(--hue) 70% 75% / 0.18);
-
-      /* Average gradient */
-      --avgGradA: hsla(var(--hue) 95% 60% / 0.22);
-      --avgGradB: hsla(var(--hue) 70% 45% / 0.32);
-
-      /* Upload preview */
-      --uploadBg: rgba(0,0,0,0.16);
-      --uploadBorder: hsla(var(--hue) 70% 75% / 0.18);
-
-      /* Inputs */
-      --inputBg: rgba(0,0,0,0.18);
-      --inputBorder: hsla(var(--hue) 70% 75% / 0.24);
-
-      /* Row separators */
-      --rowSep: hsla(var(--hue) 70% 75% / 0.14);
-    }
-
-    /* ===== Light mode: outlines darker for readability ===== */
-    html[data-mode="light"]{
-      --bg: #f5f3ff;
-
-      --text: rgba(15,10,25,0.92);
-      --muted: rgba(15,10,25,0.62);
-
-      --panel: rgba(255,255,255,0.74);
-
-      --panelBorder: hsla(var(--hue) 55% 25% / 0.28);
-
-      --chartBg: rgba(255,255,255,0.65);
-      --chartBorder: hsla(var(--hue) 55% 25% / 0.28);
-
-      --btnBg: hsla(var(--hue) 95% 55% / 0.12);
-      --btnBgHover: hsla(var(--hue) 95% 55% / 0.18);
-      --btnBorder: hsla(var(--hue) 55% 25% / 0.34);
-
-      --shadow: 0 25px 80px hsla(var(--hue) 45% 30% / 0.16);
-
-      --grid:  hsla(var(--hue) 55% 22% / 0.44);
-      --grid2: hsla(var(--hue) 55% 22% / 0.26);
-      --axis:  hsla(var(--hue) 55% 22% / 0.30);
-
-      --avgGradA: hsla(var(--hue) 95% 55% / 0.16);
-      --avgGradB: hsla(var(--hue) 65% 40% / 0.20);
-
-      --uploadBg: rgba(255,255,255,0.70);
-      --uploadBorder: hsla(var(--hue) 55% 22% / 0.30);
-
-      --inputBg: rgba(255,255,255,0.75);
-      --inputBorder: hsla(var(--hue) 55% 22% / 0.32);
-
-      --rowSep: hsla(var(--hue) 55% 22% / 0.20);
-    }
-
-    *{ box-sizing:border-box; }
-
-    body{
-      margin:0;
-      min-height:100vh;
-      display:grid;
-      place-items:center;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background:
-        radial-gradient(900px 600px at 15% 10%, hsla(var(--hue) 95% 65% / 0.22), transparent 60%),
-        radial-gradient(800px 600px at 85% 90%, hsla(calc(var(--hue) + 35) 95% 62% / 0.18), transparent 65%),
-        radial-gradient(900px 700px at 55% 55%, hsla(calc(var(--hue) - 25) 95% 60% / 0.08), transparent 70%),
-        var(--bg);
-      color: var(--text);
-    }
-
-    .wrap{
-      width:min(1100px, 95vw);
-      display:grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap:18px;
-      align-items:start;
-    }
-
-    .card{
-      background: var(--panel);
-      border:1px solid var(--panelBorder);
-      border-radius:18px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(6px);
-    }
-
-    .chart-card{ padding:16px; }
-    .controls{ padding:10px; }
-
-    h1{
-      margin:0 0 10px;
-      font-size:16px;
-      letter-spacing:0.3px;
-    }
-
-    .chart{
-      width:100%;
-      aspect-ratio:1;
-      background: var(--chartBg);
-      border-radius:14px;
-      border:1px solid var(--chartBorder);
-      overflow:hidden;
-      display:block;
-    }
-
-    .row{
-      padding:10px;
-      border-bottom:1px solid var(--rowSep);
-    }
-    .row:last-child{ border-bottom:none; }
-
-    .label{
-      display:flex;
-      justify-content:space-between;
-      font-size:13px;
-      margin-bottom:6px;
-      gap:12px;
-      align-items:center;
-    }
-    .label span:last-child{
-      color: var(--muted);
-      font-variant-numeric: tabular-nums;
-    }
-
-    input[type="range"]{
-      width:100%;
-      accent-color: var(--accent);
-    }
-
-    .mini{
-      margin-top:10px;
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      font-size:12px;
-      color: var(--muted);
-      align-items:center;
-      flex-wrap:wrap;
-    }
-
-    button{
-      padding:10px 14px;
-      border-radius:12px;
-      background: var(--btnBg);
-      border:1px solid var(--btnBorder);
-      color: var(--text);
-      cursor:pointer;
-      transition: transform .08s ease, background .18s ease, border-color .18s ease;
-      white-space:nowrap;
-    }
-    button:hover{
-      background: var(--btnBgHover);
-      border-color: color-mix(in oklab, var(--btnBorder) 55%, var(--text) 25%);
-    }
-    button:active{ transform: scale(0.98); }
-
-    /* Ø box under hexagon (the only average box) */
-    .avg-under{
-      margin-top:12px;
-      padding:12px 14px;
-      border-radius:14px;
-      background: linear-gradient(135deg, var(--avgGradA), var(--avgGradB));
-      border:1px solid color-mix(in oklab, var(--panelBorder) 65%, var(--accent) 25%);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      box-shadow:
-        inset 0 0 28px hsla(var(--hue) 95% 60% / 0.16),
-        0 0 25px hsla(var(--hue) 95% 60% / 0.06);
-    }
-
-    .avg-under .t{
-      font-size:12px;
-      color: var(--muted);
-      letter-spacing:0.2px;
-    }
-    .avg-under .v{
-      font-size:26px;
-      font-weight:800;
-      color:#f6f2ff;
-      text-shadow: 0 0 14px hsla(var(--hue) 95% 70% / 0.55);
-      font-variant-numeric: tabular-nums;
-    }
-    html[data-mode="light"] .avg-under .v{
-      color: rgba(15,10,25,0.92);
-      text-shadow:none;
-    }
-
-    .color-preview{
-      width:14px;
-      height:14px;
-      border-radius:999px;
-      background: var(--accent);
-      box-shadow: 0 0 14px hsla(var(--hue) 95% 70% / 0.45);
-      border:1px solid color-mix(in oklab, var(--panelBorder) 55%, var(--text) 20%);
-      flex:0 0 auto;
-    }
-
-    .title-input{
-      height: 38px;
-      padding: 8px 10px;
-      border-radius: 12px;
-      border: 1px solid var(--inputBorder);
-      background: var(--inputBg);
-      color: var(--text);
-      outline: none;
-      min-width: 220px;
-    }
-    .title-input::placeholder{ color: color-mix(in oklab, var(--muted) 70%, transparent); }
-    .title-input:focus{
-      border-color: color-mix(in oklab, var(--accent) 55%, var(--panelBorder) 25%);
-      box-shadow: 0 0 0 3px hsla(var(--hue) 95% 60% / 0.10);
-    }
-
-    .upload-box{
-      display:grid;
-      gap:10px;
-    }
-    .upload-preview{
-      width: 100%;
-      height: 160px;
-      border-radius: 14px;
-      border: 1px solid var(--uploadBorder);
-      background: var(--uploadBg);
-      overflow:hidden;
-      display:grid;
-      place-items:center;
-      position: relative;
-    }
-    .upload-preview img{
-      max-width: 92%;
-      max-height: 88%;
-      object-fit: contain;
-      display:none;
-      border-radius: 10px;
-    }
-    .upload-hint{
-      color: color-mix(in oklab, var(--muted) 85%, transparent);
-      font-size: 12px;
-      text-align:center;
-      padding: 0 12px;
-    }
-    .file-input{
-      width: 100%;
-      color: color-mix(in oklab, var(--text) 80%, transparent);
-      font-size: 12px;
-    }
-
-    /* SVG */
-    .grid-line{ stroke: var(--grid2); stroke-width:1; fill:none; }
-    .grid-main{ stroke: var(--grid); stroke-width:1.6; fill:none; }
-    .axis{ stroke: var(--axis); stroke-width:1; }
-
-    .lbl{
-      fill: rgba(230,210,255,0.85);
-      font-size:12px;
-      letter-spacing:0.2px;
-    }
-    html[data-mode="light"] .lbl{ fill: rgba(35,18,55,0.82); }
-
-    .skill-fill{
-      fill: var(--accentSoft);
-      stroke: var(--accent);
-      stroke-width:2.6;
-      filter: url(#glow);
-    }
-
-    .dot{
-      fill: rgba(255,255,255,0.95);
-      stroke: var(--accent);
-      stroke-width:1.2;
-      filter: url(#dotGlow);
-    }
-  </style>
+  /* Gaming card glow */
+  body.gaming .game-card-glow:hover {
+    box-shadow: 0 0 0 1px rgba(0,200,255,0.3), 0 8px 40px rgba(0,200,255,0.12), 0 2px 8px rgba(0,0,0,0.6) !important;
+  }
+</style>
 </head>
-
 <body>
-  <div class="wrap">
-    <div class="card chart-card">
-      <h1 id="pageTitle">Score for Series</h1>
+<div id="root"></div>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel">
 
-      <svg id="chartSvg" class="chart" viewBox="0 0 400 400" aria-label="Hexagon Skill Chart">
-        <defs>
-          <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
-            <feGaussianBlur stdDeviation="3.1" result="b"/>
-            <feMerge>
-              <feMergeNode in="b"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          <filter id="dotGlow" x="-60%" y="-60%" width="220%" height="220%">
-            <feGaussianBlur stdDeviation="2.1" result="bb"/>
-            <feMerge>
-              <feMergeNode in="bb"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accentColor": "indigo",
+  "cardStyle": "shadow",
+  "heroLayout": "split",
+  "showRatings": true,
+  "currency": "EUR"
+}/*EDITMODE-END*/;
 
-        <polygon id="ring2" class="grid-line" />
-        <polygon id="ring4" class="grid-line" />
-        <polygon id="ring6" class="grid-line" />
-        <polygon id="ring8" class="grid-line" />
-        <polygon id="ring10" class="grid-main" />
+// ─── Utils ───────────────────────────────────────────────────────────────────
+const fmt = (n, currency = 'USD') =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: 2 }).format(n);
 
-        <g id="axes"></g>
-        <g id="labels"></g>
+const StarRating = ({ rating }) => {
+  const full = Math.floor(rating);
+  const half = rating % 1 >= 0.5;
+  return (
+    <span style={{ display:'flex', gap:2, alignItems:'center' }}>
+      {[1,2,3,4,5].map(i => (
+        <svg key={i} width="12" height="12" viewBox="0 0 12 12">
+          <polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.2 2.8,11 3.5,7.5 1,5 4.5,4.5"
+            fill={i <= full ? 'var(--amber)' : (i === full+1 && half ? 'var(--amber)' : 'var(--border)')}
+            opacity={i === full+1 && half ? 0.5 : 1}
+          />
+        </svg>
+      ))}
+    </span>
+  );
+};
 
-        <polygon id="skills" class="skill-fill" />
-        <g id="dots"></g>
+const Badge = ({ text, type = 'default' }) => {
+  const colors = {
+    'New': { bg:'var(--accent-light)', color:'var(--accent)' },
+    'Deal': { bg:'var(--amber-light)', color:'var(--amber)' },
+    'Bestseller': { bg:'var(--green-light)', color:'var(--green)' },
+    'Popular': { bg:'var(--red-light)', color:'var(--red)' },
+    'default': { bg:'var(--border)', color:'var(--text2)' },
+  };
+  const c = colors[text] || colors.default;
+  return (
+    <span style={{
+      display:'inline-flex', alignItems:'center',
+      padding:'2px 8px', borderRadius:99, fontSize:11, fontWeight:600,
+      letterSpacing:'0.03em', textTransform:'uppercase',
+      background: c.bg, color: c.color,
+    }}>{text}</span>
+  );
+};
 
-        <circle cx="200" cy="200" r="2.9" fill="rgba(230,210,255,0.75)"/>
-      </svg>
+// Product card cover
+const ProductCover = ({ product, size = 'md' }) => {
+  const aspectRatio = size === 'sm' ? '1/1' : size === 'lg' ? '4/3' : '4/3';
+  const borderRadius = size === 'sm' ? 8 : size === 'lg' ? 'var(--radius-lg) var(--radius-lg) 0 0' : 'var(--radius) var(--radius) 0 0';
 
-      <div class="avg-under">
-        <div class="t" id="overallLabel">Overall Score</div>
-        <div class="v" id="avgValue">6.2</div>
+  return (
+    <div style={{
+      width:'100%', aspectRatio,
+      background: product.coverBg || `linear-gradient(135deg, ${product.color}22 0%, ${product.color}55 100%)`,
+      borderRadius,
+      display:'flex', alignItems:'center', justifyContent:'center',
+      position:'relative', overflow:'hidden',
+      borderBottom: size !== 'sm' ? '1px solid var(--border)' : 'none',
+    }}>
+      {product.coverSvg ? (
+        <div
+          style={{ width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center' }}
+          dangerouslySetInnerHTML={{ __html: product.coverSvg
+            .replace('<svg ', '<svg width="100%" height="100%" style="position:absolute;inset:0;" ')
+          }}
+        />
+      ) : (
+        <>
+          <div style={{ position:'absolute', width:'60%', aspectRatio:'1', borderRadius:'50%',
+            background: product.color, opacity:0.12, top:'-20%', right:'-10%' }} />
+          <div style={{
+            fontFamily:'var(--font-body)', fontSize:10, color: product.color,
+            fontWeight:700, textTransform:'uppercase', opacity:0.8,
+            position:'relative', zIndex:1, textAlign:'center', padding:'0 8px',
+          }}>
+            {product.publisher}<br/>
+            <span style={{ fontSize:14, fontWeight:800, opacity:1, letterSpacing:0, textTransform:'none', lineHeight:1.2 }}>
+              {product.name}
+            </span>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+// ─── Navbar ──────────────────────────────────────────────────────────────────
+const Navbar = ({ page, setPage, searchQuery, setSearchQuery, wishlist, cart }) => {
+  const [searchFocused, setSearchFocused] = React.useState(false);
+  const navItems = [
+    { id:'home', label:'Home' },
+    { id:'software', label:'Software' },
+    { id:'deals', label:'Deals' },
+    { id:'new', label:'New Releases' },
+  ];
+  return (
+    <nav style={{
+      background:'var(--nav)', color:'#fff',
+      display:'flex', alignItems:'center', gap:0,
+      padding:'0 32px', height:56, position:'sticky', top:0, zIndex:100,
+      borderBottom:'1px solid var(--nav-border)',
+    }}>
+      {/* Logo */}
+      <div onClick={() => setPage('home')} style={{
+        fontFamily:'var(--font-head)', fontWeight:800, fontSize:18,
+        letterSpacing:'-0.02em', cursor:'pointer', marginRight:40, flexShrink:0,
+        display:'flex', alignItems:'center', gap:8,
+      }}>
+        <span style={{
+          background:'var(--accent)', width:26, height:26, borderRadius:6,
+          display:'flex', alignItems:'center', justifyContent:'center',
+          fontSize:13, fontWeight:800,
+        }}>SV</span>
+        <span>SoftwareVault</span>
       </div>
 
-      <div class="mini">
-        <span id="scaleText">Scale: 0 (Bad) – 10 (Perfect)</span>
+      {/* Nav items */}
+      <div style={{ display:'flex', gap:4, flex:1 }}>
+        {navItems.map(item => (
+          <button key={item.id} onClick={() => setPage(item.id)} style={{
+            padding:'6px 14px', borderRadius:'var(--radius-sm)',
+            fontFamily:'var(--font-body)', fontSize:14, fontWeight: page === item.id ? 600 : 400,
+            color: page === item.id ? '#fff' : 'rgba(255,255,255,0.6)',
+            background: page === item.id ? 'rgba(255,255,255,0.1)' : 'transparent',
+            transition:'var(--transition)',
+          }}>{item.label}</button>
+        ))}
+      </div>
 
-        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end; width:100%;">
-          <input id="titleInput" class="title-input" type="text" placeholder="Title for export (e.g. Score Profile)" />
-          <button id="exportSvgBtn" type="button">Export SVG</button>
-          <button id="exportPngBtn" type="button">Export PNG</button>
-          <button id="resetBtn" type="button">Reset</button>
+      {/* Search */}
+      <div style={{ position:'relative', marginRight:12 }}>
+        <svg style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', opacity:0.4 }}
+          width="15" height="15" viewBox="0 0 20 20" fill="none">
+          <circle cx="8.5" cy="8.5" r="5.5" stroke="white" strokeWidth="1.8"/>
+          <path d="M13 13L17 17" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
+        </svg>
+        <input
+          value={searchQuery}
+          onChange={e => { setSearchQuery(e.target.value); if(e.target.value) setPage('search'); }}
+          onFocus={() => setSearchFocused(true)}
+          onBlur={() => setSearchFocused(false)}
+          placeholder="Search products…"
+          style={{
+            background: searchFocused ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.08)',
+            border:'1px solid', borderColor: searchFocused ? 'rgba(255,255,255,0.25)' : 'transparent',
+            color:'#fff', borderRadius:'var(--radius-sm)', padding:'7px 12px 7px 32px',
+            fontSize:13, outline:'none', width:200, transition:'var(--transition)',
+          }}
+        />
+      </div>
+
+      {/* Wishlist */}
+      <button onClick={() => setPage('wishlist')} style={{
+        position:'relative', padding:8, borderRadius:'var(--radius-sm)',
+        color:'rgba(255,255,255,0.7)', transition:'var(--transition)',
+        background: page === 'wishlist' ? 'rgba(255,255,255,0.1)' : 'transparent',
+      }}>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+            stroke="currentColor" strokeWidth="1.8" fill={page==='wishlist' ? 'currentColor' : 'none'}/>
+        </svg>
+        {wishlist.length > 0 && (
+          <span style={{
+            position:'absolute', top:4, right:4, width:14, height:14, borderRadius:'50%',
+            background:'var(--accent)', color:'#fff', fontSize:9, fontWeight:700,
+            display:'flex', alignItems:'center', justifyContent:'center',
+          }}>{wishlist.length}</span>
+        )}
+      </button>
+
+      {/* Cart */}
+      <button onClick={() => setPage('cart')} style={{
+        position:'relative', padding:8, borderRadius:'var(--radius-sm)',
+        color:'rgba(255,255,255,0.7)', transition:'var(--transition)',
+        background: page === 'cart' ? 'rgba(255,255,255,0.1)' : 'transparent',
+      }}>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" stroke="currentColor" strokeWidth="1.8"/>
+          <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" strokeWidth="1.8"/>
+          <path d="M16 10a4 4 0 01-8 0" stroke="currentColor" strokeWidth="1.8"/>
+        </svg>
+        {cart.length > 0 && (
+          <span style={{
+            position:'absolute', top:4, right:4, width:14, height:14, borderRadius:'50%',
+            background:'var(--accent)', color:'#fff', fontSize:9, fontWeight:700,
+            display:'flex', alignItems:'center', justifyContent:'center',
+          }}>{cart.length}</span>
+        )}
+      </button>
+
+      {/* Avatar */}
+      <div style={{
+        width:30, height:30, borderRadius:'50%', marginLeft:8,
+        background:'linear-gradient(135deg, var(--accent), var(--amber))',
+        display:'flex', alignItems:'center', justifyContent:'center',
+        fontSize:12, fontWeight:700, color:'#fff', cursor:'pointer',
+      }}>JD</div>
+    </nav>
+  );
+};
+
+// ─── Product Card ─────────────────────────────────────────────────────────────
+const ProductCard = ({ product, onOpen, onWishlist, isWishlisted, onAddToCart, tweaks }) => {
+  const [hovered, setHovered] = React.useState(false);
+  const lowestPrice = Math.min(...product.editions.map(e => e.price));
+  const hasDiscount = product.editions.some(e => e.originalPrice);
+  const origPrice = product.editions.find(e => e.originalPrice)?.originalPrice;
+  const discount = origPrice ? Math.round((1 - lowestPrice/origPrice)*100) : null;
+
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background:'var(--surface)', borderRadius:'var(--radius-lg)',
+        border:'1px solid var(--border)',
+        boxShadow: hovered
+          ? (tweaks.cardStyle === 'flat' ? 'none' : 'var(--shadow-hover)')
+          : (tweaks.cardStyle === 'flat' ? 'none' : 'var(--shadow)'),
+        transform: hovered ? 'translateY(-3px)' : 'translateY(0)',
+        transition:'var(--transition)', overflow:'hidden',
+        cursor:'pointer', display:'flex', flexDirection:'column',
+        animation:'fadeIn 0.3s ease both',
+      }}
+    >
+      {/* Cover */}
+      <div style={{ position:'relative' }} onClick={() => onOpen(product)}>
+        <ProductCover product={product} />
+        {/* Badges */}
+        <div style={{ position:'absolute', top:10, left:10, display:'flex', gap:4 }}>
+          {product.badge && <Badge text={product.badge} />}
+          {discount && <Badge text={`-${discount}%`} type="deal" />}
+        </div>
+        {/* Wishlist btn */}
+        <button
+          onClick={e => { e.stopPropagation(); onWishlist(product.id); }}
+          style={{
+            position:'absolute', top:8, right:8,
+            width:30, height:30, borderRadius:'50%',
+            background: isWishlisted ? 'var(--accent)' : 'rgba(255,255,255,0.9)',
+            display:'flex', alignItems:'center', justifyContent:'center',
+            boxShadow:'0 2px 8px rgba(0,0,0,0.12)', transition:'var(--transition)',
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+              stroke={isWishlisted ? '#fff' : 'var(--text2)'}
+              strokeWidth="1.8" fill={isWishlisted ? '#fff' : 'none'}/>
+          </svg>
+        </button>
+      </div>
+
+      {/* Body */}
+      <div style={{ padding:'14px 16px', flex:1, display:'flex', flexDirection:'column', gap:8 }} onClick={() => onOpen(product)}>
+        <div>
+          <div style={{ fontSize:11, color:'var(--text3)', fontWeight:500, textTransform:'uppercase', letterSpacing:'0.04em', marginBottom:3 }}>
+            {product.publisher}
+          </div>
+          <div style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:15, lineHeight:1.3, color:'var(--text)' }}>
+            {product.name}
+          </div>
+        </div>
+        {tweaks.showRatings && (
+          <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+            <StarRating rating={product.rating} />
+            <span style={{ fontSize:12, color:'var(--text3)' }}>
+              {product.rating} ({product.reviews.toLocaleString()})
+            </span>
+          </div>
+        )}
+        <div style={{ display:'flex', flexWrap:'wrap', gap:4, marginTop:2 }}>
+          {product.platform.map(p => (
+            <span key={p} style={{
+              fontSize:10, padding:'2px 7px', borderRadius:99, fontWeight:500,
+              background:'var(--bg)', color:'var(--text3)', border:'1px solid var(--border)',
+            }}>{p}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div style={{
+        padding:'12px 16px', borderTop:'1px solid var(--border)',
+        display:'flex', alignItems:'center', justifyContent:'space-between',
+      }}>
+        <div>
+          {origPrice && (
+            <div style={{ fontSize:11, color:'var(--text3)', textDecoration:'line-through' }}>
+              {fmt(origPrice)}
+            </div>
+          )}
+          <div style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:17, color:'var(--text)' }}>
+            {fmt(lowestPrice)}
+            {product.editions[0].name.includes('/mo') || product.editions[0].name.includes('/yr')
+              ? <span style={{ fontSize:11, fontWeight:400, color:'var(--text3)' }}> /mo</span>
+              : null}
+          </div>
+        </div>
+        <button
+          onClick={e => { e.stopPropagation(); onAddToCart(product); }}
+          style={{
+            background: hovered ? 'var(--accent)' : 'var(--bg)',
+            color: hovered ? '#fff' : 'var(--text)',
+            border:'1px solid', borderColor: hovered ? 'var(--accent)' : 'var(--border)',
+            borderRadius:'var(--radius-sm)', padding:'6px 14px', fontSize:13, fontWeight:600,
+            transition:'var(--transition)',
+          }}
+        >
+          Buy
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ─── Section Row ─────────────────────────────────────────────────────────────
+const SectionRow = ({ title, badge, products, onViewAll, onOpen, onWishlist, wishlist, onAddToCart, tweaks }) => (
+  <section style={{ marginBottom:48 }}>
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
+      <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+        <h2 style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:20, color:'var(--text)' }}>{title}</h2>
+        {badge && <Badge text={badge} />}
+      </div>
+      <button onClick={onViewAll} style={{
+        fontSize:13, color:'var(--accent)', fontWeight:600,
+        display:'flex', alignItems:'center', gap:4,
+        padding:'4px 8px', borderRadius:'var(--radius-sm)',
+        transition:'var(--transition)',
+      }}>
+        See All
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
+          <path d="M7 5l5 5-5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+        </svg>
+      </button>
+    </div>
+    <div style={{
+      display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(210px, 1fr))', gap:16,
+    }}>
+      {products.slice(0,4).map(p => (
+        <ProductCard key={p.id} product={p}
+          onOpen={onOpen} onWishlist={onWishlist}
+          isWishlisted={wishlist.includes(p.id)}
+          onAddToCart={onAddToCart} tweaks={tweaks}
+        />
+      ))}
+    </div>
+  </section>
+);
+
+// ─── Hero ─────────────────────────────────────────────────────────────────────
+const Hero = ({ onShop, tweaks }) => {
+  const featured = PRODUCTS.find(p => p.id === 'adobe-cc');
+  return (
+    <div style={{
+      borderRadius:'var(--radius-lg)', overflow:'hidden', marginBottom:52,
+      background: tweaks.heroLayout === 'dark'
+        ? 'linear-gradient(135deg, #0f1623 0%, #1a2340 100%)'
+        : 'linear-gradient(135deg, #1e2d42 0%, #2a3f60 100%)',
+      minHeight:320, display:'flex', alignItems:'stretch',
+      boxShadow:'var(--shadow-hover)',
+    }}>
+      {/* Left content */}
+      <div style={{ flex:1, padding:'52px 48px', display:'flex', flexDirection:'column', justifyContent:'center', gap:20 }}>
+        <Badge text="Featured" />
+        <div>
+          <h1 style={{
+            fontFamily:'var(--font-head)', fontWeight:800, fontSize:38, lineHeight:1.1,
+            color:'#fff', letterSpacing:'-0.03em', marginBottom:12,
+          }}>
+            Adobe Creative<br/>
+            <span style={{ color:'var(--amber)', fontWeight:700 }}>Cloud 2024</span>
+          </h1>
+          <p style={{ color:'rgba(255,255,255,0.65)', fontSize:15, maxWidth:360, lineHeight:1.6 }}>
+            All 20+ creative apps in one subscription — Photoshop, Illustrator, Premiere Pro and more.
+          </p>
+        </div>
+        <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+          <button onClick={() => onShop(featured)} style={{
+            background:'var(--accent)', color:'#fff', borderRadius:'var(--radius-sm)',
+            padding:'12px 28px', fontSize:15, fontWeight:700,
+            fontFamily:'var(--font-head)', transition:'var(--transition)',
+            boxShadow:'0 4px 20px rgba(99,102,241,0.4)',
+          }}>
+            Buy Now
+          </button>
+          <span style={{
+            fontFamily:'var(--font-head)', fontWeight:800, fontSize:24, color:'#fff',
+          }}>
+            {fmt(9.99)}
+          </span>
+          <span style={{ fontSize:13, color:'rgba(255,255,255,0.5)' }}>/mo Photography</span>
+        </div>
+        {/* Trust badges */}
+        <div style={{ display:'flex', gap:16, marginTop:4 }}>
+          {['Instant Delivery', 'Money-back Guarantee', 'Secure Payment'].map(t => (
+            <div key={t} style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, color:'rgba(255,255,255,0.5)', fontWeight:500 }}>
+              <svg width="12" height="12" viewBox="0 0 20 20">
+                <path d="M10 1L2 5v5c0 5 4 9 8 10 4-1 8-5 8-10V5L10 1z" stroke="rgba(255,255,255,0.4)" strokeWidth="1.6" fill="none"/>
+                <path d="M7 10l2 2 4-4" stroke="var(--green)" strokeWidth="1.6" strokeLinecap="round"/>
+              </svg>
+              {t}
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Right visual */}
+      <div style={{
+        width:380, flexShrink:0, display:'flex', alignItems:'stretch',
+        position:'relative', overflow:'hidden',
+      }}>
+        <div style={{
+          flex:1, margin:24, borderRadius:12,
+          background:`linear-gradient(135deg, ${featured.color}44 0%, ${featured.color}88 100%)`,
+          display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+          position:'relative', overflow:'hidden',
+        }}>
+          <div style={{ position:'absolute', width:'120%', aspectRatio:'1', borderRadius:'50%',
+            background: featured.color, opacity:0.15, top:'-30%', right:'-30%' }} />
+          <div style={{ fontFamily:'var(--font-head)', fontSize:11, color:featured.color,
+            fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase', opacity:0.8, zIndex:1 }}>
+            CD Projekt Red
+          </div>
+          <div style={{ fontFamily:'var(--font-head)', fontWeight:800, fontSize:28,
+            color:'#fff', textAlign:'center', lineHeight:1.2, zIndex:1, padding:'0 20px', marginTop:8 }}>
+            The Witcher 4
+          </div>
+          <div style={{ marginTop:12, fontSize:11, color:'rgba(255,255,255,0.5)', zIndex:1, fontStyle:'italic' }}>
+            Hero Image / Key Visual
+          </div>
         </div>
       </div>
     </div>
+  );
+};
 
-    <div class="card controls">
-      <div class="row">
-        <div class="label"><span id="n0">1) Animation/Cinematography</span><span id="v0">7</span></div>
-        <input id="s0" type="range" min="0" max="10" value="7" />
+// ─── New Releases Row (horizontal list style) ─────────────────────────────────
+const NewReleasesRow = ({ products, onOpen, onWishlist, wishlist, onAddToCart }) => (
+  <section style={{ marginBottom:48 }}>
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
+      <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+        <h2 style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:20 }}>New Releases</h2>
+        <Badge text="New" />
       </div>
-      <div class="row">
-        <div class="label"><span id="n1">2) Plot</span><span id="v1">6</span></div>
-        <input id="s1" type="range" min="0" max="10" value="6" />
-      </div>
-      <div class="row">
-        <div class="label"><span id="n2">3) Art style</span><span id="v2">8</span></div>
-        <input id="s2" type="range" min="0" max="10" value="8" />
-      </div>
-      <div class="row">
-        <div class="label"><span id="n3">4) Characters</span><span id="v3">5</span></div>
-        <input id="s3" type="range" min="0" max="10" value="5" />
-      </div>
-      <div class="row">
-        <div class="label"><span id="n4">5) Worldbuilding</span><span id="v4">7</span></div>
-        <input id="s4" type="range" min="0" max="10" value="7" />
-      </div>
-      <div class="row">
-        <div class="label"><span id="n5">6) Would rewatch</span><span id="v5">4</span></div>
-        <input id="s5" type="range" min="0" max="10" value="4" />
+    </div>
+    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+      {products.slice(0,4).map(p => {
+        const price = Math.min(...p.editions.map(e => e.price));
+        const isWL = wishlist.includes(p.id);
+        return (
+          <div key={p.id} onClick={() => onOpen(p)} style={{
+            display:'flex', gap:14, alignItems:'center',
+            background:'var(--surface)', border:'1px solid var(--border)',
+            borderRadius:'var(--radius)', padding:'14px 16px', cursor:'pointer',
+            transition:'var(--transition)',
+          }}
+          onMouseEnter={e => e.currentTarget.style.boxShadow = 'var(--shadow-hover)'}
+          onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
+          >
+            <div style={{ width:52, height:52, borderRadius:10, flexShrink:0, overflow:'hidden' }}>
+              <div style={{
+                width:'100%', height:'100%',
+                background:`linear-gradient(135deg, ${p.color}33, ${p.color}88)`,
+                display:'flex', alignItems:'center', justifyContent:'center',
+                fontFamily:'var(--font-head)', fontWeight:800, fontSize:18, color:p.color,
+              }}>
+                {p.name[0]}
+              </div>
+            </div>
+            <div style={{ flex:1 }}>
+              <div style={{ fontSize:10, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.04em', fontWeight:500 }}>{p.subcategory}</div>
+              <div style={{ fontWeight:600, fontSize:14, lineHeight:1.3, color:'var(--text)' }}>{p.name}</div>
+              <div style={{ fontSize:12, color:'var(--text3)' }}>{p.publisher}</div>
+            </div>
+            <div style={{ textAlign:'right', flexShrink:0 }}>
+              <div style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:15, color:'var(--text)' }}>{fmt(price)}</div>
+              <button onClick={e => { e.stopPropagation(); onAddToCart(p); }} style={{
+                marginTop:4, fontSize:11, fontWeight:600, color:'var(--accent)',
+                background:'var(--accent-light)', border:'none', borderRadius:99,
+                padding:'3px 10px', cursor:'pointer',
+              }}>+ Add</button>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </section>
+);
+
+// ─── Home Page ─────────────────────────────────────────────────────────────────
+const HomePage = ({ setPage, onOpen, onWishlist, wishlist, onAddToCart, tweaks }) => {
+  const office = PRODUCTS.filter(p => p.category === 'software' && p.subcategory === 'Office');
+  const creative = PRODUCTS.filter(p => (p.category === 'software' || p.category === 'new') && p.subcategory === 'Creative');
+  const notes = PRODUCTS.filter(p => p.subcategory === 'Notes & Productivity');
+  const deals = PRODUCTS.filter(p => p.category === 'deals');
+  const newReleases = PRODUCTS.filter(p => p.category === 'new');
+  return (
+    <div style={{ maxWidth:1200, margin:'0 auto', padding:'40px 32px' }} className="animate-in">
+      <Hero onShop={onOpen} tweaks={tweaks} />
+      <SectionRow title="Office & Productivity" products={[...office, ...notes]}
+        onViewAll={() => setPage('software')} onOpen={onOpen}
+        onWishlist={onWishlist} wishlist={wishlist} onAddToCart={onAddToCart} tweaks={tweaks} />
+      <SectionRow title="Creative Tools" products={creative}
+        onViewAll={() => setPage('software')} onOpen={onOpen}
+        onWishlist={onWishlist} wishlist={wishlist} onAddToCart={onAddToCart} tweaks={tweaks} />
+      <SectionRow title="Weekly Deals" badge="Deal" products={deals}
+        onViewAll={() => setPage('deals')} onOpen={onOpen}
+        onWishlist={onWishlist} wishlist={wishlist} onAddToCart={onAddToCart} tweaks={tweaks} />
+      <NewReleasesRow products={newReleases} onOpen={onOpen}
+        onWishlist={onWishlist} wishlist={wishlist} onAddToCart={onAddToCart} />
+    </div>
+  );
+};
+
+// ─── Catalog Page (Games / Software / Deals) ────────────────────────────────
+const CatalogPage = ({ category, onOpen, onWishlist, wishlist, onAddToCart, tweaks }) => {
+  const [sortBy, setSortBy] = React.useState('popular');
+  const [filterSub, setFilterSub] = React.useState('all');
+  const [compareList, setCompareList] = React.useState([]);
+  const [showCompare, setShowCompare] = React.useState(false);
+
+  const allProducts = PRODUCTS.filter(p => {
+    if (category === 'business') return p.category === 'software' || p.category === 'new';
+    return p.category === category;
+  });
+  const subcats = ['all', ...new Set(allProducts.map(p => p.subcategory))];
+  const filtered = allProducts.filter(p => filterSub === 'all' || p.subcategory === filterSub);
+  const sorted = [...filtered].sort((a, b) => {
+    if (sortBy === 'price-asc') return Math.min(...a.editions.map(e=>e.price)) - Math.min(...b.editions.map(e=>e.price));
+    if (sortBy === 'price-desc') return Math.min(...b.editions.map(e=>e.price)) - Math.min(...a.editions.map(e=>e.price));
+    if (sortBy === 'rating') return b.rating - a.rating;
+    return b.reviews - a.reviews;
+  });
+
+  const toggleCompare = (id) => {
+    setCompareList(prev => prev.includes(id) ? prev.filter(x=>x!==id) : prev.length < 3 ? [...prev, id] : prev);
+  };
+
+  const titles = { games:'Games', software:'Software', deals:'Deals & Offers', business:'Business Tools' };
+
+  return (
+    <div style={{ maxWidth:1200, margin:'0 auto', padding:'40px 32px' }} className="animate-in">
+      {/* Header */}
+      <div style={{ marginBottom:32 }}>
+        <h1 style={{ fontFamily:'var(--font-head)', fontWeight:800, fontSize:30, letterSpacing:'-0.02em', marginBottom:4 }}>
+          {titles[category] || category}
+        </h1>
+        <p style={{ color:'var(--text3)', fontSize:14 }}>{sorted.length} products available</p>
       </div>
 
-      <div class="row">
-        <div class="label">
-          <span style="display:flex; gap:10px; align-items:center;">
-            <span class="color-preview" id="colorPreview"></span>
-            Theme Color (Hue)
-          </span>
-          <span id="hueVal">270°</span>
+      {/* Filters + Sort bar */}
+      <div style={{
+        display:'flex', alignItems:'center', justifyContent:'space-between',
+        gap:16, marginBottom:28, flexWrap:'wrap',
+      }}>
+        {/* Subcategory chips */}
+        <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+          {subcats.map(s => (
+            <button key={s} onClick={() => setFilterSub(s)} style={{
+              padding:'6px 14px', borderRadius:99, fontSize:13, fontWeight:500,
+              background: filterSub === s ? 'var(--accent)' : 'var(--surface)',
+              color: filterSub === s ? '#fff' : 'var(--text2)',
+              border:'1px solid', borderColor: filterSub === s ? 'var(--accent)' : 'var(--border)',
+              transition:'var(--transition)', cursor:'pointer',
+            }}>{s === 'all' ? 'All' : s}</button>
+          ))}
         </div>
-        <input id="hueSlider" type="range" min="0" max="360" value="270" />
-
-        <div class="mini" style="margin-top:10px; justify-content:flex-start;">
-          <button id="modeBtn" type="button" aria-pressed="false" title="Toggle light/dark">🌙 Dark</button>
-          <span id="modeHint" style="color:var(--muted);">Change mode</span>
+        {/* Sort */}
+        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+          {compareList.length > 1 && (
+            <button onClick={() => setShowCompare(true)} style={{
+              padding:'6px 16px', borderRadius:'var(--radius-sm)', fontSize:13, fontWeight:600,
+              background:'var(--amber-light)', color:'var(--amber)',
+              border:'1px solid var(--amber)', cursor:'pointer', transition:'var(--transition)',
+            }}>
+              Compare ({compareList.length})
+            </button>
+          )}
+          <span style={{ fontSize:13, color:'var(--text3)' }}>Sort:</span>
+          <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{
+            border:'1px solid var(--border)', borderRadius:'var(--radius-sm)', padding:'6px 10px',
+            fontSize:13, background:'var(--surface)', color:'var(--text)', cursor:'pointer',
+            outline:'none',
+          }}>
+            <option value="popular">Most Popular</option>
+            <option value="rating">Highest Rated</option>
+            <option value="price-asc">Price: Low → High</option>
+            <option value="price-desc">Price: High → Low</option>
+          </select>
         </div>
       </div>
 
-      <div class="row">
-        <div class="upload-box">
-          <div class="label" style="margin-bottom:0;">
-            <span>Image</span>
-            <span id="imgStatus">No image</span>
+      {/* Grid */}
+      <div style={{
+        display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(220px, 1fr))', gap:20,
+        marginBottom:40,
+      }}>
+        {sorted.map(p => (
+          <div key={p.id} style={{ position:'relative' }}>
+            <ProductCard product={p}
+              onOpen={onOpen} onWishlist={onWishlist}
+              isWishlisted={wishlist.includes(p.id)}
+              onAddToCart={onAddToCart} tweaks={tweaks}
+            />
+            {/* Compare checkbox */}
+            <button onClick={() => toggleCompare(p.id)} style={{
+              position:'absolute', bottom:52, left:16, zIndex:2,
+              fontSize:11, padding:'3px 9px', borderRadius:99, fontWeight:600,
+              background: compareList.includes(p.id) ? 'var(--accent)' : 'rgba(255,255,255,0.9)',
+              color: compareList.includes(p.id) ? '#fff' : 'var(--text3)',
+              border:'1px solid', borderColor: compareList.includes(p.id) ? 'var(--accent)' : 'var(--border)',
+              cursor:'pointer', transition:'var(--transition)',
+              boxShadow:'0 2px 6px rgba(0,0,0,0.08)',
+            }}>
+              {compareList.includes(p.id) ? '✓ Compare' : '+ Compare'}
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* Compare Modal */}
+      {showCompare && (
+        <CompareModal
+          products={PRODUCTS.filter(p => compareList.includes(p.id))}
+          onClose={() => setShowCompare(false)}
+          onAddToCart={onAddToCart}
+        />
+      )}
+    </div>
+  );
+};
+
+// ─── Compare Modal ────────────────────────────────────────────────────────────
+const CompareModal = ({ products, onClose, onAddToCart }) => {
+  const allFeatures = [...new Set(products.flatMap(p => p.editions.flatMap(e => e.features)))];
+  return (
+    <div style={{
+      position:'fixed', inset:0, zIndex:200,
+      background:'rgba(15,22,35,0.6)', backdropFilter:'blur(4px)',
+      display:'flex', alignItems:'center', justifyContent:'center', padding:24,
+    }} onClick={onClose}>
+      <div onClick={e => e.stopPropagation()} style={{
+        background:'var(--surface)', borderRadius:'var(--radius-lg)',
+        width:'100%', maxWidth:860, maxHeight:'85vh', overflow:'auto',
+        boxShadow:'0 24px 80px rgba(0,0,0,0.25)',
+        animation:'scaleIn 0.2s ease both',
+      }}>
+        {/* Header */}
+        <div style={{
+          display:'flex', alignItems:'center', justifyContent:'space-between',
+          padding:'20px 28px', borderBottom:'1px solid var(--border)',
+          position:'sticky', top:0, background:'var(--surface)', zIndex:1,
+        }}>
+          <h3 style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:20 }}>
+            Product Comparison
+          </h3>
+          <button onClick={onClose} style={{
+            width:32, height:32, borderRadius:'50%', background:'var(--bg)',
+            display:'flex', alignItems:'center', justifyContent:'center',
+            fontSize:18, color:'var(--text3)', cursor:'pointer',
+          }}>×</button>
+        </div>
+        {/* Table */}
+        <div style={{ padding:'24px 28px' }}>
+          <table style={{ width:'100%', borderCollapse:'collapse' }}>
+            <thead>
+              <tr>
+                <th style={{ textAlign:'left', padding:'8px 12px', fontSize:12, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.05em', width:160 }}>Feature</th>
+                {products.map(p => (
+                  <th key={p.id} style={{ padding:'8px 12px', textAlign:'center' }}>
+                    <div style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:15 }}>{p.name}</div>
+                    <div style={{ fontSize:11, color:'var(--text3)', fontWeight:400, marginTop:2 }}>{p.publisher}</div>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {/* Price row */}
+              <tr style={{ background:'var(--bg)' }}>
+                <td style={{ padding:'12px', fontSize:13, fontWeight:600, color:'var(--text2)' }}>Price</td>
+                {products.map(p => {
+                  const low = Math.min(...p.editions.map(e=>e.price));
+                  const high = Math.max(...p.editions.map(e=>e.price));
+                  return (
+                    <td key={p.id} style={{ padding:'12px', textAlign:'center' }}>
+                      <div style={{ fontFamily:'var(--font-head)', fontWeight:800, fontSize:18, color:'var(--text)' }}>
+                        {fmt(low)}
+                      </div>
+                      {low !== high && <div style={{ fontSize:11, color:'var(--text3)' }}>up to {fmt(high)}</div>}
+                    </td>
+                  );
+                })}
+              </tr>
+              {/* Rating */}
+              <tr>
+                <td style={{ padding:'12px', fontSize:13, fontWeight:600, color:'var(--text2)' }}>Rating</td>
+                {products.map(p => (
+                  <td key={p.id} style={{ padding:'12px', textAlign:'center' }}>
+                    <div style={{ display:'flex', justifyContent:'center', marginBottom:2 }}>
+                      <StarRating rating={p.rating} />
+                    </div>
+                    <span style={{ fontSize:12, color:'var(--text3)' }}>{p.rating}/5</span>
+                  </td>
+                ))}
+              </tr>
+              {/* Editions */}
+              <tr style={{ background:'var(--bg)' }}>
+                <td style={{ padding:'12px', fontSize:13, fontWeight:600, color:'var(--text2)' }}>Editions</td>
+                {products.map(p => (
+                  <td key={p.id} style={{ padding:'12px', textAlign:'center' }}>
+                    {p.editions.map(e => (
+                      <div key={e.name} style={{ fontSize:12, color:'var(--text)', marginBottom:2 }}>
+                        <span style={{ fontWeight:600 }}>{e.name}</span>
+                        <span style={{ color:'var(--text3)' }}> — {fmt(e.price)}</span>
+                      </div>
+                    ))}
+                  </td>
+                ))}
+              </tr>
+              {/* Platform */}
+              <tr>
+                <td style={{ padding:'12px', fontSize:13, fontWeight:600, color:'var(--text2)' }}>Platform</td>
+                {products.map(p => (
+                  <td key={p.id} style={{ padding:'12px', textAlign:'center' }}>
+                    {p.platform.map(pl => (
+                      <span key={pl} style={{
+                        display:'inline-block', fontSize:11, padding:'2px 7px', borderRadius:99,
+                        background:'var(--bg)', color:'var(--text3)', border:'1px solid var(--border)',
+                        margin:'2px',
+                      }}>{pl}</span>
+                    ))}
+                  </td>
+                ))}
+              </tr>
+              {/* Features */}
+              {allFeatures.slice(0,8).map((feat, i) => (
+                <tr key={feat} style={{ background: i%2===0 ? 'var(--bg)' : 'transparent' }}>
+                  <td style={{ padding:'10px 12px', fontSize:13, color:'var(--text2)', fontWeight:500 }}>{feat}</td>
+                  {products.map(p => {
+                    const has = p.editions.some(e => e.features.includes(feat));
+                    return (
+                      <td key={p.id} style={{ padding:'10px 12px', textAlign:'center' }}>
+                        {has
+                          ? <span style={{ color:'var(--green)', fontSize:16 }}>✓</span>
+                          : <span style={{ color:'var(--border)', fontSize:16 }}>–</span>
+                        }
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {/* Action buttons */}
+          <div style={{ display:'flex', gap:12, marginTop:24, justifyContent:'center' }}>
+            {products.map(p => (
+              <button key={p.id} onClick={() => { onAddToCart(p); onClose(); }} style={{
+                background:'var(--accent)', color:'#fff', borderRadius:'var(--radius-sm)',
+                padding:'10px 24px', fontSize:14, fontWeight:700, fontFamily:'var(--font-head)',
+                cursor:'pointer', transition:'var(--transition)',
+                boxShadow:'0 4px 16px rgba(99,102,241,0.3)',
+              }}>
+                Add {p.name} to Cart
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── Product Detail Page ────────────────────────────────────────────────────
+const ProductDetailPage = ({ product, onClose, onWishlist, isWishlisted, onAddToCart }) => {
+  const [selectedEdition, setSelectedEdition] = React.useState(0);
+  const [addedToCart, setAddedToCart] = React.useState(false);
+
+  const handleAddToCart = () => {
+    onAddToCart(product, product.editions[selectedEdition]);
+    setAddedToCart(true);
+    setTimeout(() => setAddedToCart(false), 2000);
+  };
+
+  const edition = product.editions[selectedEdition];
+  const savings = edition.originalPrice ? edition.originalPrice - edition.price : null;
+
+  return (
+    <div style={{ maxWidth:1100, margin:'0 auto', padding:'40px 32px' }} className="animate-in">
+      {/* Back */}
+      <button onClick={onClose} style={{
+        display:'flex', alignItems:'center', gap:6, fontSize:13, color:'var(--text3)',
+        fontWeight:500, marginBottom:28, padding:'4px 0', cursor:'pointer',
+      }}>
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+          <path d="M13 5l-5 5 5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+        </svg>
+        Back
+      </button>
+
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:48, alignItems:'start' }}>
+        {/* Left: Cover + Meta */}
+        <div>
+          <div style={{
+            borderRadius:'var(--radius-lg)', overflow:'hidden',
+            border:'1px solid var(--border)', marginBottom:20,
+            boxShadow:'var(--shadow)',
+          }}>
+            <ProductCover product={product} size="lg" />
+          </div>
+          {/* Tags */}
+          <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:16 }}>
+            {product.tags.map(t => (
+              <span key={t} style={{
+                fontSize:12, padding:'4px 10px', borderRadius:99, fontWeight:500,
+                background:'var(--bg)', color:'var(--text2)', border:'1px solid var(--border)',
+              }}>{t}</span>
+            ))}
+          </div>
+          {/* Ratings */}
+          <div style={{
+            background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'var(--radius)',
+            padding:'16px 20px', display:'flex', gap:20,
+          }}>
+            <div style={{ textAlign:'center' }}>
+              <div style={{ fontFamily:'var(--font-head)', fontWeight:800, fontSize:32, color:'var(--text)' }}>{product.rating}</div>
+              <StarRating rating={product.rating} />
+              <div style={{ fontSize:11, color:'var(--text3)', marginTop:4 }}>{product.reviews.toLocaleString()} reviews</div>
+            </div>
+            <div style={{ flex:1, display:'flex', flexDirection:'column', gap:4, justifyContent:'center' }}>
+              {[5,4,3,2,1].map(stars => {
+                const pct = stars === 5 ? 60 : stars === 4 ? 25 : stars === 3 ? 10 : stars === 2 ? 3 : 2;
+                return (
+                  <div key={stars} style={{ display:'flex', alignItems:'center', gap:8 }}>
+                    <span style={{ fontSize:11, color:'var(--text3)', width:8 }}>{stars}</span>
+                    <div style={{ flex:1, height:6, background:'var(--border)', borderRadius:99 }}>
+                      <div style={{ width:`${pct}%`, height:'100%', background:'var(--amber)', borderRadius:99 }} />
+                    </div>
+                    <span style={{ fontSize:11, color:'var(--text3)', width:28 }}>{pct}%</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Right: Details + Purchase */}
+        <div>
+          <div style={{ fontSize:11, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.05em', fontWeight:600, marginBottom:6 }}>
+            {product.publisher} · {product.subcategory}
+          </div>
+          <h1 style={{ fontFamily:'var(--font-head)', fontWeight:800, fontSize:32, letterSpacing:'-0.02em', lineHeight:1.1, marginBottom:12 }}>
+            {product.name}
+          </h1>
+          <p style={{ color:'var(--text2)', fontSize:15, lineHeight:1.7, marginBottom:24 }}>
+            {product.description}
+          </p>
+
+          {/* Platform */}
+          <div style={{ display:'flex', gap:6, marginBottom:24 }}>
+            {product.platform.map(p => (
+              <span key={p} style={{
+                fontSize:12, padding:'4px 10px', borderRadius:99,
+                background:'var(--surface)', border:'1px solid var(--border)', color:'var(--text2)',
+              }}>{p}</span>
+            ))}
           </div>
 
-          <div class="upload-preview" id="uploadPreview">
-            <img id="previewImg" alt="Preview" />
-            <div class="upload-hint" id="previewHint">
-              Image
+          {/* Edition selector */}
+          {product.editions.length > 1 && (
+            <div style={{ marginBottom:24 }}>
+              <div style={{ fontSize:13, fontWeight:600, color:'var(--text2)', marginBottom:10 }}>Choose Edition</div>
+              <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+                {product.editions.map((ed, i) => (
+                  <div key={ed.name} onClick={() => setSelectedEdition(i)} style={{
+                    border:'2px solid', borderColor: selectedEdition === i ? 'var(--accent)' : 'var(--border)',
+                    borderRadius:'var(--radius)', padding:'14px 16px', cursor:'pointer',
+                    background: selectedEdition === i ? 'var(--accent-light)' : 'var(--surface)',
+                    transition:'var(--transition)',
+                  }}>
+                    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:8 }}>
+                      <div style={{ fontWeight:700, fontSize:15, color: selectedEdition === i ? 'var(--accent)' : 'var(--text)' }}>
+                        {ed.name}
+                      </div>
+                      <div style={{ textAlign:'right' }}>
+                        {ed.originalPrice && (
+                          <div style={{ fontSize:11, color:'var(--text3)', textDecoration:'line-through' }}>{fmt(ed.originalPrice)}</div>
+                        )}
+                        <div style={{ fontFamily:'var(--font-head)', fontWeight:800, fontSize:18, color:'var(--text)' }}>
+                          {fmt(ed.price)}
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
+                      {ed.features.map(f => (
+                        <span key={f} style={{
+                          fontSize:11, padding:'2px 8px', borderRadius:99,
+                          background: selectedEdition === i ? 'rgba(99,102,241,0.12)' : 'var(--bg)',
+                          color: selectedEdition === i ? 'var(--accent)' : 'var(--text2)',
+                          border:'1px solid', borderColor: selectedEdition === i ? 'rgba(99,102,241,0.2)' : 'var(--border)',
+                        }}>{f}</span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Single edition */}
+          {product.editions.length === 1 && (
+            <div style={{
+              border:'1px solid var(--border)', borderRadius:'var(--radius)', padding:'14px 16px', marginBottom:24,
+              background:'var(--accent-light)',
+            }}>
+              <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
+                {edition.features.map(f => (
+                  <span key={f} style={{
+                    fontSize:11, padding:'2px 8px', borderRadius:99,
+                    background:'rgba(99,102,241,0.1)', color:'var(--accent)',
+                    border:'1px solid rgba(99,102,241,0.15)',
+                  }}>{f}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Price summary */}
+          <div style={{
+            background:'var(--bg)', borderRadius:'var(--radius)', padding:'16px 20px', marginBottom:20,
+            border:'1px solid var(--border)',
+          }}>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+              <div>
+                {edition.originalPrice && (
+                  <div style={{ fontSize:13, color:'var(--text3)', textDecoration:'line-through' }}>
+                    {fmt(edition.originalPrice)}
+                  </div>
+                )}
+                <div style={{ fontFamily:'var(--font-head)', fontWeight:800, fontSize:28, color:'var(--text)' }}>
+                  {fmt(edition.price)}
+                </div>
+              </div>
+              {savings && (
+                <div style={{
+                  background:'var(--amber-light)', color:'var(--amber)',
+                  borderRadius:'var(--radius-sm)', padding:'6px 12px',
+                  fontWeight:700, fontSize:14,
+                }}>
+                  Save {fmt(savings)}
+                </div>
+              )}
             </div>
           </div>
 
-          <input id="imgInput" class="file-input" type="file" accept="image/*" />
+          {/* Actions */}
+          <div style={{ display:'flex', gap:10, marginBottom:20 }}>
+            <button onClick={handleAddToCart} style={{
+              flex:1, background: addedToCart ? 'var(--green)' : 'var(--accent)',
+              color:'#fff', borderRadius:'var(--radius-sm)', padding:'14px',
+              fontSize:16, fontWeight:700, fontFamily:'var(--font-head)',
+              cursor:'pointer', transition:'var(--transition)',
+              boxShadow: addedToCart ? '0 4px 16px rgba(0,166,80,0.3)' : '0 4px 16px rgba(99,102,241,0.3)',
+            }}>
+              {addedToCart ? '✓ Added to Cart!' : 'Add to Cart'}
+            </button>
+            <button onClick={() => onWishlist(product.id)} style={{
+              width:48, height:48, borderRadius:'var(--radius-sm)',
+              background: isWishlisted ? 'var(--red-light)' : 'var(--bg)',
+              border:'1px solid', borderColor: isWishlisted ? 'var(--red)' : 'var(--border)',
+              display:'flex', alignItems:'center', justifyContent:'center',
+              cursor:'pointer', transition:'var(--transition)',
+            }}>
+              <svg width="20" height="20" viewBox="0 0 24 24">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+                  stroke={isWishlisted ? 'var(--red)' : 'var(--text3)'}
+                  strokeWidth="1.8" fill={isWishlisted ? 'var(--red)' : 'none'}/>
+              </svg>
+            </button>
+          </div>
+
+          {/* Trust */}
+          <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+            {[
+              { icon:'🔒', label:'Secure checkout — SSL encrypted' },
+              { icon:'⚡', label:'Instant digital delivery — key sent by email' },
+              { icon:'↩️', label:'30-day money-back guarantee' },
+              { icon:'✅', label:'Official license — 100% genuine product' },
+            ].map(item => (
+              <div key={item.label} style={{ display:'flex', alignItems:'center', gap:10, fontSize:13, color:'var(--text2)' }}>
+                <span style={{ fontSize:15 }}>{item.icon}</span>
+                {item.label}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  );
+};
 
-<script>
-  // ===== Config =====
-  const N = 6;
-  const MAX = 10;
-  const cx = 200, cy = 200;
-  const R = 150;
-  const startAngleDeg = -90;
+// ─── Wishlist Page ────────────────────────────────────────────────────────────
+const WishlistPage = ({ wishlist, onOpen, onWishlist, onAddToCart, tweaks }) => {
+  const items = PRODUCTS.filter(p => wishlist.includes(p.id));
+  if (items.length === 0) return (
+    <div style={{ maxWidth:700, margin:'80px auto', padding:'0 32px', textAlign:'center' }} className="animate-in">
+      <div style={{ fontSize:48, marginBottom:16 }}>🤍</div>
+      <h2 style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:22, marginBottom:8 }}>Your wishlist is empty</h2>
+      <p style={{ color:'var(--text3)' }}>Save products you like — look for the heart icon on any product card.</p>
+    </div>
+  );
+  return (
+    <div style={{ maxWidth:1200, margin:'0 auto', padding:'40px 32px' }} className="animate-in">
+      <h1 style={{ fontFamily:'var(--font-head)', fontWeight:800, fontSize:28, marginBottom:28 }}>Wishlist ({items.length})</h1>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(220px, 1fr))', gap:20 }}>
+        {items.map(p => (
+          <ProductCard key={p.id} product={p}
+            onOpen={onOpen} onWishlist={onWishlist}
+            isWishlisted={true} onAddToCart={onAddToCart} tweaks={tweaks}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
 
-  // Right-side labels (controls + export legend)
-  const cornerNames = [
-    "1) Animation/Cinematography",
-    "2) Plot",
-    "3) Art style",
-    "4) Characters",
-    "5) Worldbuilding",
-    "6) Would rewatch"
+// ─── Cart Page ────────────────────────────────────────────────────────────────
+const CartPage = ({ cart, onRemove, onCheckout }) => {
+  const subtotal = cart.reduce((sum, item) => sum + Math.min(...item.editions.map(e=>e.price)), 0);
+  if (cart.length === 0) return (
+    <div style={{ maxWidth:700, margin:'80px auto', padding:'0 32px', textAlign:'center' }} className="animate-in">
+      <div style={{ fontSize:48, marginBottom:16 }}>🛒</div>
+      <h2 style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:22, marginBottom:8 }}>Your cart is empty</h2>
+      <p style={{ color:'var(--text3)' }}>Add products from the store to get started.</p>
+    </div>
+  );
+  return (
+    <div style={{ maxWidth:900, margin:'0 auto', padding:'40px 32px' }} className="animate-in">
+      <h1 style={{ fontFamily:'var(--font-head)', fontWeight:800, fontSize:28, marginBottom:28 }}>
+        Shopping Cart ({cart.length})
+      </h1>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 340px', gap:28, alignItems:'start' }}>
+        {/* Items */}
+        <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+          {cart.map((item, i) => {
+            const price = Math.min(...item.editions.map(e=>e.price));
+            return (
+              <div key={`${item.id}-${i}`} style={{
+                display:'flex', gap:16, padding:'16px', background:'var(--surface)',
+                border:'1px solid var(--border)', borderRadius:'var(--radius)', alignItems:'center',
+              }}>
+                <div style={{ width:56, height:56, borderRadius:10, flexShrink:0, overflow:'hidden' }}>
+                  <div style={{
+                    width:'100%', height:'100%',
+                    background:`linear-gradient(135deg, ${item.color}33, ${item.color}77)`,
+                    display:'flex', alignItems:'center', justifyContent:'center',
+                    fontFamily:'var(--font-head)', fontWeight:800, fontSize:22, color:item.color,
+                  }}>{item.name[0]}</div>
+                </div>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontWeight:600, fontSize:15, color:'var(--text)' }}>{item.name}</div>
+                  <div style={{ fontSize:12, color:'var(--text3)', marginTop:2 }}>{item.publisher}</div>
+                </div>
+                <div style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:17 }}>{fmt(price)}</div>
+                <button onClick={() => onRemove(i)} style={{
+                  width:28, height:28, borderRadius:'50%', background:'var(--bg)',
+                  border:'1px solid var(--border)', display:'flex', alignItems:'center', justifyContent:'center',
+                  fontSize:14, color:'var(--text3)', cursor:'pointer',
+                }}>×</button>
+              </div>
+            );
+          })}
+        </div>
+        {/* Summary */}
+        <div style={{
+          background:'var(--surface)', border:'1px solid var(--border)',
+          borderRadius:'var(--radius-lg)', padding:'24px', position:'sticky', top:76,
+        }}>
+          <h3 style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:17, marginBottom:16 }}>Order Summary</h3>
+          <div style={{ display:'flex', justifyContent:'space-between', marginBottom:8, fontSize:14, color:'var(--text2)' }}>
+            <span>Subtotal ({cart.length} items)</span>
+            <span>{fmt(subtotal)}</span>
+          </div>
+          <div style={{ display:'flex', justifyContent:'space-between', marginBottom:16, fontSize:14, color:'var(--green)' }}>
+            <span>Digital Delivery</span>
+            <span>Free</span>
+          </div>
+          <div style={{ borderTop:'1px solid var(--border)', paddingTop:16, marginBottom:20 }}>
+            <div style={{ display:'flex', justifyContent:'space-between', fontFamily:'var(--font-head)', fontWeight:800, fontSize:20 }}>
+              <span>Total</span>
+              <span>{fmt(subtotal)}</span>
+            </div>
+          </div>
+          <button onClick={onCheckout} style={{
+            width:'100%', background:'var(--accent)', color:'#fff',
+            borderRadius:'var(--radius-sm)', padding:'14px',
+            fontSize:16, fontWeight:700, fontFamily:'var(--font-head)',
+            cursor:'pointer', marginBottom:12,
+            boxShadow:'0 4px 16px rgba(99,102,241,0.3)',
+          }}>
+            Proceed to Checkout
+          </button>
+          <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+            {['🔒 SSL Encrypted', '⚡ Instant Delivery', '↩️ Money-back Guarantee'].map(t => (
+              <div key={t} style={{ fontSize:12, color:'var(--text3)', textAlign:'center' }}>{t}</div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── Search Results ───────────────────────────────────────────────────────────
+const SearchPage = ({ query, onOpen, onWishlist, wishlist, onAddToCart, tweaks }) => {
+  const results = PRODUCTS.filter(p =>
+    p.name.toLowerCase().includes(query.toLowerCase()) ||
+    p.publisher.toLowerCase().includes(query.toLowerCase()) ||
+    p.tags.some(t => t.toLowerCase().includes(query.toLowerCase()))
+  );
+  return (
+    <div style={{ maxWidth:1200, margin:'0 auto', padding:'40px 32px' }} className="animate-in">
+      <h1 style={{ fontFamily:'var(--font-head)', fontWeight:800, fontSize:26, marginBottom:6 }}>
+        Results for "{query}"
+      </h1>
+      <p style={{ color:'var(--text3)', fontSize:14, marginBottom:28 }}>{results.length} products found</p>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(220px, 1fr))', gap:20 }}>
+        {results.map(p => (
+          <ProductCard key={p.id} product={p}
+            onOpen={onOpen} onWishlist={onWishlist}
+            isWishlisted={wishlist.includes(p.id)}
+            onAddToCart={onAddToCart} tweaks={tweaks}
+          />
+        ))}
+      </div>
+      {results.length === 0 && (
+        <div style={{ textAlign:'center', padding:'80px 0', color:'var(--text3)' }}>
+          <div style={{ fontSize:48, marginBottom:16 }}>🔍</div>
+          <p style={{ fontSize:16 }}>No products found for "{query}"</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ─── Footer ───────────────────────────────────────────────────────────────────
+const Footer = () => (
+  <footer style={{
+    borderTop:'1px solid var(--border)', background:'var(--surface)',
+    padding:'24px 32px', marginTop:'auto',
+  }}>
+    <div style={{ maxWidth:1200, margin:'0 auto', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+      <div style={{ display:'flex', gap:24 }}>
+        {['Privacy Policy','Terms of Service','Refunds','Contact','Support'].map(l => (
+          <a key={l} href="#" style={{ fontSize:12, color:'var(--text3)', fontWeight:500 }}>{l}</a>
+        ))}
+      </div>
+      <div style={{ fontSize:12, color:'var(--text3)' }}>© 2026 SoftwareVault</div>
+    </div>
+  </footer>
+);
+
+// ─── Split Landing ────────────────────────────────────────────────────────────
+const SplitLanding = ({ onChoose }) => {
+  const [hovered, setHovered] = React.useState(null);
+
+  return (
+    <div className="split-landing">
+      {/* SOFTWARE SIDE */}
+      <div
+        className="split-side"
+        onMouseEnter={() => setHovered('software')}
+        onMouseLeave={() => setHovered(null)}
+        onClick={() => onChoose('software')}
+        style={{
+          background: hovered === 'software'
+            ? 'linear-gradient(135deg, #1a2240 0%, #0f1a30 100%)'
+            : 'linear-gradient(135deg, #141c2e 0%, #0f1623 100%)',
+          cursor: 'pointer',
+        }}
+      >
+        {/* Subtle grid */}
+        <div style={{
+          position:'absolute', inset:0, opacity:0.04,
+          backgroundImage:'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
+          backgroundSize:'40px 40px',
+        }} />
+        {/* Glow orb */}
+        <div style={{
+          position:'absolute', width:400, height:400, borderRadius:'50%',
+          background:'oklch(52% 0.22 268)', opacity: hovered==='software' ? 0.12 : 0.06,
+          filter:'blur(80px)', top:'20%', left:'20%', transition:'opacity 0.5s',
+        }} />
+        <div style={{ position:'relative', zIndex:1, textAlign:'center', padding:'0 48px' }}>
+          {/* Icon */}
+          <div style={{
+            width:72, height:72, borderRadius:18, margin:'0 auto 28px',
+            background:'linear-gradient(135deg, oklch(52% 0.22 268), oklch(46% 0.22 268))',
+            display:'flex', alignItems:'center', justifyContent:'center',
+            boxShadow: hovered==='software' ? '0 8px 40px oklch(52% 0.22 268 / 0.5)' : '0 4px 20px oklch(52% 0.22 268 / 0.25)',
+            transition:'box-shadow 0.4s',
+          }}>
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="3" width="8" height="8" rx="1.5" fill="white" opacity="0.9"/>
+              <rect x="13" y="3" width="8" height="8" rx="1.5" fill="white" opacity="0.6"/>
+              <rect x="3" y="13" width="8" height="8" rx="1.5" fill="white" opacity="0.6"/>
+              <rect x="13" y="13" width="8" height="8" rx="1.5" fill="white" opacity="0.9"/>
+            </svg>
+          </div>
+          <div style={{
+            fontFamily:"'Sora', sans-serif", fontWeight:800, fontSize:42,
+            letterSpacing:'-0.03em', color:'#fff', marginBottom:12, lineHeight:1,
+          }}>Software</div>
+          <div style={{
+            color:'rgba(255,255,255,0.5)', fontSize:16, lineHeight:1.6, marginBottom:32, maxWidth:260,
+            fontFamily:"'DM Sans', sans-serif",
+          }}>
+            Office suites, dev tools, creative apps, security & more
+          </div>
+          {/* Tags */}
+          <div style={{ display:'flex', flexWrap:'wrap', gap:8, justifyContent:'center', marginBottom:36 }}>
+            {['Office', 'Dev Tools', 'Creative', 'Security', 'CAD'].map(t => (
+              <span key={t} style={{
+                fontSize:12, padding:'4px 12px', borderRadius:99,
+                background:'rgba(255,255,255,0.08)', color:'rgba(255,255,255,0.5)',
+                border:'1px solid rgba(255,255,255,0.1)', fontFamily:"'DM Sans', sans-serif",
+              }}>{t}</span>
+            ))}
+          </div>
+          <div style={{
+            display:'inline-flex', alignItems:'center', gap:8,
+            background:'oklch(52% 0.22 268)', color:'#fff',
+            borderRadius:10, padding:'13px 32px',
+            fontFamily:"'Sora', sans-serif", fontWeight:700, fontSize:16,
+            opacity: hovered==='software' ? 1 : 0.7,
+            transform: hovered==='software' ? 'translateY(-2px)' : 'translateY(0)',
+            transition:'all 0.3s', boxShadow: hovered==='software' ? '0 8px 32px oklch(52% 0.22 268 / 0.4)' : 'none',
+          }}>
+            Enter Software Store
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+              <path d="M7 5l5 5-5 5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      {/* DIVIDER */}
+      <div className="split-divider" style={{ position:'relative' }}>
+        <div style={{
+          position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)',
+          width:40, height:40, borderRadius:'50%', background:'#0c1020',
+          border:'1.5px solid rgba(255,255,255,0.15)', zIndex:2,
+          display:'flex', alignItems:'center', justifyContent:'center',
+          fontFamily:"'Sora', sans-serif", fontWeight:700, fontSize:10, color:'rgba(255,255,255,0.4)',
+          letterSpacing:'0.02em',
+        }}>OR</div>
+      </div>
+
+      {/* GAMING SIDE */}
+      <div
+        className="split-side"
+        onMouseEnter={() => setHovered('gaming')}
+        onMouseLeave={() => setHovered(null)}
+        onClick={() => onChoose('gaming')}
+        style={{
+          background: hovered === 'gaming'
+            ? 'linear-gradient(135deg, #060a10 0%, #0a0514 100%)'
+            : 'linear-gradient(135deg, #080b10 0%, #060810 100%)',
+          cursor: 'pointer',
+        }}
+      >
+        {/* Scanline texture */}
+        <div style={{
+          position:'absolute', inset:0, opacity:0.03,
+          backgroundImage:'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,200,255,0.5) 2px, rgba(0,200,255,0.5) 3px)',
+        }} />
+        {/* Cyan glow */}
+        <div style={{
+          position:'absolute', width:500, height:500, borderRadius:'50%',
+          background:'oklch(62% 0.25 195)', opacity: hovered==='gaming' ? 0.1 : 0.04,
+          filter:'blur(100px)', bottom:'-10%', right:'-10%', transition:'opacity 0.5s',
+        }} />
+        {/* Corner decoration */}
+        <div style={{
+          position:'absolute', top:24, right:24, width:60, height:60, opacity:0.15,
+          borderTop:'2px solid oklch(62% 0.25 195)', borderRight:'2px solid oklch(62% 0.25 195)',
+        }} />
+        <div style={{
+          position:'absolute', bottom:24, left:24, width:60, height:60, opacity:0.15,
+          borderBottom:'2px solid oklch(62% 0.25 195)', borderLeft:'2px solid oklch(62% 0.25 195)',
+        }} />
+
+        <div style={{ position:'relative', zIndex:1, textAlign:'center', padding:'0 48px' }}>
+          {/* Icon */}
+          <div style={{
+            width:72, height:72, borderRadius:18, margin:'0 auto 28px',
+            background:'linear-gradient(135deg, #0a1a22, #0d2230)',
+            border:'1px solid rgba(0,200,255,0.3)',
+            display:'flex', alignItems:'center', justifyContent:'center',
+            boxShadow: hovered==='gaming'
+              ? '0 0 0 1px rgba(0,200,255,0.4), 0 8px 40px rgba(0,200,255,0.3)'
+              : '0 0 0 1px rgba(0,200,255,0.15), 0 4px 20px rgba(0,200,255,0.1)',
+            transition:'box-shadow 0.4s',
+          }}>
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+              <path d="M6 11h4M8 9v4" stroke="oklch(62% 0.25 195)" strokeWidth="2" strokeLinecap="round"/>
+              <circle cx="16" cy="10" r="1.2" fill="oklch(62% 0.25 195)"/>
+              <circle cx="18.5" cy="12" r="1.2" fill="oklch(62% 0.25 195)"/>
+              <path d="M21 6H3a1 1 0 00-1 1v6a6 6 0 006 6h8a6 6 0 006-6V7a1 1 0 00-1-1z"
+                stroke="oklch(62% 0.25 195)" strokeWidth="1.8" fill="none"/>
+            </svg>
+          </div>
+          <div style={{
+            fontFamily:"'Barlow Condensed', sans-serif", fontWeight:800, fontSize:52,
+            letterSpacing:'0.04em', textTransform:'uppercase', lineHeight:1, marginBottom:12,
+            color:'#fff',
+            textShadow: hovered==='gaming' ? '0 0 40px rgba(0,200,255,0.6)' : '0 0 20px rgba(0,200,255,0.2)',
+            transition:'text-shadow 0.4s',
+          }}>Gaming</div>
+          <div style={{
+            color:'rgba(0,200,255,0.5)', fontSize:15, lineHeight:1.6, marginBottom:32, maxWidth:260,
+            fontFamily:"'Rajdhani', sans-serif", fontWeight:500, letterSpacing:'0.02em',
+          }}>
+            AAA titles, indie gems, DLCs and exclusive game keys
+          </div>
+          {/* Tags */}
+          <div style={{ display:'flex', flexWrap:'wrap', gap:8, justifyContent:'center', marginBottom:36 }}>
+            {['RPG', 'Action', 'Open World', 'Strategy', 'Indie'].map(t => (
+              <span key={t} style={{
+                fontSize:12, padding:'4px 12px', borderRadius:3,
+                background:'rgba(0,200,255,0.06)', color:'rgba(0,200,255,0.5)',
+                border:'1px solid rgba(0,200,255,0.15)', fontFamily:"'Rajdhani', sans-serif",
+                letterSpacing:'0.05em', textTransform:'uppercase', fontWeight:600,
+              }}>{t}</span>
+            ))}
+          </div>
+          <div style={{
+            display:'inline-flex', alignItems:'center', gap:8,
+            background:'transparent', color:'oklch(62% 0.25 195)',
+            border:'1.5px solid oklch(62% 0.25 195)',
+            borderRadius:4, padding:'12px 32px',
+            fontFamily:"'Barlow Condensed', sans-serif", fontWeight:700, fontSize:17,
+            letterSpacing:'0.08em', textTransform:'uppercase',
+            opacity: hovered==='gaming' ? 1 : 0.6,
+            transform: hovered==='gaming' ? 'translateY(-2px)' : 'translateY(0)',
+            transition:'all 0.3s',
+            boxShadow: hovered==='gaming' ? '0 0 20px rgba(0,200,255,0.2), inset 0 0 20px rgba(0,200,255,0.05)' : 'none',
+          }}>
+            Enter Game Store
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+              <path d="M7 5l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── Gaming Navbar ────────────────────────────────────────────────────────────
+const GamingNavbar = ({ page, setPage, searchQuery, setSearchQuery, wishlist, cart, onBack }) => {
+  const [searchFocused, setSearchFocused] = React.useState(false);
+  const navItems = [
+    { id:'home', label:'Home' },
+    { id:'games', label:'All Games' },
+    { id:'deals', label:'Deals' },
+    { id:'new', label:'New Releases' },
   ];
+  return (
+    <nav style={{
+      background:'#050709', color:'#fff',
+      display:'flex', alignItems:'center', gap:0,
+      padding:'0 32px', height:56, position:'sticky', top:0, zIndex:100,
+      borderBottom:'1px solid rgba(0,200,255,0.12)',
+      boxShadow:'0 4px 24px rgba(0,0,0,0.5)',
+    }}>
+      {/* Logo */}
+      <div onClick={() => setPage('landing')} style={{
+        fontFamily:"'Barlow Condensed', sans-serif", fontWeight:800, fontSize:20,
+        letterSpacing:'0.06em', textTransform:'uppercase', cursor:'pointer', marginRight:36, flexShrink:0,
+        display:'flex', alignItems:'center', gap:10,
+      }}>
+        <div style={{
+          width:28, height:28, borderRadius:4, border:'1.5px solid oklch(62% 0.25 195)',
+          display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, fontWeight:800,
+          color:'oklch(62% 0.25 195)', letterSpacing:0,
+        }}>SV</div>
+        <span style={{ color:'#fff' }}>Software<span style={{ color:'oklch(62% 0.25 195)' }}>Vault</span></span>
+      </div>
 
-  // Labels around the hexagon (chart + export): ONLY numbers
-  const hexCornerNames = ["1","2","3","4","5","6"];
+      {/* Nav items */}
+      <div style={{ display:'flex', gap:2, flex:1 }}>
+        {navItems.map(item => (
+          <button key={item.id} onClick={() => setPage(item.id)} style={{
+            padding:'6px 16px', borderRadius:3,
+            fontFamily:"'Barlow Condensed', sans-serif", fontSize:15, fontWeight:600,
+            letterSpacing:'0.06em', textTransform:'uppercase',
+            color: page === item.id ? 'oklch(62% 0.25 195)' : 'rgba(255,255,255,0.5)',
+            background: page === item.id ? 'rgba(0,200,255,0.07)' : 'transparent',
+            borderBottom: page === item.id ? '2px solid oklch(62% 0.25 195)' : '2px solid transparent',
+            transition:'all 0.15s',
+          }}>{item.label}</button>
+        ))}
+      </div>
 
-  const defaults = [7,6,8,5,7,4];
+      {/* Search */}
+      <div style={{ position:'relative', marginRight:12 }}>
+        <svg style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', opacity:0.3 }}
+          width="14" height="14" viewBox="0 0 20 20" fill="none">
+          <circle cx="8.5" cy="8.5" r="5.5" stroke="oklch(62% 0.25 195)" strokeWidth="1.8"/>
+          <path d="M13 13L17 17" stroke="oklch(62% 0.25 195)" strokeWidth="1.8" strokeLinecap="round"/>
+        </svg>
+        <input
+          value={searchQuery}
+          onChange={e => { setSearchQuery(e.target.value); if(e.target.value) setPage('search'); }}
+          onFocus={() => setSearchFocused(true)}
+          onBlur={() => setSearchFocused(false)}
+          placeholder="Search games…"
+          style={{
+            background: searchFocused ? 'rgba(0,200,255,0.08)' : 'rgba(255,255,255,0.04)',
+            border:'1px solid', borderColor: searchFocused ? 'rgba(0,200,255,0.4)' : 'rgba(255,255,255,0.08)',
+            color:'#fff', borderRadius:3, padding:'7px 12px 7px 32px',
+            fontSize:13, outline:'none', width:200, transition:'all 0.2s',
+            fontFamily:"'Rajdhani', sans-serif", fontWeight:500,
+          }}
+        />
+      </div>
 
-  // Page text (used on-page AND in export so it matches 1:1)
-  const PAGE = {
-    headerTitle: "Score for Series",
-    overallLabel: "Overall Score",
-    scaleText: "Scale: 0 (Bad) – 10 (Perfect)",
-    exportPlaceholder: "Title for export (e.g. Score Profile)",
-    imageHint: "Image",
-    noImage: "No image",
-    loaded: "Loaded",
-    light: "☀️ Light",
-    dark: "🌙 Dark",
-    hintLight: "Light mode active",
-    hintDark: "Dark mode active",
-    invalidImageAlert: "Please choose an image file.",
-    exportSvgFailed: "SVG export failed: ",
-    exportPngFailed: "PNG export failed: "
+      {/* Wishlist */}
+      <button onClick={() => setPage('wishlist')} style={{
+        position:'relative', padding:8, borderRadius:3,
+        color: page==='wishlist' ? 'oklch(62% 0.25 195)' : 'rgba(255,255,255,0.5)',
+        background: page==='wishlist' ? 'rgba(0,200,255,0.07)' : 'transparent',
+        transition:'all 0.15s',
+      }}>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+            stroke="currentColor" strokeWidth="1.8" fill={page==='wishlist' ? 'currentColor' : 'none'}/>
+        </svg>
+        {wishlist.length > 0 && (
+          <span style={{
+            position:'absolute', top:4, right:4, width:14, height:14, borderRadius:'50%',
+            background:'oklch(62% 0.25 195)', color:'#000', fontSize:9, fontWeight:700,
+            display:'flex', alignItems:'center', justifyContent:'center',
+          }}>{wishlist.length}</span>
+        )}
+      </button>
+
+      {/* Cart */}
+      <button onClick={() => setPage('cart')} style={{
+        position:'relative', padding:8, borderRadius:3,
+        color: page==='cart' ? 'oklch(62% 0.25 195)' : 'rgba(255,255,255,0.5)',
+        background: page==='cart' ? 'rgba(0,200,255,0.07)' : 'transparent',
+        transition:'all 0.15s',
+      }}>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" stroke="currentColor" strokeWidth="1.8"/>
+          <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" strokeWidth="1.8"/>
+          <path d="M16 10a4 4 0 01-8 0" stroke="currentColor" strokeWidth="1.8"/>
+        </svg>
+        {cart.length > 0 && (
+          <span style={{
+            position:'absolute', top:4, right:4, width:14, height:14, borderRadius:'50%',
+            background:'oklch(62% 0.25 195)', color:'#000', fontSize:9, fontWeight:700,
+            display:'flex', alignItems:'center', justifyContent:'center',
+          }}>{cart.length}</span>
+        )}
+      </button>
+
+      {/* Switch mode */}
+      <button onClick={() => onBack()} style={{
+        marginLeft:12, padding:'6px 14px', borderRadius:3,
+        border:'1px solid rgba(255,255,255,0.12)', fontSize:12, fontWeight:600,
+        color:'rgba(255,255,255,0.4)', fontFamily:"'Barlow Condensed', sans-serif",
+        letterSpacing:'0.05em', textTransform:'uppercase', transition:'all 0.15s',
+      }}>← Switch</button>
+    </nav>
+  );
+};
+
+// ─── Gaming Product Card ──────────────────────────────────────────────────────
+const GamingProductCard = ({ product, onOpen, onWishlist, isWishlisted, onAddToCart }) => {
+  const [hovered, setHovered] = React.useState(false);
+  const lowestPrice = Math.min(...product.editions.map(e => e.price));
+  const origPrice = product.editions.find(e => e.originalPrice)?.originalPrice;
+  const discount = origPrice ? Math.round((1 - lowestPrice/origPrice)*100) : null;
+
+  return (
+    <div
+      className="game-card-glow"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onClick={() => onOpen(product)}
+      style={{
+        background: hovered ? '#111825' : '#0e1420',
+        border: '1px solid',
+        borderColor: hovered ? 'rgba(0,200,255,0.25)' : 'rgba(255,255,255,0.06)',
+        borderRadius:4,
+        boxShadow: hovered ? '0 0 0 1px rgba(0,200,255,0.2), 0 8px 40px rgba(0,200,255,0.1)' : '0 2px 12px rgba(0,0,0,0.4)',
+        transition:'all 0.2s', cursor:'pointer', overflow:'hidden',
+        display:'flex', flexDirection:'column',
+        animation:'fadeIn 0.3s ease both',
+        position:'relative',
+      }}
+    >
+      {/* Scan line accent top */}
+      <div style={{
+        position:'absolute', top:0, left:0, right:0, height:2,
+        background: hovered ? 'linear-gradient(90deg, transparent, oklch(62% 0.25 195), transparent)' : 'transparent',
+        transition:'background 0.3s', zIndex:2,
+      }} />
+
+      {/* Cover */}
+      <div style={{ position:'relative', aspectRatio:'16/9', overflow:'hidden' }}>
+        <div style={{
+          width:'100%', height:'100%',
+          background: product.coverBg || `linear-gradient(135deg, ${product.color}22 0%, ${product.color}66 60%, #080b10 100%)`,
+          display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+          position:'relative',
+        }}>
+          {product.coverSvg ? (
+            <div style={{ position:'absolute', inset:0 }}
+              dangerouslySetInnerHTML={{ __html: product.coverSvg
+                .replace('<svg ', '<svg width="100%" height="100%" style="position:absolute;inset:0;" ')
+              }}
+            />
+          ) : (
+            <>
+              <div style={{
+                position:'absolute', width:'80%', aspectRatio:'1', borderRadius:'50%',
+                background:product.color, opacity:0.08, top:'-20%', right:'-20%', filter:'blur(30px)',
+              }} />
+              <div style={{
+                fontFamily:"'Barlow Condensed', sans-serif", fontWeight:800, fontSize:22,
+                color:'rgba(255,255,255,0.9)', textAlign:'center', lineHeight:1.1,
+                letterSpacing:'0.04em', textTransform:'uppercase', padding:'0 12px',
+                textShadow:'0 2px 20px rgba(0,0,0,0.8)', zIndex:1,
+              }}>{product.name}</div>
+              <div style={{ fontSize:11, color:'rgba(255,255,255,0.35)', zIndex:1, marginTop:4, fontFamily:"'Rajdhani', sans-serif" }}>
+                {product.publisher}
+              </div>
+            </>
+          )}
+        </div>
+        {/* Badges */}
+        <div style={{ position:'absolute', top:8, left:8, display:'flex', gap:4 }}>
+          {product.badge && (
+            <span style={{
+              fontSize:10, padding:'2px 7px', borderRadius:2, fontWeight:700,
+              letterSpacing:'0.06em', textTransform:'uppercase',
+              background: product.badge==='Deal' ? 'var(--amber)' : product.badge==='New' ? 'oklch(62% 0.25 195)' : 'rgba(255,255,255,0.15)',
+              color: product.badge==='Deal' ? '#000' : product.badge==='New' ? '#000' : '#fff',
+              fontFamily:"'Barlow Condensed', sans-serif",
+            }}>{product.badge}</span>
+          )}
+          {discount && (
+            <span style={{
+              fontSize:10, padding:'2px 7px', borderRadius:2, fontWeight:700,
+              background:'var(--red)', color:'#fff',
+              fontFamily:"'Barlow Condensed', sans-serif", letterSpacing:'0.04em',
+            }}>-{discount}%</span>
+          )}
+        </div>
+        {/* Wishlist */}
+        <button onClick={e => { e.stopPropagation(); onWishlist(product.id); }} style={{
+          position:'absolute', top:8, right:8,
+          width:28, height:28, borderRadius:2,
+          background: isWishlisted ? 'oklch(62% 0.25 195)' : 'rgba(0,0,0,0.6)',
+          border:'1px solid rgba(0,200,255,0.2)',
+          display:'flex', alignItems:'center', justifyContent:'center',
+          transition:'all 0.15s',
+        }}>
+          <svg width="13" height="13" viewBox="0 0 24 24">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+              stroke={isWishlisted ? '#000' : 'rgba(0,200,255,0.7)'}
+              strokeWidth="1.8" fill={isWishlisted ? '#000' : 'none'}/>
+          </svg>
+        </button>
+      </div>
+
+      {/* Body */}
+      <div style={{ padding:'12px 14px', flex:1, display:'flex', flexDirection:'column', gap:8 }}>
+        <div style={{ display:'flex', flexWrap:'wrap', gap:4 }}>
+          {product.tags.slice(0,2).map(t => (
+            <span key={t} style={{
+              fontSize:10, padding:'2px 7px', borderRadius:2,
+              background:'rgba(0,200,255,0.06)', color:'rgba(0,200,255,0.5)',
+              border:'1px solid rgba(0,200,255,0.1)',
+              fontFamily:"'Rajdhani', sans-serif", fontWeight:600, letterSpacing:'0.04em',
+              textTransform:'uppercase',
+            }}>{t}</span>
+          ))}
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+          <StarRating rating={product.rating} />
+          <span style={{ fontSize:11, color:'rgba(255,255,255,0.3)', fontFamily:"'Rajdhani', sans-serif" }}>
+            {product.rating}
+          </span>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div style={{
+        padding:'10px 14px', borderTop:'1px solid rgba(255,255,255,0.05)',
+        display:'flex', alignItems:'center', justifyContent:'space-between',
+      }}>
+        <div>
+          {origPrice && (
+            <div style={{ fontSize:10, color:'rgba(255,255,255,0.25)', textDecoration:'line-through', fontFamily:"'Rajdhani', sans-serif" }}>
+              €{origPrice.toFixed(2)}
+            </div>
+          )}
+          <div style={{
+            fontFamily:"'Barlow Condensed', sans-serif", fontWeight:700, fontSize:20,
+            color: hovered ? 'oklch(62% 0.25 195)' : '#fff', transition:'color 0.2s',
+            letterSpacing:'0.02em',
+          }}>€{lowestPrice.toFixed(2)}</div>
+        </div>
+        <button
+          onClick={e => { e.stopPropagation(); onAddToCart(product); }}
+          style={{
+            background: hovered ? 'oklch(62% 0.25 195)' : 'rgba(0,200,255,0.08)',
+            color: hovered ? '#000' : 'oklch(62% 0.25 195)',
+            border:'1px solid rgba(0,200,255,0.3)', borderRadius:3,
+            padding:'6px 14px', fontSize:13, fontWeight:700,
+            fontFamily:"'Barlow Condensed', sans-serif", letterSpacing:'0.05em', textTransform:'uppercase',
+            transition:'all 0.2s', cursor:'pointer',
+          }}
+        >Buy</button>
+      </div>
+    </div>
+  );
+};
+
+// ─── Gaming Hero ──────────────────────────────────────────────────────────────
+const GamingHero = ({ onShop }) => {
+  const featured = PRODUCTS.find(p => p.id === 'elden-ring');
+  const [tick, setTick] = React.useState(0);
+  React.useEffect(() => {
+    const t = setInterval(() => setTick(x => x+1), 80);
+    return () => clearInterval(t);
+  }, []);
+
+  return (
+    <div style={{
+      borderRadius:4, overflow:'hidden', marginBottom:48,
+      background:'linear-gradient(135deg, #06080f 0%, #0a0d18 100%)',
+      border:'1px solid rgba(0,200,255,0.12)',
+      minHeight:340, display:'flex', alignItems:'stretch',
+      position:'relative',
+    }}>
+      {/* Scanline overlay */}
+      <div style={{
+        position:'absolute', inset:0, zIndex:0, pointerEvents:'none',
+        backgroundImage:'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,200,255,0.015) 3px, rgba(0,200,255,0.015) 4px)',
+      }} />
+      {/* Left */}
+      <div style={{ flex:1, padding:'48px 52px', display:'flex', flexDirection:'column', justifyContent:'center', gap:20, position:'relative', zIndex:1 }}>
+        <div style={{
+          display:'inline-flex', alignItems:'center', gap:8,
+          background:'rgba(0,200,255,0.08)', border:'1px solid rgba(0,200,255,0.2)',
+          borderRadius:3, padding:'5px 12px', width:'fit-content',
+          fontFamily:"'Barlow Condensed', sans-serif", fontWeight:700, fontSize:12,
+          color:'oklch(62% 0.25 195)', letterSpacing:'0.1em', textTransform:'uppercase',
+        }}>
+          <span style={{ width:6, height:6, borderRadius:'50%', background:'oklch(62% 0.25 195)', animation:'glowPulse 2s infinite' }} />
+          Featured Title
+        </div>
+        <div>
+          <h1 style={{
+            fontFamily:"'Barlow Condensed', sans-serif", fontWeight:800, fontSize:56,
+            lineHeight:1, color:'#fff', letterSpacing:'0.03em', textTransform:'uppercase', marginBottom:10,
+            textShadow:'0 0 60px rgba(0,200,255,0.2)',
+          }}>
+            Elden Ring
+          </h1>
+          <p style={{
+            color:'rgba(255,255,255,0.45)', fontSize:15, maxWidth:380, lineHeight:1.7,
+            fontFamily:"'Rajdhani', sans-serif", fontWeight:400,
+          }}>
+            Forge your legend in the Lands Between. A vast open world action RPG by FromSoftware & George R.R. Martin.
+          </p>
+        </div>
+        <div style={{ display:'flex', gap:10, alignItems:'center' }}>
+          <button onClick={() => onShop(featured)} style={{
+            background:'oklch(62% 0.25 195)', color:'#000',
+            borderRadius:3, padding:'12px 28px', fontSize:15, fontWeight:800,
+            fontFamily:"'Barlow Condensed', sans-serif", letterSpacing:'0.08em', textTransform:'uppercase',
+            cursor:'pointer', boxShadow:'0 4px 24px rgba(0,200,255,0.35)',
+          }}>Buy Now — €59.99</button>
+          <button onClick={() => onShop(featured)} style={{
+            background:'transparent', color:'rgba(0,200,255,0.7)',
+            border:'1px solid rgba(0,200,255,0.3)', borderRadius:3,
+            padding:'12px 20px', fontSize:14, fontWeight:700,
+            fontFamily:"'Barlow Condensed', sans-serif", letterSpacing:'0.06em', textTransform:'uppercase',
+            cursor:'pointer',
+          }}>View Details</button>
+        </div>
+        <div style={{ display:'flex', gap:16 }}>
+          {['Instant Key Delivery', 'Secure Checkout', '30-Day Guarantee'].map(t => (
+            <div key={t} style={{ display:'flex', alignItems:'center', gap:5, fontSize:12, color:'rgba(0,200,255,0.35)', fontFamily:"'Rajdhani', sans-serif", fontWeight:500, letterSpacing:'0.03em' }}>
+              <svg width="12" height="12" viewBox="0 0 20 20">
+                <path d="M10 1L2 5v5c0 5 4 9 8 10 4-1 8-5 8-10V5L10 1z" stroke="rgba(0,200,255,0.4)" strokeWidth="1.5" fill="none"/>
+                <path d="M7 10l2 2 4-4" stroke="oklch(62% 0.25 195)" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+              {t}
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Right visual */}
+      <div style={{ width:360, flexShrink:0, padding:20, display:'flex', position:'relative', zIndex:1 }}>
+        <div style={{
+          flex:1, borderRadius:4, border:'1px solid rgba(0,200,255,0.12)',
+          background:`linear-gradient(135deg, ${featured.color}11, ${featured.color}33)`,
+          display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+          position:'relative', overflow:'hidden',
+        }}>
+          <div style={{
+            position:'absolute', width:'140%', aspectRatio:'1', borderRadius:'50%',
+            background:featured.color, opacity:0.07, top:'-40%', right:'-40%', filter:'blur(40px)',
+          }} />
+          <div style={{
+            fontFamily:"'Barlow Condensed', sans-serif", fontWeight:800, fontSize:34,
+            color:'rgba(255,255,255,0.8)', textAlign:'center', letterSpacing:'0.05em',
+            textTransform:'uppercase', zIndex:1, padding:'0 20px',
+            textShadow:`0 0 40px ${featured.color}88`,
+          }}>ELDEN RING</div>
+          <div style={{ fontSize:11, color:'rgba(255,255,255,0.2)', marginTop:8, zIndex:1, fontFamily:"'Rajdhani', sans-serif" }}>
+            Key Visual Placeholder
+          </div>
+          {/* Corner brackets */}
+          {[[0,0,'top','left'],[0,0,'top','right'],[0,0,'bottom','left'],[0,0,'bottom','right']].map(([,,v,h], i) => (
+            <div key={i} style={{
+              position:'absolute', [v]:12, [h]:12, width:20, height:20,
+              borderTop: v==='top' ? '1.5px solid rgba(0,200,255,0.3)' : 'none',
+              borderBottom: v==='bottom' ? '1.5px solid rgba(0,200,255,0.3)' : 'none',
+              borderLeft: h==='left' ? '1.5px solid rgba(0,200,255,0.3)' : 'none',
+              borderRight: h==='right' ? '1.5px solid rgba(0,200,255,0.3)' : 'none',
+            }} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── Gaming Home ──────────────────────────────────────────────────────────────
+const GamingHomePage = ({ setPage, onOpen, onWishlist, wishlist, onAddToCart }) => {
+  const games = PRODUCTS.filter(p => p.category === 'games');
+  const deals = PRODUCTS.filter(p => p.category === 'deals' && p.subcategory !== 'OS' && p.subcategory !== 'Office' && p.subcategory !== 'Security');
+  const newGames = PRODUCTS.filter(p => p.category === 'new' && p.subcategory === 'Action');
+
+  const GamingSection = ({ title, accent, products, onViewAll }) => (
+    <section style={{ marginBottom:52 }}>
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+          <div style={{ width:4, height:22, background:'oklch(62% 0.25 195)', borderRadius:2 }} />
+          <h2 style={{ fontFamily:"'Barlow Condensed', sans-serif", fontWeight:800, fontSize:24, color:'#fff', letterSpacing:'0.04em', textTransform:'uppercase' }}>{title}</h2>
+        </div>
+        <button onClick={onViewAll} style={{
+          fontSize:13, color:'rgba(0,200,255,0.6)', fontWeight:600, display:'flex', alignItems:'center', gap:4,
+          fontFamily:"'Barlow Condensed', sans-serif", letterSpacing:'0.05em', textTransform:'uppercase',
+          background:'transparent', border:'1px solid rgba(0,200,255,0.15)', borderRadius:3, padding:'5px 12px',
+          cursor:'pointer', transition:'all 0.15s',
+        }}>See All →</button>
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(220px, 1fr))', gap:16 }}>
+        {products.slice(0,4).map(p => (
+          <GamingProductCard key={p.id} product={p}
+            onOpen={onOpen} onWishlist={onWishlist}
+            isWishlisted={wishlist.includes(p.id)}
+            onAddToCart={onAddToCart}
+          />
+        ))}
+      </div>
+    </section>
+  );
+
+  return (
+    <div style={{ maxWidth:1200, margin:'0 auto', padding:'40px 32px' }} className="animate-in">
+      <GamingHero onShop={onOpen} />
+      <GamingSection title="Top Titles" products={games} onViewAll={() => setPage('games')} />
+      <GamingSection title="Weekly Deals" products={deals} onViewAll={() => setPage('deals')} />
+    </div>
+  );
+};
+
+// ─── Gaming Catalog Page ──────────────────────────────────────────────────────
+const GamingCatalogPage = ({ category, onOpen, onWishlist, wishlist, onAddToCart }) => {
+  const [sortBy, setSortBy] = React.useState('popular');
+  const [filterSub, setFilterSub] = React.useState('all');
+  const [compareList, setCompareList] = React.useState([]);
+  const [showCompare, setShowCompare] = React.useState(false);
+
+  const allProducts = PRODUCTS.filter(p => {
+    if (category === 'games') return p.category === 'games';
+    if (category === 'deals') return p.category === 'deals';
+    if (category === 'new') return p.category === 'new';
+    return p.category === category;
+  });
+  const subcats = ['all', ...new Set(allProducts.map(p => p.subcategory))];
+  const filtered = allProducts.filter(p => filterSub === 'all' || p.subcategory === filterSub);
+  const sorted = [...filtered].sort((a, b) => {
+    if (sortBy === 'price-asc') return Math.min(...a.editions.map(e=>e.price)) - Math.min(...b.editions.map(e=>e.price));
+    if (sortBy === 'price-desc') return Math.min(...b.editions.map(e=>e.price)) - Math.min(...a.editions.map(e=>e.price));
+    if (sortBy === 'rating') return b.rating - a.rating;
+    return b.reviews - a.reviews;
+  });
+
+  const toggleCompare = (id) => {
+    setCompareList(prev => prev.includes(id) ? prev.filter(x=>x!==id) : prev.length < 3 ? [...prev, id] : prev);
   };
 
-  // ===== State =====
-  let uploadedImageDataUrl = null;
+  const titles = { games:'All Games', deals:'Deals', new:'New Releases' };
 
-  // Mode persistence
-  const MODE_KEY = "hex_mode"; // "dark" | "light"
-  function getInitialMode(){
-    const saved = localStorage.getItem(MODE_KEY);
-    if (saved === "dark" || saved === "light") return saved;
-    return (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches)
-      ? "light"
-      : "dark";
-  }
-  function applyMode(mode){
-    const root = document.documentElement;
-    root.setAttribute("data-mode", mode);
-    localStorage.setItem(MODE_KEY, mode);
-    updateModeButton(mode);
-  }
-  function updateModeButton(mode){
-    const btn = document.getElementById("modeBtn");
-    const hint = document.getElementById("modeHint");
-    const isLight = mode === "light";
-    btn.textContent = isLight ? PAGE.light : PAGE.dark;
-    btn.setAttribute("aria-pressed", String(isLight));
-    hint.textContent = isLight ? PAGE.hintLight : PAGE.hintDark;
-  }
+  return (
+    <div style={{ maxWidth:1200, margin:'0 auto', padding:'40px 32px' }} className="animate-in">
+      <div style={{ marginBottom:32 }}>
+        <h1 style={{ fontFamily:"'Barlow Condensed', sans-serif", fontWeight:800, fontSize:36,
+          letterSpacing:'0.04em', textTransform:'uppercase', color:'#fff', marginBottom:4 }}>
+          {titles[category] || category}
+        </h1>
+        <p style={{ color:'rgba(0,200,255,0.4)', fontSize:14, fontFamily:"'Rajdhani', sans-serif" }}>
+          {sorted.length} titles available
+        </p>
+      </div>
+      {/* Filters */}
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:16, marginBottom:28, flexWrap:'wrap' }}>
+        <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+          {subcats.map(s => (
+            <button key={s} onClick={() => setFilterSub(s)} style={{
+              padding:'5px 14px', borderRadius:3, fontSize:13, fontWeight:600,
+              fontFamily:"'Barlow Condensed', sans-serif", letterSpacing:'0.05em', textTransform:'uppercase',
+              background: filterSub === s ? 'oklch(62% 0.25 195)' : 'rgba(0,200,255,0.05)',
+              color: filterSub === s ? '#000' : 'rgba(0,200,255,0.5)',
+              border:'1px solid', borderColor: filterSub === s ? 'oklch(62% 0.25 195)' : 'rgba(0,200,255,0.15)',
+              cursor:'pointer', transition:'all 0.15s',
+            }}>{s === 'all' ? 'All' : s}</button>
+          ))}
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+          {compareList.length > 1 && (
+            <button onClick={() => setShowCompare(true)} style={{
+              padding:'5px 14px', borderRadius:3, fontSize:13, fontWeight:700,
+              fontFamily:"'Barlow Condensed', sans-serif", letterSpacing:'0.05em', textTransform:'uppercase',
+              background:'rgba(255,180,0,0.1)', color:'var(--amber)',
+              border:'1px solid var(--amber)', cursor:'pointer',
+            }}>Compare ({compareList.length})</button>
+          )}
+          <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{
+            border:'1px solid rgba(0,200,255,0.15)', borderRadius:3, padding:'6px 10px',
+            fontSize:13, background:'rgba(0,200,255,0.05)', color:'rgba(0,200,255,0.6)',
+            cursor:'pointer', outline:'none', fontFamily:"'Rajdhani', sans-serif",
+          }}>
+            <option value="popular">Most Popular</option>
+            <option value="rating">Highest Rated</option>
+            <option value="price-asc">Price ↑</option>
+            <option value="price-desc">Price ↓</option>
+          </select>
+        </div>
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(220px, 1fr))', gap:16, marginBottom:40 }}>
+        {sorted.map(p => (
+          <div key={p.id} style={{ position:'relative' }}>
+            <GamingProductCard product={p}
+              onOpen={onOpen} onWishlist={onWishlist}
+              isWishlisted={wishlist.includes(p.id)}
+              onAddToCart={onAddToCart}
+            />
+            <button onClick={() => toggleCompare(p.id)} style={{
+              position:'absolute', bottom:50, left:14, zIndex:2,
+              fontSize:11, padding:'3px 8px', borderRadius:2, fontWeight:700,
+              fontFamily:"'Barlow Condensed', sans-serif", letterSpacing:'0.05em', textTransform:'uppercase',
+              background: compareList.includes(p.id) ? 'oklch(62% 0.25 195)' : 'rgba(0,0,0,0.7)',
+              color: compareList.includes(p.id) ? '#000' : 'rgba(0,200,255,0.5)',
+              border:'1px solid rgba(0,200,255,0.2)', cursor:'pointer',
+            }}>
+              {compareList.includes(p.id) ? '✓ Compare' : '+ Compare'}
+            </button>
+          </div>
+        ))}
+      </div>
+      {showCompare && (
+        <CompareModal
+          products={PRODUCTS.filter(p => compareList.includes(p.id))}
+          onClose={() => setShowCompare(false)}
+          onAddToCart={onAddToCart}
+        />
+      )}
+    </div>
+  );
+};
 
-  // ===== DOM =====
-  const sliders = Array.from({length:N}, (_,i)=>document.getElementById(`s${i}`));
-  const valueSpans = Array.from({length:N}, (_,i)=>document.getElementById(`v${i}`));
-  const nameSpans  = Array.from({length:N}, (_,i)=>document.getElementById(`n${i}`));
-  const avgValueEl = document.getElementById("avgValue");
+// ─── Gaming Footer ────────────────────────────────────────────────────────────
+const GamingFooter = () => (
+  <footer style={{
+    borderTop:'1px solid rgba(0,200,255,0.08)',
+    background:'#050709', padding:'20px 32px', marginTop:'auto',
+  }}>
+    <div style={{ maxWidth:1200, margin:'0 auto', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+      <div style={{ display:'flex', gap:24 }}>
+        {['Privacy Policy','Terms','Refunds','Contact','Support'].map(l => (
+          <a key={l} href="#" style={{ fontSize:12, color:'rgba(255,255,255,0.2)', fontFamily:"'Rajdhani', sans-serif", letterSpacing:'0.04em', textTransform:'uppercase', fontWeight:500 }}>{l}</a>
+        ))}
+      </div>
+      <div style={{ fontSize:12, color:'rgba(0,200,255,0.25)', fontFamily:"'Barlow Condensed', sans-serif", letterSpacing:'0.06em', textTransform:'uppercase' }}>
+        © 2026 SoftwareVault
+      </div>
+    </div>
+  </footer>
+);
 
-  const hueSlider = document.getElementById("hueSlider");
-  const hueVal = document.getElementById("hueVal");
-  const colorPreview = document.getElementById("colorPreview");
+// ─── Root App ─────────────────────────────────────────────────────────────────
+const App = () => {
+  const [tweaks, setTweak] = window.useTweaks(TWEAK_DEFAULTS);
+  const TweaksPanel = window.TweaksPanel;
+  const TweakSection = window.TweakSection;
+  const TweakRadio = window.TweakRadio;
+  const TweakToggle = window.TweakToggle;
+  const [mode, setMode] = React.useState('landing'); // 'landing' | 'software' | 'gaming'
+  const [page, setPage] = React.useState('home');
+  const [detailProduct, setDetailProduct] = React.useState(null);
+  const [wishlist, setWishlist] = React.useState(['god-of-war', 'adobe-cc']);
+  const [cart, setCart] = React.useState([]);
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [toast, setToast] = React.useState(null);
 
-  const titleInput = document.getElementById("titleInput");
+  React.useEffect(() => {
+    if (mode === 'gaming') document.body.classList.add('gaming');
+    else document.body.classList.remove('gaming');
+  }, [mode]);
 
-  const imgInput = document.getElementById("imgInput");
-  const imgStatus = document.getElementById("imgStatus");
-  const previewImg = document.getElementById("previewImg");
-  const previewHint = document.getElementById("previewHint");
+  const chooseMode = (m) => { setMode(m); setPage('home'); };
+  const goToLanding = () => { setMode('landing'); setPage('home'); };
 
-  const skillPoly = document.getElementById("skills");
-  const dotsG = document.getElementById("dots");
-  const axesG = document.getElementById("axes");
-  const labelsG = document.getElementById("labels");
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2200);
+  };
 
-  // ===== Helpers =====
-  const toRad = (deg) => deg * Math.PI / 180;
+  const openProduct = (product) => {
+    setDetailProduct(product);
+    setPage('detail');
+  };
 
-  function pointAt(i, value, radius = R) {
-    const angle = toRad(startAngleDeg + (360 / N) * i);
-    const r = (value / MAX) * radius;
-    return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r, angle };
-  }
-
-  function polygonPoints(values) {
-    return values.map((v, i) => {
-      const p = pointAt(i, v);
-      return `${p.x.toFixed(2)},${p.y.toFixed(2)}`;
-    }).join(" ");
-  }
-
-  function ringPoints(level) {
-    return polygonPoints(Array.from({length:N}, ()=>level));
-  }
-
-  function average(values) {
-    return values.reduce((a,b)=>a+b,0) / values.length;
-  }
-
-  function escapeXml(s){
-    return String(s)
-      .replace(/&/g,"&amp;")
-      .replace(/</g,"&lt;")
-      .replace(/>/g,"&gt;")
-      .replace(/"/g,"&quot;")
-      .replace(/'/g,"&apos;");
-  }
-
-  // Make a safe filename from user title (Windows/Mac/Linux safe-ish)
-  function sanitizeFilename(name){
-    const n = String(name || "").trim();
-    if (!n) return "";
-    return n
-      .replace(/[\\\/:*?"<>|]/g, "-")   // illegal in Windows
-      .replace(/\s+/g, " ")            // collapse whitespace
-      .replace(/\./g, ".")             // keep dots, but we'll trim ends below
-      .trim()
-      .replace(/^[. ]+|[. ]+$/g, "");  // no trailing/leading dot/space
-  }
-
-  function getExportBaseName(){
-    // If user typed a title -> use that for filename; otherwise fallback to page title
-    const t = sanitizeFilename(titleInput.value);
-    return t || sanitizeFilename(PAGE.headerTitle) || "export";
-  }
-
-  function applyThemeFromHue(){
-    const h = Number(hueSlider.value);
-    document.documentElement.style.setProperty("--hue", h);
-    hueVal.textContent = `${h}°`;
-    colorPreview.style.background = `hsl(${h} 95% 68%)`;
-  }
-
-  function accentFromHue(h){
-    const accent = `hsl(${h} 95% 68%)`;
-    const accentSoft = `hsla(${h} 95% 60% / 0.28)`;
-    const grid = `hsla(${h} 55% 75% / 0.30)`;
-    const grid2 = `hsla(${h} 55% 75% / 0.16)`;
-    const axis = `hsla(${h} 70% 75% / 0.18)`;
-    return { accent, accentSoft, grid, grid2, axis };
-  }
-
-  function applyPageText(){
-    document.getElementById("pageTitle").textContent = PAGE.headerTitle;
-    document.getElementById("overallLabel").textContent = PAGE.overallLabel;
-    document.getElementById("scaleText").textContent = PAGE.scaleText;
-    titleInput.placeholder = PAGE.exportPlaceholder;
-
-    previewHint.textContent = PAGE.imageHint;
-    imgStatus.textContent = PAGE.noImage;
-  }
-
-  // ===== Build static rings =====
-  ring2.setAttribute("points", ringPoints(2));
-  ring4.setAttribute("points", ringPoints(4));
-  ring6.setAttribute("points", ringPoints(6));
-  ring8.setAttribute("points", ringPoints(8));
-  ring10.setAttribute("points", ringPoints(10));
-
-  // ===== Axes + Labels (hex labels = 1..6) =====
-  function buildAxesAndLabels(){
-    axesG.innerHTML = "";
-    labelsG.innerHTML = "";
-
-    for (let i=0;i<N;i++){
-      const outer = pointAt(i, MAX);
-
-      const line = document.createElementNS("http://www.w3.org/2000/svg","line");
-      line.setAttribute("x1", cx);
-      line.setAttribute("y1", cy);
-      line.setAttribute("x2", outer.x);
-      line.setAttribute("y2", outer.y);
-      line.setAttribute("class","axis");
-      axesG.appendChild(line);
-
-      const labelR = R + 22;
-      const lx = cx + Math.cos(outer.angle) * labelR;
-      const ly = cy + Math.sin(outer.angle) * labelR;
-
-      const t = document.createElementNS("http://www.w3.org/2000/svg","text");
-      t.setAttribute("x", lx);
-      t.setAttribute("y", ly);
-      t.setAttribute("class","lbl");
-
-      const ax = Math.cos(outer.angle), ay = Math.sin(outer.angle);
-      t.setAttribute("text-anchor", ax > 0.35 ? "start" : (ax < -0.35 ? "end" : "middle"));
-      t.setAttribute("dominant-baseline", ay > 0.35 ? "hanging" : (ay < -0.35 ? "ideographic" : "middle"));
-
-      t.textContent = hexCornerNames[i];
-      labelsG.appendChild(t);
-    }
-  }
-
-  // ===== Render =====
-  function render(){
-    cornerNames.forEach((n,i)=> nameSpans[i].textContent = n);
-
-    const vals = sliders.map(s => Number(s.value));
-    vals.forEach((v,i)=> valueSpans[i].textContent = v);
-
-    const avg = average(vals);
-    avgValueEl.textContent = avg.toFixed(1);
-
-    skillPoly.setAttribute("points", polygonPoints(vals));
-
-    dotsG.innerHTML = "";
-    vals.forEach((v,i)=>{
-      const p = pointAt(i, v);
-      const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
-      c.setAttribute("cx", p.x);
-      c.setAttribute("cy", p.y);
-      c.setAttribute("r", 4.4);
-      c.setAttribute("class", "dot");
-      dotsG.appendChild(c);
+  const toggleWishlist = (id) => {
+    setWishlist(prev => {
+      const next = prev.includes(id) ? prev.filter(x=>x!==id) : [...prev, id];
+      showToast(prev.includes(id) ? 'Removed from wishlist' : 'Added to wishlist ❤️');
+      return next;
     });
+  };
+
+  const addToCart = (product) => {
+    setCart(prev => [...prev, product]);
+    showToast(`${product.name} added to cart 🛒`);
+  };
+
+  const removeFromCart = (index) => {
+    setCart(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // ── Landing ──
+  if (mode === 'landing') {
+    return <SplitLanding onChoose={chooseMode} />;
   }
 
-  sliders.forEach(s => s.addEventListener("input", render));
-  hueSlider.addEventListener("input", () => applyThemeFromHue());
-
-  // ===== Mode Toggle =====
-  document.getElementById("modeBtn").addEventListener("click", () => {
-    const current = (document.documentElement.getAttribute("data-mode") === "light") ? "light" : "dark";
-    applyMode(current === "light" ? "dark" : "light");
-  });
-
-  // ===== Image upload =====
-  imgInput.addEventListener("change", () => {
-    const file = imgInput.files && imgInput.files[0];
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      alert(PAGE.invalidImageAlert);
-      imgInput.value = "";
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      uploadedImageDataUrl = String(reader.result);
-      previewImg.src = uploadedImageDataUrl;
-      previewImg.style.display = "block";
-      previewHint.style.display = "none";
-      imgStatus.textContent = PAGE.loaded;
-    };
-    reader.readAsDataURL(file);
-  });
-
-  // ===== Reset =====
-  document.getElementById("resetBtn").addEventListener("click", () => {
-    defaults.forEach((v,i)=> sliders[i].value = v);
-    hueSlider.value = 270;
-    titleInput.value = "";
-
-    uploadedImageDataUrl = null;
-    previewImg.removeAttribute("src");
-    previewImg.style.display = "none";
-    previewHint.style.display = "block";
-    imgStatus.textContent = PAGE.noImage;
-    imgInput.value = "";
-
-    applyThemeFromHue();
-    buildAxesAndLabels();
-    render();
-  });
-
-  // ===== Export SVG builder (MATCHES page text exactly) =====
-  function buildExportSvgString(vals, avg, hue, titleText, imageDataUrl){
-    const theme = accentFromHue(hue);
-    const mode = (document.documentElement.getAttribute("data-mode") === "light") ? "light" : "dark";
-
-    const exportBgBase = (mode === "light") ? "#f5f3ff" : "#0b0816";
-
-    const exportCardFill   = (mode === "light") ? "rgba(255,255,255,0.74)" : `hsla(${hue} 30% 80% / 0.06)`;
-    const exportCardStroke = (mode === "light") ? `hsla(${hue} 55% 22% / 0.34)` : `hsla(${hue} 70% 75% / 0.22)`;
-
-    const exportInnerFill   = (mode === "light") ? "rgba(255,255,255,0.65)" : "rgba(0,0,0,0.18)";
-    const exportInnerStroke = (mode === "light") ? `hsla(${hue} 55% 22% / 0.34)` : `hsla(${hue} 70% 75% / 0.18)`;
-
-    const exportTopTitleFill = (mode === "light") ? "rgba(15,10,25,0.92)" : "rgba(255,255,255,0.94)";
-    const exportTitleFill    = (mode === "light") ? "rgba(15,10,25,0.92)" : "rgba(255,255,255,0.92)";
-    const exportSubtitleFill = (mode === "light") ? "rgba(15,10,25,0.62)" : "rgba(255,255,255,0.65)";
-
-    const exportLabelFill      = (mode === "light") ? "rgba(35,18,55,0.82)" : "rgba(230,210,255,0.85)";
-    const exportLegendNameFill = (mode === "light") ? "rgba(35,18,55,0.82)" : "rgba(230,210,255,0.88)";
-    const exportLegendValueFill= (mode === "light") ? "rgba(15,10,25,0.72)" : "rgba(255,255,255,0.78)";
-
-    const exportAvgValueFill = (mode === "light") ? "rgba(15,10,25,0.92)" : "#f6f2ff";
-
-    const exportAxisStroke = (mode === "light") ? `hsla(${hue} 55% 22% / 0.34)` : theme.axis;
-    const exportGridMain   = (mode === "light") ? `hsla(${hue} 55% 22% / 0.46)` : theme.grid;
-    const exportGrid2      = (mode === "light") ? `hsla(${hue} 55% 22% / 0.28)` : theme.grid2;
-
-    const bg1 = (mode === "light") ? `hsla(${hue} 95% 60% / 0.12)` : `hsla(${hue} 95% 65% / 0.22)`;
-    const bg2 = (mode === "light") ? `hsla(${(hue + 35) % 360} 95% 60% / 0.10)` : `hsla(${(hue + 35) % 360} 95% 62% / 0.18)`;
-    const bg3 = (mode === "light") ? `hsla(${(hue + 335) % 360} 95% 60% / 0.06)` : `hsla(${(hue + 335) % 360} 95% 60% / 0.08)`;
-
-    const W = 1100, H = 660;
-    const margin = 18;
-    const gap = 18;
-
-    const titleCardH = 92;
-    const rowY = margin + titleCardH + gap;
-    const cardH = H - rowY - margin;
-
-    const availableW = W - margin*2 - gap*2;
-    const cardW = Math.floor(availableW / 3);
-    const imageCardW = cardW;
-    const hexCardW = cardW;
-    const legendCardW = availableW - imageCardW - hexCardW;
-
-    const imageCardX = margin;
-    const hexCardX = imageCardX + imageCardW + gap;
-    const legendCardX = hexCardX + hexCardW + gap;
-
-    const pad = 16;
-
-    const imgX = imageCardX + pad;
-    const imgY = rowY + pad;
-    const imgW = imageCardW - pad*2;
-    const imgH = cardH - pad*2;
-
-    const hexInnerX = hexCardX + pad;
-    const hexInnerY = rowY + pad;
-    const hexInnerW = hexCardW - pad*2;
-    const hexInnerH = cardH - pad*2;
-
-    const avgBoxH = 72;
-    const avgGap = 12;
-    const chartBoxSize = Math.min(hexInnerW, hexInnerH - avgGap - avgBoxH);
-    const chartBoxX = hexInnerX + (hexInnerW - chartBoxSize)/2;
-    const chartBoxY = hexInnerY;
-
-    const avgBoxX = hexInnerX;
-    const avgBoxY = chartBoxY + chartBoxSize + avgGap;
-    const avgBoxW = hexInnerW;
-
-    const s = chartBoxSize / 400;
-
-    const rpX = legendCardX + 22;
-    const rightTitleY = rowY + 44;
-    const rightSubY = rightTitleY + 26;
-
-    const legendTitleY = rightSubY + 46;
-    const legendStartY = legendTitleY + 28;
-
-    const rowH = 36;
-    const dotX = rpX + 10;
-    const nameX = rpX + 28;
-    const valueX = legendCardX + legendCardW - 26;
-
-    function expPointAt(i, value){
-      const angle = (startAngleDeg + (360 / N) * i) * Math.PI / 180;
-      const r = (value / MAX) * 150;
-      return { x: 200 + Math.cos(angle)*r, y: 200 + Math.sin(angle)*r, angle };
-    }
-    function expPolyPoints(values){
-      return values.map((v,i)=>{
-        const p = expPointAt(i,v);
-        return `${p.x.toFixed(2)},${p.y.toFixed(2)}`;
-      }).join(" ");
-    }
-    function expRing(level){ return expPolyPoints(Array(N).fill(level)); }
-
-    const rings = [2,4,6,8,10].map(lvl=>{
-      const cls = (lvl === 10) ? "grid-main" : "grid-line";
-      return `<polygon class="${cls}" points="${expRing(lvl)}" />`;
-    }).join("");
-
-    const axes = Array.from({length:N},(_,i)=>{
-      const p = expPointAt(i, 10);
-      return `<line class="axis" x1="200" y1="200" x2="${p.x.toFixed(2)}" y2="${p.y.toFixed(2)}" />`;
-    }).join("");
-
-    const labels = Array.from({length:N},(_,i)=>{
-      const p = expPointAt(i, 10);
-      const labelR = 150 + 22;
-      const lx = 200 + Math.cos(p.angle)*labelR;
-      const ly = 200 + Math.sin(p.angle)*labelR;
-      const ax = Math.cos(p.angle), ay = Math.sin(p.angle);
-      const anchor = ax > 0.35 ? "start" : (ax < -0.35 ? "end" : "middle");
-      const baseline = ay > 0.35 ? "hanging" : (ay < -0.35 ? "ideographic" : "middle");
-      return `<text class="lbl" x="${lx.toFixed(2)}" y="${ly.toFixed(2)}" text-anchor="${anchor}" dominant-baseline="${baseline}">${escapeXml(hexCornerNames[i])}</text>`;
-    }).join("");
-
-    const poly = `<polygon class="skill-fill" points="${expPolyPoints(vals)}" />`;
-    const dots = vals.map((v,i)=>{
-      const p = expPointAt(i,v);
-      return `<circle class="dot" cx="${p.x.toFixed(2)}" cy="${p.y.toFixed(2)}" r="4.4" />`;
-    }).join("");
-
-    const legendRows = cornerNames.map((name,i)=>{
-      const y = legendStartY + i*rowH;
-      return `
-        <circle cx="${dotX}" cy="${y-4}" r="5" class="legendDot" />
-        <text x="${nameX}" y="${y}" class="legendName">${escapeXml(name)}</text>
-        <text x="${valueX}" y="${y}" class="legendValue" text-anchor="end">${vals[i]}</text>
-      `;
-    }).join("");
-
-    const exportTitle = (titleText && titleText.trim()) ? titleText.trim() : PAGE.headerTitle;
-    const safeTitle = escapeXml(exportTitle);
-
-    const imgPad = 10;
-    const imgRx = 16;
-    const imgIX = imgX + imgPad;
-    const imgIY = imgY + imgPad;
-    const imgIW = imgW - imgPad * 2;
-    const imgIH = imgH - imgPad * 2;
-
-    const imageNode = imageDataUrl
-      ? `
-        <g clip-path="url(#imgClip)">
-          <image x="${imgIX}" y="${imgIY}" width="${imgIW}" height="${imgIH}"
-                 href="${imageDataUrl}"
-                 preserveAspectRatio="xMidYMid meet" />
-          <rect x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" rx="${imgRx}" fill="none" />
-        </g>
-      `
-      : `<text x="${imgX + imgW/2}" y="${imgY + imgH/2}" class="imgHint" text-anchor="middle" dominant-baseline="middle">
-           ${escapeXml(PAGE.noImage)}
-         </text>`;
-
-    const rightTitle = PAGE.headerTitle;
-    const rightSub = PAGE.scaleText;
-    const avgLabel = PAGE.overallLabel;
-
-    return `
-<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-  <defs>
-    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="3.2" result="b"/>
-      <feMerge>
-        <feMergeNode in="b"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-    <filter id="dotGlow" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur stdDeviation="2.1" result="bb"/>
-      <feMerge>
-        <feMergeNode in="bb"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-
-    <radialGradient id="bgGlow1" cx="15%" cy="10%" r="70%">
-      <stop offset="0" stop-color="${bg1}"/>
-      <stop offset="1" stop-color="rgba(0,0,0,0)"/>
-    </radialGradient>
-    <radialGradient id="bgGlow2" cx="85%" cy="90%" r="70%">
-      <stop offset="0" stop-color="${bg2}"/>
-      <stop offset="1" stop-color="rgba(0,0,0,0)"/>
-    </radialGradient>
-    <radialGradient id="bgGlow3" cx="55%" cy="55%" r="80%">
-      <stop offset="0" stop-color="${bg3}"/>
-      <stop offset="1" stop-color="rgba(0,0,0,0)"/>
-    </radialGradient>
-
-    <linearGradient id="avgGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="hsla(${hue} 95% 60% / ${mode === "light" ? "0.16" : "0.22"})"/>
-      <stop offset="1" stop-color="hsla(${hue} 70% 45% / ${mode === "light" ? "0.20" : "0.32"})"/>
-    </linearGradient>
-
-    <clipPath id="imgClip">
-      <rect x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" rx="${imgRx}" />
-    </clipPath>
-  </defs>
-
-  <style>
-    .bgBase { fill:${exportBgBase}; }
-    .bg1 { fill:url(#bgGlow1); }
-    .bg2 { fill:url(#bgGlow2); }
-    .bg3 { fill:url(#bgGlow3); }
-
-    .card { fill: ${exportCardFill}; stroke: ${exportCardStroke}; }
-    .inner { fill: ${exportInnerFill}; stroke: ${exportInnerStroke}; }
-
-    .grid-line{ stroke: ${exportGrid2}; stroke-width:1; fill:none; }
-    .grid-main{ stroke: ${exportGridMain}; stroke-width:1.6; fill:none; }
-    .axis{ stroke: ${exportAxisStroke}; stroke-width:1; }
-
-    .lbl{
-      fill: ${exportLabelFill};
-      font-size: 12px;
-      letter-spacing: 0.2px;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    }
-
-    .skill-fill{
-      fill: ${theme.accentSoft};
-      stroke: ${theme.accent};
-      stroke-width: 2.6;
-      filter: url(#glow);
-    }
-
-    .dot{
-      fill: rgba(255,255,255,0.95);
-      stroke: ${theme.accent};
-      stroke-width: 1.2;
-      filter: url(#dotGlow);
-    }
-
-    .topTitle{
-      fill: ${exportTopTitleFill};
-      font-size: 26px;
-      font-weight: 800;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    }
-
-    .title{
-      fill: ${exportTitleFill};
-      font-size: 20px;
-      font-weight: 750;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    }
-
-    .subtitle{
-      fill: ${exportSubtitleFill};
-      font-size: 13px;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    }
-
-    .avgBox{
-      fill: url(#avgGrad);
-      stroke: ${mode === "light" ? `hsla(${hue} 55% 22% / 0.34)` : `hsla(${hue} 70% 75% / 0.35)`};
-    }
-
-    .avgLabel{
-      fill: ${exportSubtitleFill};
-      font-size: 13px;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    }
-
-    .avgValue{
-      fill: ${exportAvgValueFill};
-      font-size: 30px;
-      font-weight: 800;
-      font-variant-numeric: tabular-nums;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    }
-
-    .legendHead{
-      fill: ${exportTitleFill};
-      font-size: 15px;
-      font-weight: 750;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    }
-
-    .legendDot{
-      fill: rgba(255,255,255,0.95);
-      stroke: ${theme.accent};
-      stroke-width: 1.2;
-      filter: url(#dotGlow);
-    }
-
-    .legendName{
-      fill: ${exportLegendNameFill};
-      font-size: 14px;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    }
-
-    .legendValue{
-      fill: ${exportLegendValueFill};
-      font-size: 14px;
-      font-variant-numeric: tabular-nums;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    }
-
-    .imgHint{
-      fill: ${exportSubtitleFill};
-      font-size: 14px;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    }
-  </style>
-
-  <rect class="bgBase" x="0" y="0" width="${W}" height="${H}"/>
-  <rect class="bg1" x="0" y="0" width="${W}" height="${H}"/>
-  <rect class="bg2" x="0" y="0" width="${W}" height="${H}"/>
-  <rect class="bg3" x="0" y="0" width="${W}" height="${H}"/>
-
-  <rect class="card" x="${margin}" y="${margin}" width="${W - margin*2}" height="92" rx="22"/>
-  <text x="${W/2}" y="${margin + 58}" class="topTitle" text-anchor="middle">${safeTitle}</text>
-
-  <rect class="card" x="${imageCardX}" y="${rowY}" width="${imageCardW}" height="${cardH}" rx="22"/>
-  <rect class="inner" x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" rx="${imgRx}"/>
-  ${imageNode}
-
-  <rect class="card" x="${hexCardX}" y="${rowY}" width="${hexCardW}" height="${cardH}" rx="22"/>
-  <rect class="inner" x="${chartBoxX}" y="${chartBoxY}" width="${chartBoxSize}" height="${chartBoxSize}" rx="16"/>
-
-  <g transform="translate(${chartBoxX},${chartBoxY}) scale(${s})">
-    ${rings}
-    ${axes}
-    ${labels}
-    ${poly}
-    ${dots}
-    <circle cx="200" cy="200" r="2.9" fill="${mode === "light" ? "rgba(35,18,55,0.55)" : "rgba(230,210,255,0.75)"}"/>
-  </g>
-
-  <rect class="avgBox" x="${avgBoxX}" y="${avgBoxY}" width="${avgBoxW}" height="${avgBoxH}" rx="16"/>
-  <text x="${avgBoxX + 16}" y="${avgBoxY + 30}" class="avgLabel">${escapeXml(avgLabel)}</text>
-  <text x="${avgBoxX + 16}" y="${avgBoxY + 58}" class="avgValue">${avg.toFixed(1)}</text>
-
-  <rect class="card" x="${legendCardX}" y="${rowY}" width="${legendCardW}" height="${cardH}" rx="22"/>
-
-  <text x="${rpX}" y="${rightTitleY}" class="title">${escapeXml(rightTitle)}</text>
-  <text x="${rpX}" y="${rightSubY}" class="subtitle">${escapeXml(rightSub)}</text>
-
-  <text x="${rpX}" y="${legendTitleY}" class="legendHead">Legend</text>
-  ${legendRows}
-</svg>
-    `.trim();
+  // ── Gaming mode ──
+  if (mode === 'gaming') {
+    return (
+      <div style={{ minHeight:'100vh', display:'flex', flexDirection:'column', background:'var(--bg)' }}>
+        <GamingNavbar
+          page={page} setPage={setPage}
+          searchQuery={searchQuery} setSearchQuery={setSearchQuery}
+          wishlist={wishlist} cart={cart}
+          onBack={goToLanding}
+        />
+        <main style={{ flex:1 }}>
+          {page === 'home' && (
+            <GamingHomePage setPage={setPage} onOpen={openProduct}
+              onWishlist={toggleWishlist} wishlist={wishlist} onAddToCart={addToCart} />
+          )}
+          {page === 'games' && (
+            <GamingCatalogPage category="games" onOpen={openProduct}
+              onWishlist={toggleWishlist} wishlist={wishlist} onAddToCart={addToCart} />
+          )}
+          {page === 'deals' && (
+            <GamingCatalogPage category="deals" onOpen={openProduct}
+              onWishlist={toggleWishlist} wishlist={wishlist} onAddToCart={addToCart} />
+          )}
+          {page === 'new' && (
+            <GamingCatalogPage category="new" onOpen={openProduct}
+              onWishlist={toggleWishlist} wishlist={wishlist} onAddToCart={addToCart} />
+          )}
+          {page === 'detail' && detailProduct && (
+            <ProductDetailPage
+              product={detailProduct}
+              onClose={() => setPage('home')}
+              onWishlist={toggleWishlist}
+              isWishlisted={wishlist.includes(detailProduct.id)}
+              onAddToCart={addToCart}
+            />
+          )}
+          {page === 'wishlist' && (
+            <WishlistPage wishlist={wishlist} onOpen={openProduct}
+              onWishlist={toggleWishlist} onAddToCart={addToCart} tweaks={tweaks} />
+          )}
+          {page === 'cart' && (
+            <CartPage cart={cart} onRemove={removeFromCart}
+              onCheckout={() => showToast('Checkout coming soon!')} />
+          )}
+          {page === 'search' && (
+            <SearchPage query={searchQuery} onOpen={openProduct}
+              onWishlist={toggleWishlist} wishlist={wishlist}
+              onAddToCart={addToCart} tweaks={tweaks} />
+          )}
+        </main>
+        <GamingFooter />
+        {toast && (
+          <div style={{
+            position:'fixed', bottom:32, left:'50%', transform:'translateX(-50%)',
+            background:'#050709', color:'oklch(62% 0.25 195)',
+            border:'1px solid rgba(0,200,255,0.25)',
+            borderRadius:4, padding:'12px 24px', fontSize:14, fontWeight:600,
+            boxShadow:'0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(0,200,255,0.1)',
+            zIndex:300, animation:'slideDown 0.2s ease both', whiteSpace:'nowrap',
+            fontFamily:"'Rajdhani', sans-serif", letterSpacing:'0.03em',
+          }}>{toast}</div>
+        )}
+        <TweaksPanel>
+          <TweakSection label="Content" />
+          <TweakToggle label="Show Star Ratings" value={tweaks.showRatings}
+            onChange={v => setTweak('showRatings', v)} />
+        </TweaksPanel>
+      </div>
+    );
   }
 
-  function downloadTextFile(filename, content, mime){
-    const blob = new Blob([content], { type: mime });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }
+  // ── Software mode ──
+  return (
+    <div style={{ minHeight:'100vh', display:'flex', flexDirection:'column' }}>
+      <Navbar
+        page={page} setPage={p => { if(p==='landing') goToLanding(); else setPage(p); }}
+        searchQuery={searchQuery} setSearchQuery={setSearchQuery}
+        wishlist={wishlist} cart={cart}
+      />
+      {/* Switch mode banner */}
+      <div style={{ background:'var(--nav)', padding:'0 32px' }}>
+        <div style={{ maxWidth:1200, margin:'0 auto', display:'flex', alignItems:'center', justifyContent:'flex-end' }}>
+          <button onClick={goToLanding} style={{
+            fontSize:12, color:'rgba(255,255,255,0.35)', fontWeight:500, padding:'6px 0',
+            background:'none', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:4,
+          }}>← Back to store selection</button>
+        </div>
+      </div>
+      <main style={{ flex:1 }}>
+        {page === 'home' && (
+          <HomePage setPage={setPage} onOpen={openProduct}
+            onWishlist={toggleWishlist} wishlist={wishlist}
+            onAddToCart={addToCart} tweaks={tweaks} />
+        )}
+        {page === 'games' && (
+          <CatalogPage category="games" onOpen={openProduct}
+            onWishlist={toggleWishlist} wishlist={wishlist}
+            onAddToCart={addToCart} tweaks={tweaks} />
+        )}
+        {page === 'software' && (
+          <CatalogPage category="software" onOpen={openProduct}
+            onWishlist={toggleWishlist} wishlist={wishlist}
+            onAddToCart={addToCart} tweaks={tweaks} />
+        )}
+        {page === 'deals' && (
+          <CatalogPage category="deals" onOpen={openProduct}
+            onWishlist={toggleWishlist} wishlist={wishlist}
+            onAddToCart={addToCart} tweaks={tweaks} />
+        )}
+        {page === 'business' && (
+          <CatalogPage category="business" onOpen={openProduct}
+            onWishlist={toggleWishlist} wishlist={wishlist}
+            onAddToCart={addToCart} tweaks={tweaks} />
+        )}
+        {page === 'detail' && detailProduct && (
+          <ProductDetailPage
+            product={detailProduct}
+            onClose={() => setPage('home')}
+            onWishlist={toggleWishlist}
+            isWishlisted={wishlist.includes(detailProduct.id)}
+            onAddToCart={addToCart}
+          />
+        )}
+        {page === 'wishlist' && (
+          <WishlistPage wishlist={wishlist} onOpen={openProduct}
+            onWishlist={toggleWishlist} onAddToCart={addToCart} tweaks={tweaks} />
+        )}
+        {page === 'cart' && (
+          <CartPage cart={cart} onRemove={removeFromCart}
+            onCheckout={() => showToast('Checkout coming soon!')} />
+        )}
+        {page === 'search' && (
+          <SearchPage query={searchQuery} onOpen={openProduct}
+            onWishlist={toggleWishlist} wishlist={wishlist}
+            onAddToCart={addToCart} tweaks={tweaks} />
+        )}
+      </main>
+      <Footer />
+      {toast && (
+        <div style={{
+          position:'fixed', bottom:32, left:'50%', transform:'translateX(-50%)',
+          background:'#1a1814', color:'#fff', borderRadius:'var(--radius-sm)',
+          padding:'12px 24px', fontSize:14, fontWeight:500,
+          boxShadow:'0 8px 32px rgba(0,0,0,0.2)', zIndex:300,
+          animation:'slideDown 0.2s ease both', whiteSpace:'nowrap',
+        }}>{toast}</div>
+      )}
+      <TweaksPanel>
+        <TweakSection label="Visuals" />
+        <TweakRadio label="Card Style" value={tweaks.cardStyle}
+          options={['shadow','flat']}
+          onChange={v => setTweak('cardStyle', v)} />
+        <TweakRadio label="Hero" value={tweaks.heroLayout}
+          options={['split','dark']}
+          onChange={v => setTweak('heroLayout', v)} />
+        <TweakSection label="Content" />
+        <TweakToggle label="Show Star Ratings" value={tweaks.showRatings}
+          onChange={v => setTweak('showRatings', v)} />
+        <TweakSection label="Currency" />
+        <TweakRadio label="Currency" value={tweaks.currency}
+          options={['USD','EUR','GBP']}
+          onChange={v => setTweak('currency', v)} />
+      </TweaksPanel>
+    </div>
+  );
+};
 
-  function svgToPng(svgString, outWidth = 2200, outHeight = 1320){
-    return new Promise((resolve, reject) => {
-      const svgBlob = new Blob([svgString], {type:"image/svg+xml;charset=utf-8"});
-      const url = URL.createObjectURL(svgBlob);
-
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = outWidth;
-        canvas.height = outHeight;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, outWidth, outHeight);
-        URL.revokeObjectURL(url);
-        canvas.toBlob((blob)=>{
-          if(!blob) return reject(new Error("PNG export failed"));
-          resolve(blob);
-        }, "image/png");
-      };
-      img.onerror = () => {
-        URL.revokeObjectURL(url);
-        reject(new Error("Could not load SVG for PNG conversion"));
-      };
-      img.src = url;
-    });
-  }
-
-  async function exportSVG(){
-    const vals = sliders.map(s => Number(s.value));
-    const avg = average(vals);
-    const hue = Number(hueSlider.value);
-    const titleText = titleInput.value;
-
-    const exportSvg = buildExportSvgString(vals, avg, hue, titleText, uploadedImageDataUrl);
-
-    const base = getExportBaseName();
-    downloadTextFile(`${base}.svg`, exportSvg, "image/svg+xml;charset=utf-8");
-  }
-
-  async function exportPNG(){
-    const vals = sliders.map(s => Number(s.value));
-    const avg = average(vals);
-    const hue = Number(hueSlider.value);
-    const titleText = titleInput.value;
-
-    const exportSvg = buildExportSvgString(vals, avg, hue, titleText, uploadedImageDataUrl);
-    const pngBlob = await svgToPng(exportSvg);
-
-    const base = getExportBaseName();
-    const url = URL.createObjectURL(pngBlob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${base}.png`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }
-
-  document.getElementById("exportSvgBtn").addEventListener("click", () => {
-    exportSVG().catch(err => alert(PAGE.exportSvgFailed + err.message));
-  });
-
-  document.getElementById("exportPngBtn").addEventListener("click", () => {
-    exportPNG().catch(err => alert(PAGE.exportPngFailed + err.message));
-  });
-
-  // ===== Init =====
-  applyPageText();
-  applyMode(getInitialMode());
-  applyThemeFromHue();
-  buildAxesAndLabels();
-  render();
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 </script>
 </body>
 </html>
