@@ -102,6 +102,26 @@
   body.gaming .game-card-glow:hover {
     box-shadow: 0 0 0 1px rgba(0,200,255,0.3), 0 8px 40px rgba(0,200,255,0.12), 0 2px 8px rgba(0,0,0,0.6) !important;
   }
+
+  /* ─── Responsive shared classes ─── */
+  .sv-page { max-width:1200px; margin:0 auto; padding:40px 32px; }
+  .sv-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); gap:16px; }
+  .sv-narrow { max-width:760px; margin:0 auto; }
+
+  @media (max-width: 860px) {
+    .sv-page { padding:28px 18px; }
+  }
+  @media (max-width: 640px) {
+    .sv-page { padding:20px 14px; }
+    .sv-grid { grid-template-columns:repeat(2, 1fr); gap:10px; }
+    .split-landing { flex-direction:column; height:auto; min-height:100vh; }
+    .split-side { min-height:46vh; padding:32px 0; }
+    .split-side:hover { flex:1; }
+    .split-divider { width:100%; height:2px; }
+  }
+  @media (max-width: 400px) {
+    .sv-grid { grid-template-columns:1fr; }
+  }
 </style>
 </head>
 <body>
@@ -114,12 +134,42 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "cardStyle": "shadow",
   "heroLayout": "split",
   "showRatings": true,
-  "currency": "EUR"
+  "currency": "CHF"
 }/*EDITMODE-END*/;
 
 // ─── Utils ───────────────────────────────────────────────────────────────────
-const fmt = (n, currency = 'USD') =>
-  new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: 2 }).format(n);
+// Approximate conversion from base prices (stored in CHF) so the currency control actually works.
+const FX_RATES = { CHF: 1, EUR: 1.04, USD: 1.11 };
+const fmt = (n, currency) => {
+  const cur = currency || window.__svCurrency || 'CHF';
+  const rate = FX_RATES[cur] || 1;
+  return new Intl.NumberFormat('de-CH', { style: 'currency', currency: cur, maximumFractionDigits: 2 }).format(n * rate);
+};
+
+// Single source of truth for what a cart line actually costs: the edition the user chose,
+// falling back to the cheapest edition when none was explicitly selected.
+const lineItemPrice = (item) =>
+  item.chosenEdition ? item.chosenEdition.price : Math.min(...item.editions.map(e => e.price));
+const lineItemEditionName = (item) =>
+  item.chosenEdition ? item.chosenEdition.name : (item.editions.length > 1 ? item.editions.reduce((a, b) => a.price <= b.price ? a : b).name : item.editions[0].name);
+
+const getBadge = (p) => {
+  if (p.isNew) return 'New';
+  if (p.isDeal) return 'Deal';
+  if (p.reviews > 25000) return 'Bestseller';
+  return null;
+};
+
+const useIsMobile = (bp = 760) => {
+  const [m, setM] = React.useState(typeof window !== 'undefined' && window.innerWidth < bp);
+  React.useEffect(() => {
+    const on = () => setM(window.innerWidth < bp);
+    on();
+    window.addEventListener('resize', on);
+    return () => window.removeEventListener('resize', on);
+  }, [bp]);
+  return m;
+};
 
 const StarRating = ({ rating }) => {
   const full = Math.floor(rating);
@@ -170,99 +220,6 @@ const ProductCover = ({ product, size = 'md' }) => {
       display:'flex', alignItems:'center', justifyContent:'center',
       position:'relative', overflow:'hidden',
       borderBottom: size !== 'sm' ? '1px solid var(--border)' : 'none',
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }}>
       {product.coverSvg ? (
         <div
@@ -292,8 +249,12 @@ const ProductCover = ({ product, size = 'md' }) => {
 };
 
 // ─── Navbar ──────────────────────────────────────────────────────────────────
-const Navbar = ({ page, setPage, searchQuery, setSearchQuery, wishlist, cart }) => {
+const Navbar = ({ page, setPage, searchQuery, setSearchQuery, wishlist, cart, onAction, onSignOut, user }) => {
   const [searchFocused, setSearchFocused] = React.useState(false);
+  const [accountOpen, setAccountOpen] = React.useState(false);
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  const isMobile = useIsMobile();
+  const go = (id) => { setPage(id); setMenuOpen(false); };
   const navItems = [
     { id:'home', label:'Home' },
     { id:'software', label:'Software' },
@@ -304,13 +265,25 @@ const Navbar = ({ page, setPage, searchQuery, setSearchQuery, wishlist, cart }) 
     <nav style={{
       background:'var(--nav)', color:'#fff',
       display:'flex', alignItems:'center', gap:0,
-      padding:'0 32px', height:56, position:'sticky', top:0, zIndex:100,
+      padding: isMobile ? '0 16px' : '0 32px', height:56, position:'sticky', top:0, zIndex:100,
       borderBottom:'1px solid var(--nav-border)',
     }}>
+      {/* Hamburger (mobile) */}
+      {isMobile && (
+        <button onClick={() => setMenuOpen(o => !o)} style={{
+          padding:8, marginRight:4, color:'#fff', display:'flex',
+        }}>
+          {menuOpen ? (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+          ) : (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+          )}
+        </button>
+      )}
       {/* Logo */}
-      <div onClick={() => setPage('home')} style={{
+      <div onClick={() => go('home')} style={{
         fontFamily:'var(--font-head)', fontWeight:800, fontSize:18,
-        letterSpacing:'-0.02em', cursor:'pointer', marginRight:40, flexShrink:0,
+        letterSpacing:'-0.02em', cursor:'pointer', marginRight: isMobile ? 'auto' : 40, flexShrink:0,
         display:'flex', alignItems:'center', gap:8,
       }}>
         <span style={{
@@ -318,10 +291,11 @@ const Navbar = ({ page, setPage, searchQuery, setSearchQuery, wishlist, cart }) 
           display:'flex', alignItems:'center', justifyContent:'center',
           fontSize:13, fontWeight:800,
         }}>SV</span>
-        <span>SoftwareVault</span>
+        {!isMobile && <span>SoftwareVault</span>}
       </div>
 
-      {/* Nav items */}
+      {/* Nav items (desktop) */}
+      {!isMobile && (
       <div style={{ display:'flex', gap:4, flex:1 }}>
         {navItems.map(item => (
           <button key={item.id} onClick={() => setPage(item.id)} style={{
@@ -333,8 +307,10 @@ const Navbar = ({ page, setPage, searchQuery, setSearchQuery, wishlist, cart }) 
           }}>{item.label}</button>
         ))}
       </div>
+      )}
 
-      {/* Search */}
+      {/* Search (desktop) */}
+      {!isMobile && (
       <div style={{ position:'relative', marginRight:12 }}>
         <svg style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', opacity:0.4 }}
           width="15" height="15" viewBox="0 0 20 20" fill="none">
@@ -343,7 +319,7 @@ const Navbar = ({ page, setPage, searchQuery, setSearchQuery, wishlist, cart }) 
         </svg>
         <input
           value={searchQuery}
-          onChange={e => { setSearchQuery(e.target.value); if(e.target.value) setPage('search'); }}
+          onChange={e => { setSearchQuery(e.target.value); setPage(e.target.value ? 'search' : 'home'); }}
           onFocus={() => setSearchFocused(true)}
           onBlur={() => setSearchFocused(false)}
           placeholder="Search products…"
@@ -355,6 +331,7 @@ const Navbar = ({ page, setPage, searchQuery, setSearchQuery, wishlist, cart }) 
           }}
         />
       </div>
+      )}
 
       {/* Wishlist */}
       <button onClick={() => setPage('wishlist')} style={{
@@ -395,13 +372,70 @@ const Navbar = ({ page, setPage, searchQuery, setSearchQuery, wishlist, cart }) 
         )}
       </button>
 
-      {/* Avatar */}
-      <div style={{
-        width:30, height:30, borderRadius:'50%', marginLeft:8,
-        background:'linear-gradient(135deg, var(--accent), var(--amber))',
-        display:'flex', alignItems:'center', justifyContent:'center',
-        fontSize:12, fontWeight:700, color:'#fff', cursor:'pointer',
-      }}>JD</div>
+      {/* Account */}
+      <div style={{ position:'relative', marginLeft:8 }}>
+        <button onClick={() => setAccountOpen(o => !o)} style={{
+          width:30, height:30, borderRadius:'50%',
+          background:'linear-gradient(135deg, var(--accent), var(--amber))',
+          display:'flex', alignItems:'center', justifyContent:'center',
+          fontSize:12, fontWeight:700, color:'#fff', cursor:'pointer',
+          border: accountOpen ? '2px solid rgba(255,255,255,0.5)' : '2px solid transparent',
+        }}>{user.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</button>
+        {accountOpen && (
+          <>
+            <div onClick={() => setAccountOpen(false)} style={{ position:'fixed', inset:0, zIndex:90 }} />
+            <div style={{
+              position:'absolute', top:42, right:0, zIndex:95, width:220,
+              background:'var(--surface)', border:'1px solid var(--border)',
+              borderRadius:'var(--radius)', boxShadow:'var(--shadow-hover)',
+              padding:8, animation:'slideDown 0.15s ease both',
+            }}>
+              <div style={{ padding:'10px 12px', borderBottom:'1px solid var(--border)', marginBottom:6 }}>
+                <div style={{ fontWeight:600, fontSize:14, color:'var(--text)' }}>{user.name}</div>
+                <div style={{ fontSize:12, color:'var(--text3)' }}>{user.email}</div>
+              </div>
+              {[
+                { label:'My Wishlist', action:() => setPage('wishlist') },
+                { label:'My Cart', action:() => setPage('cart') },
+                { label:'Order History', action:() => setPage('orders') },
+                { label:'Account Settings', action:() => setPage('settings') },
+              ].map(item => (
+                <button key={item.label} onClick={() => { item.action(); setAccountOpen(false); }} style={{
+                  display:'block', width:'100%', textAlign:'left', padding:'8px 12px',
+                  fontSize:13, color:'var(--text2)', borderRadius:'var(--radius-sm)',
+                  background:'transparent', cursor:'pointer', transition:'var(--transition)',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background='var(--bg)'; e.currentTarget.style.color='var(--text)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='var(--text2)'; }}
+                >{item.label}</button>
+              ))}
+              <div style={{ borderTop:'1px solid var(--border)', marginTop:6, paddingTop:6 }}>
+                <button onClick={() => { onSignOut(); setAccountOpen(false); }} style={{
+                  display:'block', width:'100%', textAlign:'left', padding:'8px 12px',
+                  fontSize:13, color:'var(--red)', borderRadius:'var(--radius-sm)',
+                  background:'transparent', cursor:'pointer', fontWeight:500,
+                }}>Sign Out</button>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Switch store */}
+      <button onClick={() => setPage('landing')} style={{
+        marginLeft:12, padding:'7px 14px', borderRadius:'var(--radius-sm)',
+        border:'1px solid rgba(255,255,255,0.15)', fontSize:12, fontWeight:600,
+        color:'rgba(255,255,255,0.55)', transition:'var(--transition)',
+        display:'flex', alignItems:'center', gap:5,
+      }}
+      onMouseEnter={e => { e.currentTarget.style.background='rgba(255,255,255,0.08)'; e.currentTarget.style.color='#fff'; }}
+      onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='rgba(255,255,255,0.55)'; }}
+      >
+        <svg width="13" height="13" viewBox="0 0 20 20" fill="none">
+          <path d="M7 4L3 8l4 4M3 8h10M13 16l4-4-4-4M17 12H7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        Switch
+      </button>
     </nav>
   );
 };
@@ -435,7 +469,7 @@ const ProductCard = ({ product, onOpen, onWishlist, isWishlisted, onAddToCart, t
         <ProductCover product={product} />
         {/* Badges */}
         <div style={{ position:'absolute', top:10, left:10, display:'flex', gap:4 }}>
-          {product.badge && <Badge text={product.badge} />}
+          {getBadge(product) && <Badge text={getBadge(product)} />}
           {discount && <Badge text={`-${discount}%`} type="deal" />}
         </div>
         {/* Wishlist btn */}
@@ -540,9 +574,7 @@ const SectionRow = ({ title, badge, products, onViewAll, onOpen, onWishlist, wis
         </svg>
       </button>
     </div>
-    <div style={{
-      display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(210px, 1fr))', gap:16,
-    }}>
+    <div className="sv-grid">
       {products.slice(0,4).map(p => (
         <ProductCard key={p.id} product={p}
           onOpen={onOpen} onWishlist={onWishlist}
@@ -568,34 +600,7 @@ const Hero = ({ onShop, tweaks }) => {
     }}>
       {/* Left content */}
       <div style={{ flex:1, padding:'52px 48px', display:'flex', flexDirection:'column', justifyContent:'center', gap:20 }}>
-        <Badge text="Featured" />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        <Badge text="Popular" />
         <div>
           <h1 style={{
             fontFamily:'var(--font-head)', fontWeight:800, fontSize:38, lineHeight:1.1,
@@ -636,7 +641,6 @@ const Hero = ({ onShop, tweaks }) => {
             </div>
           ))}
         </div>
-
       </div>
       {/* Right visual */}
       <div style={{
@@ -644,24 +648,17 @@ const Hero = ({ onShop, tweaks }) => {
         position:'relative', overflow:'hidden',
       }}>
         <div style={{
-          flex:1, margin:24, borderRadius:12,
-          background:`linear-gradient(135deg, ${featured.color}44 0%, ${featured.color}88 100%)`,
-          display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
-          position:'relative', overflow:'hidden',
+          flex:1, margin:24, borderRadius:12, overflow:'hidden',
+          background: featured.coverBg || `linear-gradient(135deg, ${featured.color}44 0%, ${featured.color}88 100%)`,
+          display:'flex', alignItems:'center', justifyContent:'center',
+          position:'relative',
         }}>
-          <div style={{ position:'absolute', width:'120%', aspectRatio:'1', borderRadius:'50%',
-            background: featured.color, opacity:0.15, top:'-30%', right:'-30%' }} />
-          <div style={{ fontFamily:'var(--font-head)', fontSize:11, color:featured.color,
-            fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase', opacity:0.8, zIndex:1 }}>
-            CD Projekt Red
-          </div>
-          <div style={{ fontFamily:'var(--font-head)', fontWeight:800, fontSize:28,
-            color:'#fff', textAlign:'center', lineHeight:1.2, zIndex:1, padding:'0 20px', marginTop:8 }}>
-            The Witcher 4
-          </div>
-          <div style={{ marginTop:12, fontSize:11, color:'rgba(255,255,255,0.5)', zIndex:1, fontStyle:'italic' }}>
-            Hero Image / Key Visual
-          </div>
+          {featured.coverSvg
+            ? <div style={{ position:'absolute', inset:0 }}
+                dangerouslySetInnerHTML={{ __html: featured.coverSvg.replace('<svg ', '<svg width="100%" height="100%" style="position:absolute;inset:0;" ') }}
+              />
+            : <div style={{ fontFamily:'var(--font-head)', fontWeight:800, fontSize:28, color:'#fff', textAlign:'center', zIndex:1, padding:'0 20px' }}>{featured.name}</div>
+          }
         </div>
       </div>
     </div>
@@ -713,31 +710,10 @@ const NewReleasesRow = ({ products, onOpen, onWishlist, wishlist, onAddToCart })
                 background:'var(--accent-light)', border:'none', borderRadius:99,
                 padding:'3px 10px', cursor:'pointer',
               }}>+ Add</button>
-
-
-
-
-
-
-
             </div>
           </div>
         );
       })}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     </div>
   </section>
 );
@@ -745,12 +721,12 @@ const NewReleasesRow = ({ products, onOpen, onWishlist, wishlist, onAddToCart })
 // ─── Home Page ─────────────────────────────────────────────────────────────────
 const HomePage = ({ setPage, onOpen, onWishlist, wishlist, onAddToCart, tweaks }) => {
   const office = PRODUCTS.filter(p => p.category === 'software' && p.subcategory === 'Office');
-  const creative = PRODUCTS.filter(p => (p.category === 'software' || p.category === 'new') && p.subcategory === 'Creative');
-  const notes = PRODUCTS.filter(p => p.subcategory === 'Notes & Productivity');
-  const deals = PRODUCTS.filter(p => p.category === 'deals');
-  const newReleases = PRODUCTS.filter(p => p.category === 'new');
+  const creative = PRODUCTS.filter(p => p.category === 'software' && p.subcategory === 'Creative');
+  const notes = PRODUCTS.filter(p => p.category === 'software' && p.subcategory === 'Notes & Productivity');
+  const deals = PRODUCTS.filter(p => p.category === 'software' && p.isDeal);
+  const newReleases = PRODUCTS.filter(p => p.category === 'software' && p.isNew);
   return (
-    <div style={{ maxWidth:1200, margin:'0 auto', padding:'40px 32px' }} className="animate-in">
+    <div className="sv-page animate-in">
       <Hero onShop={onOpen} tweaks={tweaks} />
       <SectionRow title="Office & Productivity" products={[...office, ...notes]}
         onViewAll={() => setPage('software')} onOpen={onOpen}
@@ -775,8 +751,9 @@ const CatalogPage = ({ category, onOpen, onWishlist, wishlist, onAddToCart, twea
   const [showCompare, setShowCompare] = React.useState(false);
 
   const allProducts = PRODUCTS.filter(p => {
-    if (category === 'business') return p.category === 'software' || p.category === 'new';
-    return p.category === category;
+    if (category === 'deals') return p.category === 'software' && p.isDeal;
+    if (category === 'new') return p.category === 'software' && p.isNew;
+    return p.category === 'software';
   });
   const subcats = ['all', ...new Set(allProducts.map(p => p.subcategory))];
   const filtered = allProducts.filter(p => filterSub === 'all' || p.subcategory === filterSub);
@@ -791,10 +768,10 @@ const CatalogPage = ({ category, onOpen, onWishlist, wishlist, onAddToCart, twea
     setCompareList(prev => prev.includes(id) ? prev.filter(x=>x!==id) : prev.length < 3 ? [...prev, id] : prev);
   };
 
-  const titles = { games:'Games', software:'Software', deals:'Deals & Offers', business:'Business Tools' };
+  const titles = { software:'All Software', deals:'Deals & Offers', new:'New Releases' };
 
   return (
-    <div style={{ maxWidth:1200, margin:'0 auto', padding:'40px 32px' }} className="animate-in">
+    <div className="sv-page animate-in">
       {/* Header */}
       <div style={{ marginBottom:32 }}>
         <h1 style={{ fontFamily:'var(--font-head)', fontWeight:800, fontSize:30, letterSpacing:'-0.02em', marginBottom:4 }}>
@@ -846,10 +823,7 @@ const CatalogPage = ({ category, onOpen, onWishlist, wishlist, onAddToCart, twea
       </div>
 
       {/* Grid */}
-      <div style={{
-        display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(220px, 1fr))', gap:20,
-        marginBottom:40,
-      }}>
+      <div className="sv-grid" style={{ marginBottom:40 }}>
         {sorted.map(p => (
           <div key={p.id} style={{ position:'relative' }}>
             <ProductCard product={p}
@@ -1039,20 +1013,6 @@ const ProductDetailPage = ({ product, onClose, onWishlist, isWishlisted, onAddTo
   const edition = product.editions[selectedEdition];
   const savings = edition.originalPrice ? edition.originalPrice - edition.price : null;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   return (
     <div style={{ maxWidth:1100, margin:'0 auto', padding:'40px 32px' }} className="animate-in">
       {/* Back */}
@@ -1065,15 +1025,6 @@ const ProductDetailPage = ({ product, onClose, onWishlist, isWishlisted, onAddTo
         </svg>
         Back
       </button>
-
-
-
-
-
-
-
-
-
 
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:48, alignItems:'start' }}>
         {/* Left: Cover + Meta */}
@@ -1119,7 +1070,6 @@ const ProductDetailPage = ({ product, onClose, onWishlist, isWishlisted, onAddTo
               })}
             </div>
           </div>
-
         </div>
 
         {/* Right: Details + Purchase */}
@@ -1278,19 +1228,23 @@ const ProductDetailPage = ({ product, onClose, onWishlist, isWishlisted, onAddTo
 };
 
 // ─── Wishlist Page ────────────────────────────────────────────────────────────
-const WishlistPage = ({ wishlist, onOpen, onWishlist, onAddToCart, tweaks }) => {
+const WishlistPage = ({ wishlist, onOpen, onWishlist, onAddToCart, onBrowse, tweaks }) => {
   const items = PRODUCTS.filter(p => wishlist.includes(p.id));
   if (items.length === 0) return (
     <div style={{ maxWidth:700, margin:'80px auto', padding:'0 32px', textAlign:'center' }} className="animate-in">
       <div style={{ fontSize:48, marginBottom:16 }}>🤍</div>
       <h2 style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:22, marginBottom:8 }}>Your wishlist is empty</h2>
-      <p style={{ color:'var(--text3)' }}>Save products you like — look for the heart icon on any product card.</p>
+      <p style={{ color:'var(--text3)', marginBottom:24 }}>Save products you like — look for the heart icon on any product card.</p>
+      <button onClick={onBrowse} style={{
+        background:'var(--accent)', color:'#fff', borderRadius:'var(--radius-sm)',
+        padding:'12px 28px', fontSize:14, fontWeight:700, fontFamily:'var(--font-head)', cursor:'pointer',
+      }}>Browse Products</button>
     </div>
   );
   return (
-    <div style={{ maxWidth:1200, margin:'0 auto', padding:'40px 32px' }} className="animate-in">
+    <div className="sv-page animate-in">
       <h1 style={{ fontFamily:'var(--font-head)', fontWeight:800, fontSize:28, marginBottom:28 }}>Wishlist ({items.length})</h1>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(220px, 1fr))', gap:20 }}>
+      <div className="sv-grid">
         {items.map(p => (
           <ProductCard key={p.id} product={p}
             onOpen={onOpen} onWishlist={onWishlist}
@@ -1303,13 +1257,17 @@ const WishlistPage = ({ wishlist, onOpen, onWishlist, onAddToCart, tweaks }) => 
 };
 
 // ─── Cart Page ────────────────────────────────────────────────────────────────
-const CartPage = ({ cart, onRemove, onCheckout }) => {
-  const subtotal = cart.reduce((sum, item) => sum + Math.min(...item.editions.map(e=>e.price)), 0);
+const CartPage = ({ cart, onRemove, onCheckout, onBrowse }) => {
+  const subtotal = cart.reduce((sum, item) => sum + lineItemPrice(item), 0);
   if (cart.length === 0) return (
     <div style={{ maxWidth:700, margin:'80px auto', padding:'0 32px', textAlign:'center' }} className="animate-in">
       <div style={{ fontSize:48, marginBottom:16 }}>🛒</div>
       <h2 style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:22, marginBottom:8 }}>Your cart is empty</h2>
-      <p style={{ color:'var(--text3)' }}>Add products from the store to get started.</p>
+      <p style={{ color:'var(--text3)', marginBottom:24 }}>Add products from the store to get started.</p>
+      <button onClick={onBrowse} style={{
+        background:'var(--accent)', color:'#fff', borderRadius:'var(--radius-sm)',
+        padding:'12px 28px', fontSize:14, fontWeight:700, fontFamily:'var(--font-head)', cursor:'pointer',
+      }}>Browse Products</button>
     </div>
   );
   return (
@@ -1321,7 +1279,7 @@ const CartPage = ({ cart, onRemove, onCheckout }) => {
         {/* Items */}
         <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
           {cart.map((item, i) => {
-            const price = Math.min(...item.editions.map(e=>e.price));
+            const price = lineItemPrice(item);
             return (
               <div key={`${item.id}-${i}`} style={{
                 display:'flex', gap:16, padding:'16px', background:'var(--surface)',
@@ -1337,7 +1295,7 @@ const CartPage = ({ cart, onRemove, onCheckout }) => {
                 </div>
                 <div style={{ flex:1 }}>
                   <div style={{ fontWeight:600, fontSize:15, color:'var(--text)' }}>{item.name}</div>
-                  <div style={{ fontSize:12, color:'var(--text3)', marginTop:2 }}>{item.publisher}</div>
+                  <div style={{ fontSize:12, color:'var(--text3)', marginTop:2 }}>{item.publisher} · {lineItemEditionName(item)}</div>
                 </div>
                 <div style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:17 }}>{fmt(price)}</div>
                 <button onClick={() => onRemove(i)} style={{
@@ -1384,21 +1342,422 @@ const CartPage = ({ cart, onRemove, onCheckout }) => {
             ))}
           </div>
         </div>
+      </div>
+    </div>
+  );
+};
 
+// ─── Checkout Page ────────────────────────────────────────────────────────────
+const CheckoutPage = ({ cart, onBack, onPlaceOrder }) => {
+  const subtotal = cart.reduce((sum, item) => sum + lineItemPrice(item), 0);
+  const [form, setForm] = React.useState({ email:'', name:'', card:'', exp:'', cvc:'', method:'card' });
+  const [touched, setTouched] = React.useState(false);
 
+  const valid = form.email.includes('@') && form.name.length > 1 &&
+    (form.method !== 'card' || (form.card.replace(/\s/g,'').length >= 12 && form.exp.length >= 4 && form.cvc.length >= 3));
 
+  const field = (label, key, placeholder, opts={}) => (
+    <div style={{ flex: opts.flex || 1 }}>
+      <label style={{ fontSize:12, fontWeight:600, color:'var(--text2)', display:'block', marginBottom:5 }}>{label}</label>
+      <input
+        value={form[key]}
+        onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+        placeholder={placeholder}
+        style={{
+          width:'100%', padding:'10px 12px', fontSize:14,
+          border:'1px solid', borderColor: touched && opts.required && !form[key] ? 'var(--red)' : 'var(--border)',
+          borderRadius:'var(--radius-sm)', outline:'none', background:'var(--surface)', color:'var(--text)',
+        }}
+      />
+    </div>
+  );
 
+  if (cart.length === 0) return (
+    <div style={{ maxWidth:700, margin:'80px auto', padding:'0 32px', textAlign:'center' }} className="animate-in">
+      <div style={{ fontSize:48, marginBottom:16 }}>🛒</div>
+      <h2 style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:22, marginBottom:8 }}>Your cart is empty</h2>
+      <p style={{ color:'var(--text3)' }}>Add products before checking out.</p>
+    </div>
+  );
 
+  return (
+    <div style={{ maxWidth:900, margin:'0 auto', padding:'40px 32px' }} className="animate-in">
+      <button onClick={onBack} style={{
+        display:'flex', alignItems:'center', gap:6, fontSize:13, color:'var(--text3)',
+        fontWeight:500, marginBottom:24, padding:'4px 0', cursor:'pointer', background:'none',
+      }}>
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+          <path d="M13 5l-5 5 5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+        </svg>
+        Back to Cart
+      </button>
+      <h1 style={{ fontFamily:'var(--font-head)', fontWeight:800, fontSize:28, marginBottom:28 }}>Checkout</h1>
 
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 320px', gap:28, alignItems:'start' }}>
+        {/* Form */}
+        <div style={{ display:'flex', flexDirection:'column', gap:24 }}>
+          {/* Contact */}
+          <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'var(--radius)', padding:'20px 22px' }}>
+            <h3 style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:15, marginBottom:14 }}>Contact</h3>
+            <div style={{ display:'flex', gap:12 }}>
+              {field('Full Name', 'name', 'Jane Doe', { required:true })}
+              {field('Email Address', 'email', 'jane@email.com', { required:true })}
+            </div>
+            <p style={{ fontSize:12, color:'var(--text3)', marginTop:10 }}>
+              ⚡ Your license keys will be sent to this email instantly after purchase.
+            </p>
+          </div>
 
+          {/* Payment method */}
+          <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'var(--radius)', padding:'20px 22px' }}>
+            <h3 style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:15, marginBottom:14 }}>Payment Method</h3>
+            <div style={{ display:'flex', gap:8, marginBottom:16 }}>
+              {[{id:'card',label:'Credit Card'},{id:'twint',label:'TWINT'},{id:'paypal',label:'PayPal'}].map(m => (
+                <button key={m.id} onClick={() => setForm(f => ({...f, method:m.id}))} style={{
+                  flex:1, padding:'10px', fontSize:13, fontWeight:600, borderRadius:'var(--radius-sm)',
+                  border:'1.5px solid', borderColor: form.method===m.id ? 'var(--accent)' : 'var(--border)',
+                  background: form.method===m.id ? 'var(--accent-light)' : 'var(--surface)',
+                  color: form.method===m.id ? 'var(--accent)' : 'var(--text2)', cursor:'pointer',
+                  transition:'var(--transition)',
+                }}>{m.label}</button>
+              ))}
+            </div>
+            {form.method === 'card' ? (
+              <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+                {field('Card Number', 'card', '4242 4242 4242 4242', { required:true })}
+                <div style={{ display:'flex', gap:12 }}>
+                  {field('Expiry', 'exp', 'MM/YY', { required:true })}
+                  {field('CVC', 'cvc', '123', { required:true })}
+                </div>
+              </div>
+            ) : (
+              <p style={{ fontSize:13, color:'var(--text3)', padding:'12px 0' }}>
+                You will be redirected to {form.method === 'paypal' ? 'PayPal' : 'TWINT'} to complete your payment securely.
+              </p>
+            )}
+          </div>
+        </div>
 
+        {/* Summary */}
+        <div style={{
+          background:'var(--surface)', border:'1px solid var(--border)',
+          borderRadius:'var(--radius-lg)', padding:'22px', position:'sticky', top:76,
+        }}>
+          <h3 style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:16, marginBottom:16 }}>Order Summary</h3>
+          <div style={{ display:'flex', flexDirection:'column', gap:10, marginBottom:16, maxHeight:200, overflowY:'auto' }}>
+            {cart.map((item, i) => (
+              <div key={i} style={{ display:'flex', justifyContent:'space-between', fontSize:13, gap:10 }}>
+                <span style={{ color:'var(--text2)' }}>{item.name}</span>
+                <span style={{ fontWeight:600, whiteSpace:'nowrap' }}>{fmt(lineItemPrice(item))}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ display:'flex', justifyContent:'space-between', fontSize:14, color:'var(--green)', marginBottom:8 }}>
+            <span>Digital Delivery</span><span>Free</span>
+          </div>
+          <div style={{ borderTop:'1px solid var(--border)', paddingTop:14, marginBottom:18 }}>
+            <div style={{ display:'flex', justifyContent:'space-between', fontFamily:'var(--font-head)', fontWeight:800, fontSize:20 }}>
+              <span>Total</span><span>{fmt(subtotal)}</span>
+            </div>
+          </div>
+          <button
+            onClick={() => { setTouched(true); if (valid) onPlaceOrder(); }}
+            style={{
+              width:'100%', background: valid ? 'var(--accent)' : 'var(--border)',
+              color: valid ? '#fff' : 'var(--text3)',
+              borderRadius:'var(--radius-sm)', padding:'14px',
+              fontSize:16, fontWeight:700, fontFamily:'var(--font-head)',
+              cursor: valid ? 'pointer' : 'not-allowed', marginBottom:12,
+              boxShadow: valid ? '0 4px 16px rgba(99,102,241,0.3)' : 'none',
+              transition:'var(--transition)',
+            }}>
+            Place Order — {fmt(subtotal)}
+          </button>
+          {touched && !valid && (
+            <p style={{ fontSize:12, color:'var(--red)', textAlign:'center', marginBottom:8 }}>
+              Please fill in all required fields.
+            </p>
+          )}
+          <div style={{ fontSize:12, color:'var(--text3)', textAlign:'center' }}>🔒 Secured by 256-bit SSL encryption</div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
+// ─── Order Confirmed Page ─────────────────────────────────────────────────────
+const LicenseKey = ({ value }) => {
+  const [copied, setCopied] = React.useState(false);
+  const copy = () => {
+    const done = () => { setCopied(true); setTimeout(() => setCopied(false), 1600); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(value).then(done).catch(done);
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = value; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta); done();
+    }
+  };
+  return (
+    <div style={{ display:'flex', alignItems:'center', gap:8, marginTop:2 }}>
+      <code style={{ fontSize:12, color:'var(--green)', fontFamily:'monospace', letterSpacing:'0.05em' }}>{value}</code>
+      <button onClick={copy} aria-label="Copy license key" style={{
+        display:'inline-flex', alignItems:'center', gap:4, fontSize:11, fontWeight:600,
+        color: copied ? 'var(--green)' : 'var(--accent)',
+        background: copied ? 'var(--green-light)' : 'var(--accent-light)',
+        border:'none', borderRadius:99, padding:'3px 9px', cursor:'pointer', transition:'var(--transition)',
+      }}>
+        {copied ? (
+          <><svg width="11" height="11" viewBox="0 0 20 20" fill="none"><path d="M5 10l3 3 7-7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>Copied</>
+        ) : (
+          <><svg width="11" height="11" viewBox="0 0 20 20" fill="none"><rect x="6" y="6" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.6"/><path d="M4 13V4a1 1 0 011-1h8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>Copy</>
+        )}
+      </button>
+    </div>
+  );
+};
 
+const OrderConfirmedPage = ({ orderItems, orderNumber, orderKeys, onContinue }) => {
+  const total = orderItems.reduce((sum, item) => sum + lineItemPrice(item), 0);
+  return (
+    <div style={{ maxWidth:600, margin:'60px auto', padding:'0 32px', textAlign:'center' }} className="animate-in">
+      <div style={{
+        width:72, height:72, borderRadius:'50%', background:'var(--green-light)',
+        display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 24px',
+      }}>
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+          <path d="M5 13l4 4L19 7" stroke="var(--green)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </div>
+      <h1 style={{ fontFamily:'var(--font-head)', fontWeight:800, fontSize:28, marginBottom:10 }}>Order Confirmed!</h1>
+      <p style={{ color:'var(--text2)', fontSize:15, lineHeight:1.6, marginBottom:8 }}>
+        Thank you for your purchase. Your license key{orderItems.length > 1 ? 's have' : ' has'} been sent to your email.
+      </p>
+      <p style={{ color:'var(--text3)', fontSize:13, marginBottom:32 }}>Order <strong style={{ color:'var(--text)' }}>{orderNumber}</strong></p>
 
+      <div style={{
+        background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'var(--radius-lg)',
+        padding:'24px', textAlign:'left', marginBottom:28,
+      }}>
+        <h3 style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:15, marginBottom:16 }}>Your Items</h3>
+        <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+          {orderItems.map((item, i) => (
+            <div key={i} style={{ display:'flex', alignItems:'center', gap:14 }}>
+              <div style={{ width:44, height:44, borderRadius:8, flexShrink:0, overflow:'hidden' }}>
+                <div style={{
+                  width:'100%', height:'100%',
+                  background:`linear-gradient(135deg, ${item.color}33, ${item.color}77)`,
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  fontFamily:'var(--font-head)', fontWeight:800, fontSize:18, color:item.color,
+                }}>{item.name[0]}</div>
+              </div>
+              <div style={{ flex:1 }}>
+                <div style={{ fontWeight:600, fontSize:14 }}>{item.name}</div>
+                <div style={{ fontSize:11, color:'var(--text3)', marginBottom:2 }}>{lineItemEditionName(item)}</div>
+                <LicenseKey value={orderKeys[i]} />
+              </div>
+              <div style={{ fontWeight:700, fontFamily:'var(--font-head)' }}>{fmt(lineItemPrice(item))}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ borderTop:'1px solid var(--border)', marginTop:16, paddingTop:16, display:'flex', justifyContent:'space-between', fontFamily:'var(--font-head)', fontWeight:800, fontSize:18 }}>
+          <span>Total Paid</span><span>{fmt(total)}</span>
+        </div>
+      </div>
 
+      <button onClick={onContinue} style={{
+        background:'var(--accent)', color:'#fff', borderRadius:'var(--radius-sm)',
+        padding:'13px 32px', fontSize:15, fontWeight:700, fontFamily:'var(--font-head)',
+        cursor:'pointer', boxShadow:'0 4px 16px rgba(99,102,241,0.3)',
+      }}>Continue Shopping</button>
+    </div>
+  );
+};
 
+// ─── Order History Page ───────────────────────────────────────────────────────
+const OrderHistoryPage = ({ orders, onBack, onContinue }) => {
+  const [expanded, setExpanded] = React.useState(orders.length ? 0 : -1);
 
+  if (orders.length === 0) return (
+    <div style={{ maxWidth:700, margin:'80px auto', padding:'0 32px', textAlign:'center' }} className="animate-in">
+      <div style={{ fontSize:48, marginBottom:16 }}>📦</div>
+      <h2 style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:22, marginBottom:8 }}>No orders yet</h2>
+      <p style={{ color:'var(--text3)', marginBottom:24 }}>When you buy something, your orders and license keys will appear here.</p>
+      <button onClick={onContinue} style={{
+        background:'var(--accent)', color:'#fff', borderRadius:'var(--radius-sm)',
+        padding:'12px 28px', fontSize:14, fontWeight:700, fontFamily:'var(--font-head)', cursor:'pointer',
+      }}>Browse Store</button>
+    </div>
+  );
 
+  return (
+    <div style={{ maxWidth:820, margin:'0 auto', padding:'40px 32px 64px' }} className="animate-in">
+      <button onClick={onBack} style={{
+        display:'flex', alignItems:'center', gap:6, fontSize:13, color:'var(--text3)',
+        fontWeight:500, marginBottom:24, padding:'4px 0', cursor:'pointer', background:'none',
+      }}>
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+          <path d="M13 5l-5 5 5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+        </svg>
+        Back
+      </button>
+      <h1 style={{ fontFamily:'var(--font-head)', fontWeight:800, fontSize:28, marginBottom:6 }}>Order History</h1>
+      <p style={{ color:'var(--text3)', fontSize:14, marginBottom:28 }}>{orders.length} order{orders.length>1?'s':''}</p>
+
+      <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+        {orders.map((o, idx) => {
+          const total = o.items.reduce((s, it) => s + lineItemPrice(it), 0);
+          const open = expanded === idx;
+          return (
+            <div key={o.number} style={{
+              background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'var(--radius-lg)', overflow:'hidden',
+            }}>
+              <button onClick={() => setExpanded(open ? -1 : idx)} style={{
+                width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between',
+                padding:'18px 22px', background:'none', cursor:'pointer', textAlign:'left', gap:16,
+              }}>
+                <div>
+                  <div style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:15, color:'var(--text)' }}>{o.number}</div>
+                  <div style={{ fontSize:13, color:'var(--text3)', marginTop:2 }}>{o.date} · {o.items.length} item{o.items.length>1?'s':''}</div>
+                </div>
+                <div style={{ display:'flex', alignItems:'center', gap:16 }}>
+                  <span style={{
+                    fontSize:11, fontWeight:600, padding:'3px 10px', borderRadius:99,
+                    background:'var(--green-light)', color:'var(--green)', textTransform:'uppercase', letterSpacing:'0.03em',
+                  }}>Delivered</span>
+                  <span style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:16 }}>{fmt(total)}</span>
+                  <span style={{ fontSize:18, color:'var(--text3)', transition:'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0)' }}>⌄</span>
+                </div>
+              </button>
+              {open && (
+                <div style={{ padding:'0 22px 20px', animation:'slideDown 0.15s ease both' }}>
+                  <div style={{ display:'flex', flexDirection:'column', gap:12, borderTop:'1px solid var(--border)', paddingTop:16 }}>
+                    {o.items.map((it, i) => (
+                      <div key={i} style={{ display:'flex', alignItems:'center', gap:14 }}>
+                        <div style={{ width:42, height:42, borderRadius:8, flexShrink:0, overflow:'hidden' }}>
+                          <div style={{
+                            width:'100%', height:'100%', background:`linear-gradient(135deg, ${it.color}33, ${it.color}77)`,
+                            display:'flex', alignItems:'center', justifyContent:'center',
+                            fontFamily:'var(--font-head)', fontWeight:800, fontSize:18, color:it.color,
+                          }}>{it.name[0]}</div>
+                        </div>
+                        <div style={{ flex:1 }}>
+                          <div style={{ fontWeight:600, fontSize:14 }}>{it.name}</div>
+                          <div style={{ fontSize:11, color:'var(--text3)' }}>{lineItemEditionName(it)}</div>
+                          <div style={{ fontSize:12, color:'var(--green)', fontFamily:'monospace', letterSpacing:'0.05em' }}>{o.keys[i]}</div>
+                        </div>
+                        <div style={{ fontWeight:700, fontFamily:'var(--font-head)' }}>{fmt(lineItemPrice(it))}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+// ─── Settings Page ──────────────────────────────────────────────────────────
+const SettingsPage = ({ settings, onSave, onBack }) => {
+  const [local, setLocal] = React.useState(settings);
+  const [saved, setSaved] = React.useState(false);
+  const set = (k, v) => { setLocal(s => ({ ...s, [k]: v })); setSaved(false); };
+
+  const Toggle = ({ on, onClick }) => (
+    <button onClick={onClick} style={{
+      width:42, height:24, borderRadius:99, border:'none', cursor:'pointer', position:'relative',
+      background: on ? 'var(--green)' : 'var(--border)', transition:'var(--transition)', flexShrink:0,
+    }}>
+      <span style={{
+        position:'absolute', top:2, left: on ? 20 : 2, width:20, height:20, borderRadius:'50%',
+        background:'#fff', transition:'left var(--transition)', boxShadow:'0 1px 3px rgba(0,0,0,0.3)',
+      }} />
+    </button>
+  );
+
+  const Row = ({ label, sub, children }) => (
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:16, padding:'14px 0', borderBottom:'1px solid var(--border)' }}>
+      <div>
+        <div style={{ fontSize:14, fontWeight:600, color:'var(--text)' }}>{label}</div>
+        {sub && <div style={{ fontSize:12, color:'var(--text3)', marginTop:2 }}>{sub}</div>}
+      </div>
+      {children}
+    </div>
+  );
+
+  const inputStyle = {
+    width:'100%', padding:'10px 12px', fontSize:14, border:'1px solid var(--border)',
+    borderRadius:'var(--radius-sm)', outline:'none', background:'var(--surface)', color:'var(--text)',
+  };
+
+  return (
+    <div style={{ maxWidth:680, margin:'0 auto', padding:'40px 32px 64px' }} className="animate-in">
+      <button onClick={onBack} style={{
+        display:'flex', alignItems:'center', gap:6, fontSize:13, color:'var(--text3)',
+        fontWeight:500, marginBottom:24, padding:'4px 0', cursor:'pointer', background:'none',
+      }}>
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+          <path d="M13 5l-5 5 5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+        </svg>
+        Back
+      </button>
+      <h1 style={{ fontFamily:'var(--font-head)', fontWeight:800, fontSize:28, marginBottom:28 }}>Account Settings</h1>
+
+      {/* Profile */}
+      <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'var(--radius-lg)', padding:'22px', marginBottom:20 }}>
+        <h3 style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:16, marginBottom:16 }}>Profile</h3>
+        <div style={{ display:'flex', gap:14, marginBottom:14 }}>
+          <div style={{ flex:1 }}>
+            <label style={{ fontSize:12, fontWeight:600, color:'var(--text2)', display:'block', marginBottom:5 }}>Full Name</label>
+            <input value={local.name} onChange={e => set('name', e.target.value)} style={inputStyle} />
+          </div>
+          <div style={{ flex:1 }}>
+            <label style={{ fontSize:12, fontWeight:600, color:'var(--text2)', display:'block', marginBottom:5 }}>Email</label>
+            <input value={local.email} onChange={e => set('email', e.target.value)} style={inputStyle} />
+          </div>
+        </div>
+      </div>
+
+      {/* Notifications */}
+      <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'var(--radius-lg)', padding:'22px', marginBottom:20 }}>
+        <h3 style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:16, marginBottom:6 }}>Notifications</h3>
+        <Row label="Order updates" sub="Delivery and license key emails">
+          <Toggle on={local.notifyOrders} onClick={() => set('notifyOrders', !local.notifyOrders)} />
+        </Row>
+        <Row label="Deals & offers" sub="Occasional discounts and sales">
+          <Toggle on={local.notifyDeals} onClick={() => set('notifyDeals', !local.notifyDeals)} />
+        </Row>
+        <Row label="Newsletter" sub="Monthly product roundup">
+          <Toggle on={local.newsletter} onClick={() => set('newsletter', !local.newsletter)} />
+        </Row>
+      </div>
+
+      {/* Preferences */}
+      <div style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'var(--radius-lg)', padding:'22px', marginBottom:24 }}>
+        <h3 style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:16, marginBottom:6 }}>Preferences</h3>
+        <Row label="Language">
+          <select value={local.language} onChange={e => set('language', e.target.value)} style={{ ...inputStyle, width:'auto', cursor:'pointer' }}>
+            <option>Deutsch</option><option>Français</option><option>Italiano</option><option>English</option>
+          </select>
+        </Row>
+        <Row label="Currency">
+          <select value={local.currency} onChange={e => set('currency', e.target.value)} style={{ ...inputStyle, width:'auto', cursor:'pointer' }}>
+            <option>CHF</option><option>EUR</option><option>USD</option>
+          </select>
+        </Row>
+      </div>
+
+      <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+        <button onClick={() => { onSave(local); setSaved(true); }} style={{
+          background: saved ? 'var(--green)' : 'var(--accent)', color:'#fff', borderRadius:'var(--radius-sm)',
+          padding:'12px 28px', fontSize:15, fontWeight:700, fontFamily:'var(--font-head)', cursor:'pointer',
+          transition:'var(--transition)',
+        }}>{saved ? '✓ Saved' : 'Save Changes'}</button>
+        {saved && <span style={{ fontSize:13, color:'var(--text3)' }}>Your settings have been updated.</span>}
       </div>
     </div>
   );
@@ -1412,12 +1771,12 @@ const SearchPage = ({ query, onOpen, onWishlist, wishlist, onAddToCart, tweaks }
     p.tags.some(t => t.toLowerCase().includes(query.toLowerCase()))
   );
   return (
-    <div style={{ maxWidth:1200, margin:'0 auto', padding:'40px 32px' }} className="animate-in">
+    <div className="sv-page animate-in">
       <h1 style={{ fontFamily:'var(--font-head)', fontWeight:800, fontSize:26, marginBottom:6 }}>
         Results for "{query}"
       </h1>
       <p style={{ color:'var(--text3)', fontSize:14, marginBottom:28 }}>{results.length} products found</p>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(220px, 1fr))', gap:20 }}>
+      <div className="sv-grid">
         {results.map(p => (
           <ProductCard key={p.id} product={p}
             onOpen={onOpen} onWishlist={onWishlist}
@@ -1436,33 +1795,206 @@ const SearchPage = ({ query, onOpen, onWishlist, wishlist, onAddToCart, tweaks }
   );
 };
 
+// ─── Info / Legal Pages ───────────────────────────────────────────────────────
+const INFO_CONTENT = {
+  privacy: {
+    title: 'Privacy Policy',
+    updated: 'Last updated: January 2026',
+    intro: 'At SoftwareVault, your privacy matters. This policy explains what data we collect, why we collect it, and how we keep it safe.',
+    sections: [
+      { h: '1. Information We Collect', p: 'We collect the information you provide at checkout — your name, email address and billing details — as well as basic technical data such as your IP address, browser type and the products you view. We never collect more than we need to deliver your order.' },
+      { h: '2. How We Use Your Data', p: 'Your data is used to process orders, deliver license keys, provide customer support and send order confirmations. With your consent, we may also send occasional offers. You can opt out at any time via the link in any email.' },
+      { h: '3. Payment Security', p: 'All payments are processed by PCI-DSS compliant payment providers. We never store your full credit card number on our servers — card data is tokenised and handled directly by our payment partners.' },
+      { h: '4. Cookies', p: 'We use essential cookies to keep your cart and session working, plus optional analytics cookies to improve the store. You control non-essential cookies through your browser settings.' },
+      { h: '5. Your Rights', p: 'Under the Swiss Federal Act on Data Protection (revFADP / nDSG) you have the right to access, correct or delete your personal data, and to request a copy of everything we hold about you. Email privacy@softwarevault.ch to exercise these rights.' },
+    ],
+  },
+  terms: {
+    title: 'Terms of Service',
+    updated: 'Last updated: January 2026',
+    intro: 'These terms govern your use of SoftwareVault and the purchase of digital products through our store. By placing an order you agree to them.',
+    sections: [
+      { h: '1. Digital Products', p: 'All products sold on SoftwareVault are digital license keys or subscriptions. After a successful payment, your key is delivered to your email and shown on your order confirmation page.' },
+      { h: '2. Licenses', p: 'Each key grants a license under the terms of the respective publisher (Microsoft, Adobe, Valve, etc.). You are responsible for complying with the publisher\'s end-user license agreement.' },
+      { h: '3. Pricing & Payment', p: 'All prices are shown in your selected currency and include Swiss VAT (MWST/TVA) where applicable. We reserve the right to correct pricing errors and to cancel orders affected by an obvious mistake.' },
+      { h: '4. Account Responsibility', p: 'You are responsible for keeping your account credentials secure. Notify us immediately of any unauthorised use of your account.' },
+      { h: '5. Prohibited Use', p: 'You may not resell keys purchased for personal use, attempt to obtain products fraudulently, or use the store for any unlawful purpose.' },
+    ],
+  },
+  refunds: {
+    title: 'Refund Policy',
+    updated: 'Last updated: January 2026',
+    intro: 'We want you to buy with confidence. This policy explains when you are entitled to a refund and how to request one. Our 30-day money-back guarantee applies to eligible purchases.',
+    sections: [
+      { h: '1. 30-Day Money-Back Guarantee', p: 'If a product does not work as described, you may request a full refund within 30 days of purchase. We will either resolve the issue or refund your payment to the original payment method.' },
+      { h: '2. Unused License Keys', p: 'A license key is eligible for a full refund as long as it has NOT been revealed, activated or redeemed. Once a key has been displayed on your confirmation page or activated, it is generally non-refundable — this is standard for digital goods.' },
+      { h: '3. Subscriptions', p: 'Subscription products (e.g. Microsoft 365, Adobe Creative Cloud, NordVPN) can be cancelled at any time. You will not be charged for the next billing cycle. Refunds for the current cycle are available within 14 days if the service has not been substantially used.' },
+      { h: '4. How to Request a Refund', p: 'Open your Order History from the account menu, find the order, and click "Request Refund" — or email refunds@softwarevault.ch with your order number. Most refunds are reviewed within 24 hours and processed within 3–5 business days.' },
+      { h: '5. Non-Refundable Cases', p: 'Refunds cannot be issued for activated keys, redeemed subscription codes, or orders flagged for fraud. If you are unsure whether your purchase qualifies, contact our support team before redeeming your key.' },
+    ],
+    cta: { label: 'Request a Refund', topic: 'refund-request' },
+  },
+  contact: {
+    title: 'Contact Us',
+    updated: 'We typically reply within a few hours',
+    intro: 'Have a question about an order, a product or your account? Reach out through any of the channels below and our team will be happy to help.',
+    cards: [
+      { icon: '✉️', h: 'Email', p: 'support@softwarevault.ch', sub: 'Best for order and billing questions' },
+      { icon: '💬', h: 'Live Chat', p: 'Available 9:00 – 22:00 CET', sub: 'Fastest way to reach a human' },
+      { icon: '📞', h: 'Phone', p: '+41 44 123 45 67', sub: 'Mon–Fri, 9:00 – 18:00 CET' },
+      { icon: '🏢', h: 'Headquarters', p: 'Bahnhofstrasse 21, 8001 Zürich', sub: 'Switzerland' },
+    ],
+  },
+  support: {
+    title: 'Help & Support',
+    updated: 'Find answers fast',
+    intro: 'Browse the most common questions below. If you can\'t find what you need, our support team is one click away.',
+    faqs: [
+      { q: 'Where is my license key?', a: 'Your key is shown on the Order Confirmed page immediately after purchase and is also emailed to you. You can find past keys in your Order History from the account menu.' },
+      { q: 'How do I activate my product?', a: 'Each product page lists activation steps. In general, copy your key and paste it into the publisher\'s activation screen (e.g. Steam → Add a Game → Activate a Product, or Microsoft → Redeem).' },
+      { q: 'My key isn\'t working — what now?', a: 'First make sure you are activating on the correct platform. If it still fails, contact support with your order number and we will issue a replacement or refund right away.' },
+      { q: 'Can I get a refund?', a: 'Yes — unused keys are eligible for a full refund within 30 days. See our Refund Policy for full details.' },
+      { q: 'Do you offer student or volume discounts?', a: 'Many publishers offer educational pricing. Contact us with proof of eligibility and we will point you to the best available offer.' },
+    ],
+  },
+};
+
+const InfoPage = ({ topic, onBack, onNavigate }) => {
+  const c = INFO_CONTENT[topic];
+  const [openFaq, setOpenFaq] = React.useState(0);
+  if (!c) return null;
+
+  return (
+    <div style={{ maxWidth:760, margin:'0 auto', padding:'40px 32px 64px' }} className="animate-in">
+      <button onClick={onBack} style={{
+        display:'flex', alignItems:'center', gap:6, fontSize:13, color:'var(--text3)',
+        fontWeight:500, marginBottom:28, padding:'4px 0', cursor:'pointer', background:'none',
+      }}>
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+          <path d="M13 5l-5 5 5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+        </svg>
+        Back
+      </button>
+
+      <h1 style={{ fontFamily:'var(--font-head)', fontWeight:800, fontSize:32, letterSpacing:'-0.02em', marginBottom:6 }}>
+        {c.title}
+      </h1>
+      <p style={{ fontSize:13, color:'var(--text3)', marginBottom:24 }}>{c.updated}</p>
+      <p style={{ fontSize:16, color:'var(--text2)', lineHeight:1.7, marginBottom:36, paddingBottom:28, borderBottom:'1px solid var(--border)' }}>
+        {c.intro}
+      </p>
+
+      {/* Standard sections */}
+      {c.sections && (
+        <div style={{ display:'flex', flexDirection:'column', gap:28 }}>
+          {c.sections.map(s => (
+            <div key={s.h}>
+              <h2 style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:17, marginBottom:8, color:'var(--text)' }}>{s.h}</h2>
+              <p style={{ fontSize:15, color:'var(--text2)', lineHeight:1.7 }}>{s.p}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Refund CTA */}
+      {c.cta && (
+        <div style={{
+          marginTop:36, padding:'24px', background:'var(--accent-light)',
+          border:'1px solid var(--border)', borderRadius:'var(--radius-lg)',
+          display:'flex', alignItems:'center', justifyContent:'space-between', gap:20, flexWrap:'wrap',
+        }}>
+          <div>
+            <div style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:16, color:'var(--text)', marginBottom:4 }}>
+              Need to return a purchase?
+            </div>
+            <div style={{ fontSize:14, color:'var(--text2)' }}>Start a refund request and we&rsquo;ll review it within 24 hours.</div>
+          </div>
+          <button onClick={() => onNavigate('support')} style={{
+            background:'var(--accent)', color:'#fff', borderRadius:'var(--radius-sm)',
+            padding:'12px 24px', fontSize:14, fontWeight:700, fontFamily:'var(--font-head)',
+            cursor:'pointer', whiteSpace:'nowrap', boxShadow:'0 4px 16px rgba(99,102,241,0.25)',
+          }}>{c.cta.label}</button>
+        </div>
+      )}
+
+      {/* Contact cards */}
+      {c.cards && (
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
+          {c.cards.map(card => (
+            <div key={card.h} style={{
+              background:'var(--surface)', border:'1px solid var(--border)',
+              borderRadius:'var(--radius)', padding:'20px',
+            }}>
+              <div style={{ fontSize:24, marginBottom:10 }}>{card.icon}</div>
+              <div style={{ fontFamily:'var(--font-head)', fontWeight:700, fontSize:15, marginBottom:4 }}>{card.h}</div>
+              <div style={{ fontSize:15, color:'var(--text)', fontWeight:500, marginBottom:2 }}>{card.p}</div>
+              <div style={{ fontSize:13, color:'var(--text3)' }}>{card.sub}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* FAQ accordion */}
+      {c.faqs && (
+        <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+          {c.faqs.map((f, i) => (
+            <div key={f.q} style={{
+              background:'var(--surface)', border:'1px solid var(--border)',
+              borderRadius:'var(--radius)', overflow:'hidden',
+            }}>
+              <button onClick={() => setOpenFaq(openFaq === i ? -1 : i)} style={{
+                width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between',
+                padding:'16px 20px', background:'none', cursor:'pointer', textAlign:'left',
+                fontFamily:'var(--font-head)', fontWeight:600, fontSize:15, color:'var(--text)',
+              }}>
+                {f.q}
+                <span style={{
+                  fontSize:18, color:'var(--text3)', transition:'transform 0.2s',
+                  transform: openFaq === i ? 'rotate(45deg)' : 'rotate(0)',
+                }}>+</span>
+              </button>
+              {openFaq === i && (
+                <div style={{ padding:'0 20px 18px', fontSize:14, color:'var(--text2)', lineHeight:1.7, animation:'slideDown 0.15s ease both' }}>
+                  {f.a}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ─── Footer ───────────────────────────────────────────────────────────────────
-const Footer = () => (
+const Footer = ({ onNavigate }) => {
+  const links = [['Privacy Policy','privacy'],['Terms of Service','terms'],['Refunds','refunds'],['Contact','contact'],['Support','support']];
+  return (
   <footer style={{
     borderTop:'1px solid var(--border)', background:'var(--surface)',
     padding:'24px 32px', marginTop:'auto',
   }}>
     <div style={{ maxWidth:1200, margin:'0 auto', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
       <div style={{ display:'flex', gap:24 }}>
-        {['Privacy Policy','Terms of Service','Refunds','Contact','Support'].map(l => (
-          <a key={l} href="#" style={{ fontSize:12, color:'var(--text3)', fontWeight:500 }}>{l}</a>
+        {links.map(([label, id]) => (
+          <button key={id} onClick={() => onNavigate(id)} style={{
+            fontSize:12, color:'var(--text3)', fontWeight:500, background:'none', border:'none',
+            cursor:'pointer', padding:0, transition:'var(--transition)',
+          }}
+          onMouseEnter={e => e.currentTarget.style.color='var(--text)'}
+          onMouseLeave={e => e.currentTarget.style.color='var(--text3)'}
+          >{label}</button>
         ))}
       </div>
       <div style={{ fontSize:12, color:'var(--text3)' }}>© 2026 SoftwareVault</div>
     </div>
   </footer>
-);
-
+  );
+};
 
 // ─── Split Landing ────────────────────────────────────────────────────────────
 const SplitLanding = ({ onChoose }) => {
   const [hovered, setHovered] = React.useState(null);
-
-
-
-
-
-
 
   return (
     <div className="split-landing">
@@ -1523,7 +2055,7 @@ const SplitLanding = ({ onChoose }) => {
               <span key={t} style={{
                 fontSize:12, padding:'4px 12px', borderRadius:99,
                 background:'rgba(255,255,255,0.08)', color:'rgba(255,255,255,0.5)',
-                border:'1px solid rgba(255,255,255,0.1)', fontFamily:"'DM Sans', sans-serif",
+                border:'1px solid rgba(255,255,255,0.1)', fontFamily:"'DM Sans', sans-serif", whiteSpace:'nowrap',
               }}>{t}</span>
             ))}
           </div>
@@ -1535,6 +2067,7 @@ const SplitLanding = ({ onChoose }) => {
             opacity: hovered==='software' ? 1 : 0.7,
             transform: hovered==='software' ? 'translateY(-2px)' : 'translateY(0)',
             transition:'all 0.3s', boxShadow: hovered==='software' ? '0 8px 32px oklch(52% 0.22 268 / 0.4)' : 'none',
+            whiteSpace:'nowrap',
           }}>
             Enter Software Store
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
@@ -1630,7 +2163,7 @@ const SplitLanding = ({ onChoose }) => {
                 fontSize:12, padding:'4px 12px', borderRadius:3,
                 background:'rgba(0,200,255,0.06)', color:'rgba(0,200,255,0.5)',
                 border:'1px solid rgba(0,200,255,0.15)', fontFamily:"'Rajdhani', sans-serif",
-                letterSpacing:'0.05em', textTransform:'uppercase', fontWeight:600,
+                letterSpacing:'0.05em', textTransform:'uppercase', fontWeight:600, whiteSpace:'nowrap',
               }}>{t}</span>
             ))}
           </div>
@@ -1645,6 +2178,7 @@ const SplitLanding = ({ onChoose }) => {
             transform: hovered==='gaming' ? 'translateY(-2px)' : 'translateY(0)',
             transition:'all 0.3s',
             boxShadow: hovered==='gaming' ? '0 0 20px rgba(0,200,255,0.2), inset 0 0 20px rgba(0,200,255,0.05)' : 'none',
+            whiteSpace:'nowrap',
           }}>
             Enter Game Store
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
@@ -1658,8 +2192,9 @@ const SplitLanding = ({ onChoose }) => {
 };
 
 // ─── Gaming Navbar ────────────────────────────────────────────────────────────
-const GamingNavbar = ({ page, setPage, searchQuery, setSearchQuery, wishlist, cart, onBack }) => {
+const GamingNavbar = ({ page, setPage, searchQuery, setSearchQuery, wishlist, cart, onBack, onAction, onSignOut, user }) => {
   const [searchFocused, setSearchFocused] = React.useState(false);
+  const [accountOpen, setAccountOpen] = React.useState(false);
   const navItems = [
     { id:'home', label:'Home' },
     { id:'games', label:'All Games' },
@@ -1675,7 +2210,7 @@ const GamingNavbar = ({ page, setPage, searchQuery, setSearchQuery, wishlist, ca
       boxShadow:'0 4px 24px rgba(0,0,0,0.5)',
     }}>
       {/* Logo */}
-      <div onClick={() => setPage('landing')} style={{
+      <div onClick={() => setPage('home')} style={{
         fontFamily:"'Barlow Condensed', sans-serif", fontWeight:800, fontSize:20,
         letterSpacing:'0.06em', textTransform:'uppercase', cursor:'pointer', marginRight:36, flexShrink:0,
         display:'flex', alignItems:'center', gap:10,
@@ -1712,7 +2247,7 @@ const GamingNavbar = ({ page, setPage, searchQuery, setSearchQuery, wishlist, ca
         </svg>
         <input
           value={searchQuery}
-          onChange={e => { setSearchQuery(e.target.value); if(e.target.value) setPage('search'); }}
+          onChange={e => { setSearchQuery(e.target.value); setPage(e.target.value ? 'search' : 'home'); }}
           onFocus={() => setSearchFocused(true)}
           onBlur={() => setSearchFocused(false)}
           placeholder="Search games…"
@@ -1767,13 +2302,72 @@ const GamingNavbar = ({ page, setPage, searchQuery, setSearchQuery, wishlist, ca
         )}
       </button>
 
-      {/* Switch mode */}
+      {/* Account */}
+      <div style={{ position:'relative', marginLeft:8 }}>
+        <button onClick={() => setAccountOpen(o => !o)} style={{
+          width:30, height:30, borderRadius:'50%',
+          background:'linear-gradient(135deg, oklch(62% 0.25 195), #0d2230)',
+          display:'flex', alignItems:'center', justifyContent:'center',
+          fontSize:12, fontWeight:700, color:'#fff', cursor:'pointer',
+          border: accountOpen ? '2px solid rgba(0,200,255,0.6)' : '2px solid transparent',
+        }}>{user.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</button>
+        {accountOpen && (
+          <>
+            <div onClick={() => setAccountOpen(false)} style={{ position:'fixed', inset:0, zIndex:90 }} />
+            <div style={{
+              position:'absolute', top:42, right:0, zIndex:95, width:220,
+              background:'#0e1420', border:'1px solid rgba(0,200,255,0.2)',
+              borderRadius:6, boxShadow:'0 12px 40px rgba(0,0,0,0.6)',
+              padding:8, animation:'slideDown 0.15s ease both',
+            }}>
+              <div style={{ padding:'10px 12px', borderBottom:'1px solid rgba(255,255,255,0.08)', marginBottom:6 }}>
+                <div style={{ fontWeight:600, fontSize:14, color:'#fff', fontFamily:"'Rajdhani', sans-serif" }}>{user.name}</div>
+                <div style={{ fontSize:12, color:'rgba(255,255,255,0.4)' }}>{user.email}</div>
+              </div>
+              {[
+                { label:'My Wishlist', action:() => setPage('wishlist') },
+                { label:'My Cart', action:() => setPage('cart') },
+                { label:'Order History', action:() => setPage('orders') },
+                { label:'Account Settings', action:() => setPage('settings') },
+              ].map(item => (
+                <button key={item.label} onClick={() => { item.action(); setAccountOpen(false); }} style={{
+                  display:'block', width:'100%', textAlign:'left', padding:'8px 12px',
+                  fontSize:13, color:'rgba(255,255,255,0.6)', borderRadius:4,
+                  background:'transparent', cursor:'pointer', transition:'all 0.15s',
+                  fontFamily:"'Rajdhani', sans-serif", fontWeight:500,
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background='rgba(0,200,255,0.08)'; e.currentTarget.style.color='oklch(62% 0.25 195)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='rgba(255,255,255,0.6)'; }}
+                >{item.label}</button>
+              ))}
+              <div style={{ borderTop:'1px solid rgba(255,255,255,0.08)', marginTop:6, paddingTop:6 }}>
+                <button onClick={() => { onSignOut(); setAccountOpen(false); }} style={{
+                  display:'block', width:'100%', textAlign:'left', padding:'8px 12px',
+                  fontSize:13, color:'var(--red)', borderRadius:4,
+                  background:'transparent', cursor:'pointer', fontWeight:500, fontFamily:"'Rajdhani', sans-serif",
+                }}>Sign Out</button>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Switch store */}
       <button onClick={() => onBack()} style={{
-        marginLeft:12, padding:'6px 14px', borderRadius:3,
+        marginLeft:12, padding:'7px 14px', borderRadius:3,
         border:'1px solid rgba(255,255,255,0.12)', fontSize:12, fontWeight:600,
-        color:'rgba(255,255,255,0.4)', fontFamily:"'Barlow Condensed', sans-serif",
+        color:'rgba(255,255,255,0.45)', fontFamily:"'Barlow Condensed', sans-serif",
         letterSpacing:'0.05em', textTransform:'uppercase', transition:'all 0.15s',
-      }}>← Switch</button>
+        display:'flex', alignItems:'center', gap:5,
+      }}
+      onMouseEnter={e => { e.currentTarget.style.background='rgba(0,200,255,0.08)'; e.currentTarget.style.color='oklch(62% 0.25 195)'; }}
+      onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='rgba(255,255,255,0.45)'; }}
+      >
+        <svg width="13" height="13" viewBox="0 0 20 20" fill="none">
+          <path d="M7 4L3 8l4 4M3 8h10M13 16l4-4-4-4M17 12H7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        Switch
+      </button>
     </nav>
   );
 };
@@ -1844,14 +2438,14 @@ const GamingProductCard = ({ product, onOpen, onWishlist, isWishlisted, onAddToC
         </div>
         {/* Badges */}
         <div style={{ position:'absolute', top:8, left:8, display:'flex', gap:4 }}>
-          {product.badge && (
+          {getBadge(product) && (
             <span style={{
               fontSize:10, padding:'2px 7px', borderRadius:2, fontWeight:700,
               letterSpacing:'0.06em', textTransform:'uppercase',
-              background: product.badge==='Deal' ? 'var(--amber)' : product.badge==='New' ? 'oklch(62% 0.25 195)' : 'rgba(255,255,255,0.15)',
-              color: product.badge==='Deal' ? '#000' : product.badge==='New' ? '#000' : '#fff',
+              background: getBadge(product)==='Deal' ? 'var(--amber)' : getBadge(product)==='New' ? 'oklch(62% 0.25 195)' : 'rgba(255,255,255,0.15)',
+              color: getBadge(product)==='Deal' ? '#000' : getBadge(product)==='New' ? '#000' : '#fff',
               fontFamily:"'Barlow Condensed', sans-serif",
-            }}>{product.badge}</span>
+            }}>{getBadge(product)}</span>
           )}
           {discount && (
             <span style={{
@@ -1907,14 +2501,14 @@ const GamingProductCard = ({ product, onOpen, onWishlist, isWishlisted, onAddToC
         <div>
           {origPrice && (
             <div style={{ fontSize:10, color:'rgba(255,255,255,0.25)', textDecoration:'line-through', fontFamily:"'Rajdhani', sans-serif" }}>
-              €{origPrice.toFixed(2)}
+              {fmt(origPrice)}
             </div>
           )}
           <div style={{
             fontFamily:"'Barlow Condensed', sans-serif", fontWeight:700, fontSize:20,
             color: hovered ? 'oklch(62% 0.25 195)' : '#fff', transition:'color 0.2s',
             letterSpacing:'0.02em',
-          }}>€{lowestPrice.toFixed(2)}</div>
+          }}>{fmt(lowestPrice)}</div>
         </div>
         <button
           onClick={e => { e.stopPropagation(); onAddToCart(product); }}
@@ -1933,7 +2527,7 @@ const GamingProductCard = ({ product, onOpen, onWishlist, isWishlisted, onAddToC
 };
 
 // ─── Gaming Hero ──────────────────────────────────────────────────────────────
-const GamingHero = ({ onShop }) => {
+const GamingHero = ({ onShop, onBuy }) => {
   const featured = PRODUCTS.find(p => p.id === 'elden-ring');
   const [tick, setTick] = React.useState(0);
   React.useEffect(() => {
@@ -1982,12 +2576,12 @@ const GamingHero = ({ onShop }) => {
           </p>
         </div>
         <div style={{ display:'flex', gap:10, alignItems:'center' }}>
-          <button onClick={() => onShop(featured)} style={{
+          <button onClick={() => onBuy(featured)} style={{
             background:'oklch(62% 0.25 195)', color:'#000',
             borderRadius:3, padding:'12px 28px', fontSize:15, fontWeight:800,
             fontFamily:"'Barlow Condensed', sans-serif", letterSpacing:'0.08em', textTransform:'uppercase',
             cursor:'pointer', boxShadow:'0 4px 24px rgba(0,200,255,0.35)',
-          }}>Buy Now — €59.99</button>
+          }}>Buy Now — {fmt(59.99)}</button>
           <button onClick={() => onShop(featured)} style={{
             background:'transparent', color:'rgba(0,200,255,0.7)',
             border:'1px solid rgba(0,200,255,0.3)', borderRadius:3,
@@ -2048,8 +2642,8 @@ const GamingHero = ({ onShop }) => {
 // ─── Gaming Home ──────────────────────────────────────────────────────────────
 const GamingHomePage = ({ setPage, onOpen, onWishlist, wishlist, onAddToCart }) => {
   const games = PRODUCTS.filter(p => p.category === 'games');
-  const deals = PRODUCTS.filter(p => p.category === 'deals' && p.subcategory !== 'OS' && p.subcategory !== 'Office' && p.subcategory !== 'Security');
-  const newGames = PRODUCTS.filter(p => p.category === 'new' && p.subcategory === 'Action');
+  const deals = PRODUCTS.filter(p => p.category === 'games' && p.isDeal);
+  const newGames = PRODUCTS.filter(p => p.category === 'games' && p.isNew);
 
   const GamingSection = ({ title, accent, products, onViewAll }) => (
     <section style={{ marginBottom:52 }}>
@@ -2065,7 +2659,7 @@ const GamingHomePage = ({ setPage, onOpen, onWishlist, wishlist, onAddToCart }) 
           cursor:'pointer', transition:'all 0.15s',
         }}>See All →</button>
       </div>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(220px, 1fr))', gap:16 }}>
+      <div className="sv-grid">
         {products.slice(0,4).map(p => (
           <GamingProductCard key={p.id} product={p}
             onOpen={onOpen} onWishlist={onWishlist}
@@ -2078,9 +2672,10 @@ const GamingHomePage = ({ setPage, onOpen, onWishlist, wishlist, onAddToCart }) 
   );
 
   return (
-    <div style={{ maxWidth:1200, margin:'0 auto', padding:'40px 32px' }} className="animate-in">
-      <GamingHero onShop={onOpen} />
+    <div className="sv-page animate-in">
+      <GamingHero onShop={onOpen} onBuy={(p) => { onAddToCart(p); setPage('cart'); window.scrollTo({top:0}); }} />
       <GamingSection title="Top Titles" products={games} onViewAll={() => setPage('games')} />
+      <GamingSection title="New Releases" products={newGames} onViewAll={() => setPage('new')} />
       <GamingSection title="Weekly Deals" products={deals} onViewAll={() => setPage('deals')} />
     </div>
   );
@@ -2094,10 +2689,9 @@ const GamingCatalogPage = ({ category, onOpen, onWishlist, wishlist, onAddToCart
   const [showCompare, setShowCompare] = React.useState(false);
 
   const allProducts = PRODUCTS.filter(p => {
-    if (category === 'games') return p.category === 'games';
-    if (category === 'deals') return p.category === 'deals';
-    if (category === 'new') return p.category === 'new';
-    return p.category === category;
+    if (category === 'deals') return p.category === 'games' && p.isDeal;
+    if (category === 'new') return p.category === 'games' && p.isNew;
+    return p.category === 'games';
   });
   const subcats = ['all', ...new Set(allProducts.map(p => p.subcategory))];
   const filtered = allProducts.filter(p => filterSub === 'all' || p.subcategory === filterSub);
@@ -2115,7 +2709,7 @@ const GamingCatalogPage = ({ category, onOpen, onWishlist, wishlist, onAddToCart
   const titles = { games:'All Games', deals:'Deals', new:'New Releases' };
 
   return (
-    <div style={{ maxWidth:1200, margin:'0 auto', padding:'40px 32px' }} className="animate-in">
+    <div className="sv-page animate-in">
       <div style={{ marginBottom:32 }}>
         <h1 style={{ fontFamily:"'Barlow Condensed', sans-serif", fontWeight:800, fontSize:36,
           letterSpacing:'0.04em', textTransform:'uppercase', color:'#fff', marginBottom:4 }}>
@@ -2137,10 +2731,6 @@ const GamingCatalogPage = ({ category, onOpen, onWishlist, wishlist, onAddToCart
               border:'1px solid', borderColor: filterSub === s ? 'oklch(62% 0.25 195)' : 'rgba(0,200,255,0.15)',
               cursor:'pointer', transition:'all 0.15s',
             }}>{s === 'all' ? 'All' : s}</button>
-
-
-
-
           ))}
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
@@ -2164,7 +2754,7 @@ const GamingCatalogPage = ({ category, onOpen, onWishlist, wishlist, onAddToCart
           </select>
         </div>
       </div>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(220px, 1fr))', gap:16, marginBottom:40 }}>
+      <div className="sv-grid" style={{ marginBottom:40 }}>
         {sorted.map(p => (
           <div key={p.id} style={{ position:'relative' }}>
             <GamingProductCard product={p}
@@ -2197,24 +2787,33 @@ const GamingCatalogPage = ({ category, onOpen, onWishlist, wishlist, onAddToCart
 };
 
 // ─── Gaming Footer ────────────────────────────────────────────────────────────
-const GamingFooter = () => (
+const GamingFooter = ({ onNavigate }) => {
+  const links = [['Privacy Policy','privacy'],['Terms','terms'],['Refunds','refunds'],['Contact','contact'],['Support','support']];
+  return (
   <footer style={{
     borderTop:'1px solid rgba(0,200,255,0.08)',
     background:'#050709', padding:'20px 32px', marginTop:'auto',
   }}>
     <div style={{ maxWidth:1200, margin:'0 auto', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
       <div style={{ display:'flex', gap:24 }}>
-        {['Privacy Policy','Terms','Refunds','Contact','Support'].map(l => (
-          <a key={l} href="#" style={{ fontSize:12, color:'rgba(255,255,255,0.2)', fontFamily:"'Rajdhani', sans-serif", letterSpacing:'0.04em', textTransform:'uppercase', fontWeight:500 }}>{l}</a>
+        {links.map(([label, id]) => (
+          <button key={id} onClick={() => onNavigate(id)} style={{
+            fontSize:12, color:'rgba(255,255,255,0.2)', fontFamily:"'Rajdhani', sans-serif",
+            letterSpacing:'0.04em', textTransform:'uppercase', fontWeight:500,
+            background:'none', border:'none', cursor:'pointer', padding:0, transition:'all 0.15s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.color='rgba(0,200,255,0.6)'}
+          onMouseLeave={e => e.currentTarget.style.color='rgba(255,255,255,0.2)'}
+          >{label}</button>
         ))}
       </div>
       <div style={{ fontSize:12, color:'rgba(0,200,255,0.25)', fontFamily:"'Barlow Condensed', sans-serif", letterSpacing:'0.06em', textTransform:'uppercase' }}>
         © 2026 SoftwareVault
       </div>
-
     </div>
   </footer>
-);
+  );
+};
 
 // ─── Root App ─────────────────────────────────────────────────────────────────
 const App = () => {
@@ -2235,6 +2834,12 @@ const App = () => {
     if (mode === 'gaming') document.body.classList.add('gaming');
     else document.body.classList.remove('gaming');
   }, [mode]);
+
+  // Keep the live currency in sync with the Tweaks control so all prices reformat.
+  React.useEffect(() => {
+    window.__svCurrency = tweaks.currency || 'CHF';
+    setCart(c => c.slice()); // nudge a re-render so prices reformat immediately
+  }, [tweaks.currency]);
 
   const chooseMode = (m) => { setMode(m); setPage('home'); };
   const goToLanding = () => { setMode('landing'); setPage('home'); };
@@ -2257,13 +2862,43 @@ const App = () => {
     });
   };
 
-  const addToCart = (product) => {
-    setCart(prev => [...prev, product]);
+  const addToCart = (product, edition) => {
+    const chosen = edition || (product.editions.length > 1
+      ? product.editions.reduce((a, b) => a.price <= b.price ? a : b)
+      : product.editions[0]);
+    setCart(prev => [...prev, { ...product, chosenEdition: chosen }]);
     showToast(`${product.name} added to cart 🛒`);
   };
 
   const removeFromCart = (index) => {
     setCart(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const genKey = () => 'KEY-' + Math.random().toString(36).slice(2,7).toUpperCase() + '-' + Math.random().toString(36).slice(2,7).toUpperCase();
+  const [orders, setOrders] = React.useState([]);
+  const [settings, setSettings] = React.useState({
+    name: 'Jane Doe', email: 'jane.doe@email.ch',
+    notifyOrders: true, notifyDeals: true, newsletter: false,
+    language: 'Deutsch', currency: 'CHF',
+  });
+
+  const [order, setOrder] = React.useState({ items: [], number: '', keys: [] });
+  const placeOrder = () => {
+    const number = 'SV-' + Date.now().toString().slice(-8);
+    const keys = cart.map(() => genKey());
+    const date = new Date().toLocaleDateString('de-CH', { day:'2-digit', month:'short', year:'numeric' });
+    setOrder({ items: cart, number, keys });
+    setOrders(prev => [{ number, date, items: cart, keys }, ...prev]);
+    setCart([]);
+    setPage('order-confirmed');
+    window.scrollTo({ top: 0 });
+  };
+
+  const signOut = () => {
+    setCart([]);
+    setMode('landing');
+    setPage('home');
+    showToast("You've been signed out");
   };
 
   // ── Landing ──
@@ -2279,7 +2914,7 @@ const App = () => {
           page={page} setPage={setPage}
           searchQuery={searchQuery} setSearchQuery={setSearchQuery}
           wishlist={wishlist} cart={cart}
-          onBack={goToLanding}
+          onBack={goToLanding} onAction={showToast} onSignOut={signOut} user={settings}
         />
         <main style={{ flex:1 }}>
           {page === 'home' && (
@@ -2309,11 +2944,29 @@ const App = () => {
           )}
           {page === 'wishlist' && (
             <WishlistPage wishlist={wishlist} onOpen={openProduct}
-              onWishlist={toggleWishlist} onAddToCart={addToCart} tweaks={tweaks} />
+              onWishlist={toggleWishlist} onAddToCart={addToCart}
+            onBrowse={() => { setPage('home'); window.scrollTo({top:0}); }} tweaks={tweaks} />
           )}
           {page === 'cart' && (
             <CartPage cart={cart} onRemove={removeFromCart}
-              onCheckout={() => showToast('Checkout coming soon!')} />
+              onCheckout={() => { setPage('checkout'); window.scrollTo({top:0}); }}
+            onBrowse={() => { setPage('home'); window.scrollTo({top:0}); }} />
+          )}
+          {page === 'checkout' && (
+            <CheckoutPage cart={cart} onBack={() => setPage('cart')} onPlaceOrder={placeOrder} />
+          )}
+          {page === 'order-confirmed' && (
+            <OrderConfirmedPage orderItems={order.items} orderNumber={order.number} orderKeys={order.keys}
+              onContinue={() => setPage('home')} />
+          )}
+          {page === 'orders' && (
+            <OrderHistoryPage orders={orders} onBack={() => setPage('home')} onContinue={() => setPage('games')} />
+          )}
+          {page === 'settings' && (
+            <SettingsPage settings={settings} onSave={s => { setSettings(s); showToast('Settings saved'); }} onBack={() => setPage('home')} />
+          )}
+          {INFO_CONTENT[page] && (
+            <InfoPage topic={page} onBack={() => setPage('home')} onNavigate={(id) => { setPage(id); window.scrollTo({top:0}); }} />
           )}
           {page === 'search' && (
             <SearchPage query={searchQuery} onOpen={openProduct}
@@ -2321,7 +2974,7 @@ const App = () => {
               onAddToCart={addToCart} tweaks={tweaks} />
           )}
         </main>
-        <GamingFooter />
+        <GamingFooter onNavigate={(id) => { setPage(id); window.scrollTo({top:0}); }} />
         {toast && (
           <div style={{
             position:'fixed', bottom:32, left:'50%', transform:'translateX(-50%)',
@@ -2342,32 +2995,17 @@ const App = () => {
     );
   }
 
-
   // ── Software mode ──
   return (
     <div style={{ minHeight:'100vh', display:'flex', flexDirection:'column' }}>
       <Navbar
         page={page} setPage={p => { if(p==='landing') goToLanding(); else setPage(p); }}
         searchQuery={searchQuery} setSearchQuery={setSearchQuery}
-        wishlist={wishlist} cart={cart}
+        wishlist={wishlist} cart={cart} onAction={showToast} onSignOut={signOut} user={settings}
       />
-      {/* Switch mode banner */}
-      <div style={{ background:'var(--nav)', padding:'0 32px' }}>
-        <div style={{ maxWidth:1200, margin:'0 auto', display:'flex', alignItems:'center', justifyContent:'flex-end' }}>
-          <button onClick={goToLanding} style={{
-            fontSize:12, color:'rgba(255,255,255,0.35)', fontWeight:500, padding:'6px 0',
-            background:'none', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:4,
-          }}>← Back to store selection</button>
-        </div>
-      </div>
       <main style={{ flex:1 }}>
         {page === 'home' && (
           <HomePage setPage={setPage} onOpen={openProduct}
-            onWishlist={toggleWishlist} wishlist={wishlist}
-            onAddToCart={addToCart} tweaks={tweaks} />
-        )}
-        {page === 'games' && (
-          <CatalogPage category="games" onOpen={openProduct}
             onWishlist={toggleWishlist} wishlist={wishlist}
             onAddToCart={addToCart} tweaks={tweaks} />
         )}
@@ -2381,8 +3019,8 @@ const App = () => {
             onWishlist={toggleWishlist} wishlist={wishlist}
             onAddToCart={addToCart} tweaks={tweaks} />
         )}
-        {page === 'business' && (
-          <CatalogPage category="business" onOpen={openProduct}
+        {page === 'new' && (
+          <CatalogPage category="new" onOpen={openProduct}
             onWishlist={toggleWishlist} wishlist={wishlist}
             onAddToCart={addToCart} tweaks={tweaks} />
         )}
@@ -2397,11 +3035,29 @@ const App = () => {
         )}
         {page === 'wishlist' && (
           <WishlistPage wishlist={wishlist} onOpen={openProduct}
-            onWishlist={toggleWishlist} onAddToCart={addToCart} tweaks={tweaks} />
+            onWishlist={toggleWishlist} onAddToCart={addToCart}
+            onBrowse={() => { setPage('home'); window.scrollTo({top:0}); }} tweaks={tweaks} />
         )}
         {page === 'cart' && (
           <CartPage cart={cart} onRemove={removeFromCart}
-            onCheckout={() => showToast('Checkout coming soon!')} />
+            onCheckout={() => { setPage('checkout'); window.scrollTo({top:0}); }}
+            onBrowse={() => { setPage('home'); window.scrollTo({top:0}); }} />
+        )}
+        {page === 'checkout' && (
+          <CheckoutPage cart={cart} onBack={() => setPage('cart')} onPlaceOrder={placeOrder} />
+        )}
+        {page === 'order-confirmed' && (
+          <OrderConfirmedPage orderItems={order.items} orderNumber={order.number} orderKeys={order.keys}
+            onContinue={() => setPage('home')} />
+        )}
+        {page === 'orders' && (
+          <OrderHistoryPage orders={orders} onBack={() => setPage('home')} onContinue={() => setPage('software')} />
+        )}
+        {page === 'settings' && (
+          <SettingsPage settings={settings} onSave={s => { setSettings(s); showToast('Settings saved'); }} onBack={() => setPage('home')} />
+        )}
+        {INFO_CONTENT[page] && (
+          <InfoPage topic={page} onBack={() => setPage('home')} onNavigate={(id) => { setPage(id); window.scrollTo({top:0}); }} />
         )}
         {page === 'search' && (
           <SearchPage query={searchQuery} onOpen={openProduct}
@@ -2409,7 +3065,7 @@ const App = () => {
             onAddToCart={addToCart} tweaks={tweaks} />
         )}
       </main>
-      <Footer />
+      <Footer onNavigate={(id) => { setPage(id); window.scrollTo({top:0}); }} />
       {toast && (
         <div style={{
           position:'fixed', bottom:32, left:'50%', transform:'translateX(-50%)',
@@ -2432,7 +3088,7 @@ const App = () => {
           onChange={v => setTweak('showRatings', v)} />
         <TweakSection label="Currency" />
         <TweakRadio label="Currency" value={tweaks.currency}
-          options={['USD','EUR','GBP']}
+          options={['CHF','EUR','USD']}
           onChange={v => setTweak('currency', v)} />
       </TweaksPanel>
     </div>
